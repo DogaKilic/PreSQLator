@@ -5,10 +5,10 @@ import soot.*;
 import soot.jimple.InstanceFieldRef;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
-import soot.jimple.SpecialInvokeExpr;
 import soot.util.Chain;
 import util.ClassWriter;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class RowClassGenerator extends ClassGenerator {
@@ -22,8 +22,8 @@ public class RowClassGenerator extends ClassGenerator {
         rowClasses.add(rowClass);
         rowClass.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
         Scene.v().addClass(rowClass);
-        LinkedList<String[]> columnContent = TableBank.getColumnContent(tableName);
-        LinkedList<Type> types = new LinkedList<>();
+        ArrayList<String[]> columnContent = TableBank.getColumnContent(tableName);
+        ArrayList<Type> types = new ArrayList<>();
         for (String[] data : columnContent) {
             Type type = getType(data[1]);
             types.add(type);
@@ -36,7 +36,7 @@ public class RowClassGenerator extends ClassGenerator {
         JimpleBody mainBody = Jimple.v().newBody(constructor);
         constructor.setActiveBody(mainBody);
         Chain units = mainBody.getUnits();
-        LinkedList<Local> parameterList = new LinkedList<>();
+        ArrayList<Local> parameterList = new ArrayList<>();
         int parmCount = 0;
         Local ref;
         ref = soot.jimple.Jimple.v().newLocal("this", rowClass.getType());  // create "this" like you create other locals

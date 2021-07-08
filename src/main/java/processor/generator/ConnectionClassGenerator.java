@@ -6,15 +6,17 @@ import soot.jimple.*;
 import soot.util.Chain;
 import util.ClassWriter;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class ConnectionClassGenerator extends ClassGenerator {
 
-    public void generateClass(LinkedList<TableContent> contents) {
-        LinkedList<String> tableClassNames = new LinkedList<>();
-        LinkedList<String> rowClassNames = new LinkedList<>();
-        LinkedList<String> tableFieldNames = new LinkedList<>();
-        LinkedList<SootField> tableFields = new LinkedList<>();
+    public void generateClass(List<TableContent> contents) {
+        ArrayList<String> tableClassNames = new ArrayList<>();
+        ArrayList<String> rowClassNames = new ArrayList<>();
+        ArrayList<String> tableFieldNames = new ArrayList<>();
+        ArrayList<SootField> tableFields = new ArrayList<>();
         SootClass connectionClass = new SootClass("Connection");
         connectionClass.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
         Scene.v().addClass(connectionClass);
@@ -58,8 +60,8 @@ public class ConnectionClassGenerator extends ClassGenerator {
         cnt = 0;
         for (TableContent i : contents) {
             if (i.hasPreparedInsert()) {
-                LinkedList<Local> parameterList = new LinkedList<>();
-                LinkedList<Type> types = new LinkedList<>();
+                ArrayList<Local> parameterList = new ArrayList<>();
+                ArrayList<Type> types = new ArrayList<>();
                 for (String[] data : i.getColumnContent()) {
                     Type type = getType(data[1]);
                     types.add(type);

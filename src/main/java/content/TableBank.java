@@ -1,5 +1,6 @@
 package content;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class TableBank {
@@ -43,7 +44,7 @@ public class TableBank {
         }
     }
 
-    public static LinkedList<String[]> getColumnContent(String tableName) {
+    public static ArrayList<String[]> getColumnContent(String tableName) {
         return getTable(tableName).getColumnContent();
     }
 

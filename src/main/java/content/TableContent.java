@@ -1,22 +1,23 @@
 package content;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class TableContent implements ITableContent {
 
     private String tableName;
     private Boolean hasPreparedInsert;
-    private final LinkedList<String> columns;
-    private final LinkedList<String> queries;
-    private final LinkedList<String[]> columnContent;
+    private final ArrayList<String> columns;
+    private final ArrayList<String> queries;
+    private final ArrayList<String[]> columnContent;
 
 
     public TableContent(String tableName) {
         setTableName(tableName);
         hasPreparedInsert = false;
-        columns = new LinkedList<>();
-        queries = new LinkedList<>();
-        columnContent = new LinkedList<>();
+        columns = new ArrayList<>();
+        queries = new ArrayList<>();
+        columnContent = new ArrayList<>();
     }
 
 
@@ -50,15 +51,15 @@ public class TableContent implements ITableContent {
         return hasPreparedInsert;
     }
 
-    public LinkedList<String> getColumns() {
+    public ArrayList<String> getColumns() {
         return columns;
     }
 
-    public LinkedList<String> getQueries() {
+    public ArrayList<String> getQueries() {
         return queries;
     }
 
-    public LinkedList<String[]> getColumnContent() {
+    public ArrayList<String[]> getColumnContent() {
         return columnContent;
     }
 

@@ -8,12 +8,13 @@ import soot.jimple.SpecialInvokeExpr;
 import soot.util.Chain;
 import util.ClassWriter;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class TableClassGenerator extends ClassGenerator {
 
 
-    private static final LinkedList<SootClass> tableClasses = new LinkedList<>();
+    private static final ArrayList<SootClass> tableClasses = new ArrayList<>();
 
 
     public void generateClass(String tableName) {
@@ -53,7 +54,7 @@ public class TableClassGenerator extends ClassGenerator {
 
     }
 
-    public static LinkedList<SootClass> getTableClasses() {
+    public static ArrayList<SootClass> getTableClasses() {
         return tableClasses;
     }
 }

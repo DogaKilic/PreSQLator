@@ -1,0 +1,124 @@
+class Connection extends java.lang.Object
+{
+    public PersonTable personTable;
+    public DogTable dogTable;
+
+    public void <init>()
+    {
+        Connection this;
+        PersonTable table0;
+        DogTable table1;
+
+        this := @this: Connection;
+
+        specialinvoke this.<java.lang.Object: void <init>()>();
+
+        table0 = new PersonTable;
+
+        specialinvoke table0.<PersonTable: void <init>()>();
+
+        this.<Connection: PersonTable personTable> = table0;
+
+        table1 = new DogTable;
+
+        specialinvoke table1.<DogTable: void <init>()>();
+
+        this.<Connection: DogTable dogTable> = table1;
+
+        return;
+    }
+
+    public void personInsertStatement(int, java.lang.String)
+    {
+        Connection thisRef;
+        int parm0;
+        java.lang.String parm1;
+        PersonRow newRow0;
+        LinkedList<> tableClass;
+        PersonTable table;
+
+        thisRef := @this: Connection;
+
+        parm0 := @parameter0: int;
+
+        parm1 := @parameter1: java.lang.String;
+
+        newRow0 = new PersonRow;
+
+        specialinvoke newRow0.<PersonRow: void <init>(int,java.lang.String)>(parm0, parm1);
+
+        table = thisRef.<Connection: PersonTable personTable>;
+
+        tableClass = table.<PersonTable: java.util.LinkedList<PersonRow> rows>;
+
+        virtualinvoke tableClass.<java.util.LinkedList: void addLast(java.lang.Object)>(newRow0);
+
+        return;
+    }
+
+    public void dogInsertStatement(int, int, java.lang.String)
+    {
+        Connection thisRef;
+        int parm0, parm1;
+        java.lang.String parm2;
+        DogRow newRow1;
+        LinkedList<> tableClass;
+        DogTable table;
+
+        thisRef := @this: Connection;
+
+        parm0 := @parameter0: int;
+
+        parm1 := @parameter1: int;
+
+        parm2 := @parameter2: java.lang.String;
+
+        newRow1 = new DogRow;
+
+        specialinvoke newRow1.<DogRow: void <init>(int,int,java.lang.String)>(parm0, parm1, parm2);
+
+        table = thisRef.<Connection: DogTable dogTable>;
+
+        tableClass = table.<DogTable: java.util.LinkedList<DogRow> rows>;
+
+        virtualinvoke tableClass.<java.util.LinkedList: void addLast(java.lang.Object)>(newRow1);
+
+        return;
+    }
+
+    public Iterator<PersonRow> personSelectStatement()
+    {
+        Connection thisRef;
+        LinkedList<> tableClass;
+        PersonTable table;
+        Iterator<PersonRow> iterator;
+
+        thisRef := @this: Connection;
+
+        table = thisRef.<Connection: PersonTable personTable>;
+
+        tableClass = table.<PersonTable: java.util.LinkedList<PersonRow> rows>;
+
+        iterator = virtualinvoke tableClass.<java.util.LinkedList: java.util.Iterator descendingIterator()>();
+
+        return iterator;
+    }
+
+    public Iterator<DogRow> dogSelectStatement()
+    {
+        Connection thisRef;
+        LinkedList<> tableClass;
+        DogTable table;
+        Iterator<DogRow> iterator;
+
+        thisRef := @this: Connection;
+
+        table = thisRef.<Connection: DogTable dogTable>;
+
+        tableClass = table.<DogTable: java.util.LinkedList<DogRow> rows>;
+
+        iterator = virtualinvoke tableClass.<java.util.LinkedList: java.util.Iterator descendingIterator()>();
+
+        return iterator;
+    }
+}

@@ -1,0 +1,29 @@
+class DogRow extends java.lang.Object
+{
+    public int petid;
+    public int age;
+    public java.lang.String name;
+
+    public void <init>(int, int, java.lang.String)
+    {
+        DogRow this;
+        int parm0, parm1;
+        java.lang.String parm2;
+
+        this := @this: DogRow;
+
+        parm0 := @parameter0: int;
+
+        parm1 := @parameter1: int;
+
+        parm2 := @parameter2: java.lang.String;
+
+        this.<DogRow: int petid> = parm0;
+
+        this.<DogRow: int age> = parm1;
+
+        this.<DogRow: java.lang.String name> = parm2;
+
+        return;
+    }
+}

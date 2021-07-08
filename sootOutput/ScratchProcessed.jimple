@@ -1,0 +1,8 @@
+public class ScratchProcessed extends java.lang.Object
+{
+
+    public static void main(java.lang.String[])
+    {
+        return;
+    }
+}

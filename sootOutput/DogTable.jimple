@@ -1,0 +1,22 @@
+class DogTable extends java.lang.Object
+{
+    public java.util.LinkedList<DogRow> rows;
+
+    public void <init>()
+    {
+        java.util.LinkedList listNew;
+        DogTable this;
+
+        this := @this: DogTable;
+
+        specialinvoke this.<java.lang.Object: void <init>()>();
+
+        listNew = new java.util.LinkedList;
+
+        specialinvoke listNew.<java.util.LinkedList: void <init>()>();
+
+        this.<DogTable: java.util.LinkedList<DogRow> rows> = listNew;
+
+        return;
+    }
+}

@@ -1,0 +1,24 @@
+class PersonRow extends java.lang.Object
+{
+    public int id;
+    public java.lang.String name;
+
+    public void <init>(int, java.lang.String)
+    {
+        PersonRow this;
+        int parm0;
+        java.lang.String parm1;
+
+        this := @this: PersonRow;
+
+        parm0 := @parameter0: int;
+
+        parm1 := @parameter1: java.lang.String;
+
+        this.<PersonRow: int id> = parm0;
+
+        this.<PersonRow: java.lang.String name> = parm1;
+
+        return;
+    }
+}

@@ -7,8 +7,11 @@ import soot.util.Chain;
 import util.ClassWriter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ConnectionClassGenerator extends ClassGenerator {
 
@@ -90,13 +93,13 @@ public class ConnectionClassGenerator extends ClassGenerator {
                 insertUnits.add(Jimple.v().newAssignStmt(newRow, Jimple.v().newNewExpr(Scene.v().getRefType(rowClassNames.get(cnt)))));
                 SpecialInvokeExpr listInv = Jimple.v().newSpecialInvokeExpr(newRow, Scene.v().getSootClass(rowClassNames.get(cnt)).getMethodByName(SootMethod.constructorName).makeRef(), parameterList);
                 insertUnits.add(Jimple.v().newInvokeStmt(listInv));
-                Local tableClass = Jimple.v().newLocal("tableClass", RefType.v("LinkedList<>"));
+                Local tableClass = Jimple.v().newLocal("tableClass", RefType.v("ArrayList<>"));
                 insertBody.getLocals().add(tableClass);
                 Local table = Jimple.v().newLocal("table", RefType.v(tableClassNames.get(cnt)));
                 insertBody.getLocals().add(table);
                 insertUnits.add(Jimple.v().newAssignStmt(table, Jimple.v().newInstanceFieldRef(insertRef, connectionClass.getFieldByName(i.getTableName() + "Table").makeRef())));
                 insertUnits.add(Jimple.v().newAssignStmt(tableClass, Jimple.v().newInstanceFieldRef(table, Scene.v().getSootClass(tableClassNames.get(cnt)).getFields().getFirst().makeRef())));
-                SootMethod toCall = Scene.v().getSootClass("java.util.LinkedList").getMethods().get(13);
+                SootMethod toCall = Scene.v().getSootClass("java.util.ArrayList").getMethods().get(21);
                 insertUnits.add(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(tableClass, toCall.makeRef(), newRow)));
 
 
@@ -119,13 +122,13 @@ public class ConnectionClassGenerator extends ClassGenerator {
                 Local selectRef = Jimple.v().newLocal("thisRef" + nmb, connectionClass.getType());
                 selectBody.getLocals().add(selectRef);
                 selectUnits.add(Jimple.v().newIdentityStmt(selectRef, Jimple.v().newThisRef(connectionClass.getType())));
-                Local tableClass = Jimple.v().newLocal("tableClass" + nmb, RefType.v("LinkedList<>"));
+                Local tableClass = Jimple.v().newLocal("tableClass" + nmb, RefType.v("ArrayList<>"));
                 selectBody.getLocals().add(tableClass);
                 Local table = Jimple.v().newLocal("table" + nmb, RefType.v(tableClassNames.get(cnt)));
                 selectBody.getLocals().add(table);
                 selectUnits.add(Jimple.v().newAssignStmt(table, Jimple.v().newInstanceFieldRef(selectRef, connectionClass.getFieldByName(i.getTableName() + "Table").makeRef())));
                 selectUnits.add(Jimple.v().newAssignStmt(tableClass, Jimple.v().newInstanceFieldRef(table, Scene.v().getSootClass(tableClassNames.get(cnt)).getFields().getFirst().makeRef())));
-                SootMethod toCall = Scene.v().getSootClass("java.util.LinkedList").getMethodByName("descendingIterator");
+                SootMethod toCall = Scene.v().getSootClass("java.util.ArrayList").getMethodByName("iterator");
                 if (query.equals("*")) {
                     Local iterator = Jimple.v().newLocal("iterator" + nmb, RefType.v("Iterator<" + rowClassNames.get(cnt) + ">"));
                     selectBody.getLocals().add(iterator);
@@ -134,6 +137,31 @@ public class ConnectionClassGenerator extends ClassGenerator {
                 }
                 else {
                     System.out.println(query);
+                    Local stream = Jimple.v().newLocal("Stream" + nmb, RefType.v("Stream<" + rowClassNames.get(cnt) + ">"));
+                    selectBody.getLocals().add(stream);
+                    SootMethod toCallStream = Scene.v().getSootClass("java.util.Collection").getMethodByName("stream");
+                    selectUnits.add(Jimple.v().newAssignStmt(stream, Jimple.v().newInterfaceInvokeExpr(tableClass, toCallStream.makeRef())));
+
+                    Local map = Jimple.v().newLocal("Stream" + nmb, RefType.v("Stream<" + rowClassNames.get(cnt) + ">"));
+                    selectBody.getLocals().add(map);
+                    SootMethod toCallMap = Scene.v().getSootClass("java.util.stream.Stream").getMethodByName("map");
+                    Stream<String> toDeleteStream = i.getColumns().stream().filter(p -> !Arrays.stream(query.split(",")).anyMatch(y -> y.equals(p)));
+                    List<String> results = toDeleteStream.collect(Collectors.toList());
+
+                    for(String result : results) {
+                        Local toDeleteLocal = Jimple.v().newLocal("toDelete" + nmb, RefType.v("java.lang.String"));
+                        selectBody.getLocals().add(toDeleteLocal);
+
+                        //selectUnits.add(Jimple.v().newAssignStmt(toDeleteLocal, "(i -> i." + result.get(0)+ " = null"));
+                        //selectUnits.add(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(stream, toCallStream.makeRef(), "(i -> i." + result.get(0)+ " = null")));
+                    }
+
+
+
+
+
+
+
                     Local iterator = Jimple.v().newLocal("iterator" + nmb, RefType.v("Iterator<" + rowClassNames.get(cnt) + ">"));
                     selectBody.getLocals().add(iterator);
                     selectUnits.add(Jimple.v().newAssignStmt(iterator, Jimple.v().newVirtualInvokeExpr(tableClass, toCall.makeRef())));

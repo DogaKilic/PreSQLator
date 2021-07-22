@@ -38,6 +38,8 @@ public class JDBCProcessor implements IProcessor {
         String sootClassPath = javaPath;
         Options.v().set_soot_classpath(sootClassPath);
         Scene.v().loadClassAndSupport("java.lang.Object");
+        Scene.v().addBasicClass("java.util.Collection", SIGNATURES);
+        Scene.v().addBasicClass("java.util.stream.Stream", SIGNATURES);
         Scene.v().addBasicClass("java.util.LinkedList", SIGNATURES);
         Scene.v().addBasicClass("java.util.ArrayList", SIGNATURES);
         Scene.v().addBasicClass("java.util.Iterator", SIGNATURES);

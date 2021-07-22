@@ -64,8 +64,18 @@ public class TableBank {
                     i.addQuery(query.get(0));
                 }
                 else {
-                    System.out.println(query.toString());
-                    i.addQuery(query.toString());
+                    int cnt = 0;
+                    String output = "";
+                    for (String k : query){
+                        if(cnt == 0){
+                            output = output + k;
+                        }
+                        else {
+                            output = output + "," + k;
+                        }
+                        cnt++;
+                    }
+                    i.addQuery(output);
                 }
             }
         }

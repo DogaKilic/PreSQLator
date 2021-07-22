@@ -38,10 +38,12 @@ public class SQLiteSootListener extends SQLiteParserBaseListener {
         List<SQLiteParser.Select_coreContext> selectCores = ctx.select_core();
         ArrayList<String> currentResults = new ArrayList<>();
         String tableName = "";
+        String query = "";
         for(int i = 0; i < selectCores.stream().count(); i++){
             tableName = selectCores.get(i).table_or_subquery().get(0).getText();
             for(int k = 0; k < selectCores.get(i).result_column().stream().count(); k++) {
                 currentResults.add(selectCores.get(i).result_column().get(k).getText());
+                System.out.println(selectCores.get(i).result_column().get(k).getText());
             }
             TableBank.addPreparedSelectQuery(tableName, currentResults);
             currentResults.clear();

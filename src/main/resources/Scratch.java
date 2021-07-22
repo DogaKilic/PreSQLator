@@ -14,10 +14,10 @@ public class Scratch {
             statement.executeUpdate("create table person (id integer, name string)");
             statement.executeUpdate("create table dog (petid integer, age integer , name string)");
             PreparedStatement dogInsert = connection.prepareStatement("insert into dog values(?, ?, ?)");
-            PreparedStatement dogSelect = connection.prepareStatement("select * from dog");
+            PreparedStatement dogSelect = connection.prepareStatement("select age, name from dog");
+			PreparedStatement dogSelect2 = connection.prepareStatement("select * from dog");
             PreparedStatement insert = connection.prepareStatement("insert into person values(?, ?)");
-            //PreparedStatement select = connection.prepareStatement("select * from person");
-            PreparedStatement select = connection.prepareStatement("select name from person");
+            PreparedStatement select = connection.prepareStatement("select * from person");
             // do some work to obtain the secret
             // ...
             insert.setInt(1, secretId);

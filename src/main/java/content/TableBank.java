@@ -2,6 +2,7 @@ package content;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class TableBank {
 
@@ -56,10 +57,16 @@ public class TableBank {
         }
     }
 
-    public static void addPreparedSelectQuery(String tableName, String query) {
+    public static void addPreparedSelectQuery(String tableName, List<String> query) {
         for (TableContent i : tables) {
             if (i.getTableName().equals(tableName)) {
-                i.addQuery(query);
+                if (query.stream().count() == 1) {
+                    i.addQuery(query.get(0));
+                }
+                else {
+                    System.out.println(query.toString());
+                    i.addQuery(query.toString());
+                }
             }
         }
     }

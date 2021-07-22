@@ -108,29 +108,41 @@ public class ConnectionClassGenerator extends ClassGenerator {
         }
         //add selectStatement methods
         cnt = 0;
+        int nmb = 0;
         for (TableContent i : contents) {
-            SootMethod select = new SootMethod(i.getTableName() + "SelectStatement", null, RefType.v("Iterator<" + rowClassNames.get(cnt) + ">"), Modifier.PUBLIC);
-            connectionClass.addMethod(select);
-            JimpleBody selectBody = Jimple.v().newBody(select);
-            select.setActiveBody(selectBody);
-            Chain selectUnits = selectBody.getUnits();
-            Local selectRef = Jimple.v().newLocal("thisRef", connectionClass.getType());
-            selectBody.getLocals().add(selectRef);
-            selectUnits.add(Jimple.v().newIdentityStmt(selectRef, Jimple.v().newThisRef(connectionClass.getType())));
-            Local tableClass = Jimple.v().newLocal("tableClass", RefType.v("LinkedList<>"));
-            selectBody.getLocals().add(tableClass);
-            Local table = Jimple.v().newLocal("table", RefType.v(tableClassNames.get(cnt)));
-            selectBody.getLocals().add(table);
-            selectUnits.add(Jimple.v().newAssignStmt(table, Jimple.v().newInstanceFieldRef(selectRef, connectionClass.getFieldByName(i.getTableName() + "Table").makeRef())));
-            selectUnits.add(Jimple.v().newAssignStmt(tableClass, Jimple.v().newInstanceFieldRef(table, Scene.v().getSootClass(tableClassNames.get(cnt)).getFields().getFirst().makeRef())));
-            SootMethod toCall = Scene.v().getSootClass("java.util.LinkedList").getMethodByName("descendingIterator");
-            Local iterator = Jimple.v().newLocal("iterator", RefType.v("Iterator<" + rowClassNames.get(cnt) + ">"));
-            selectBody.getLocals().add(iterator);
-            selectUnits.add(Jimple.v().newAssignStmt(iterator, Jimple.v().newVirtualInvokeExpr(tableClass, toCall.makeRef())));
-
-            selectUnits.add(Jimple.v().newReturnStmt(iterator));
-            selectBody.validate();
-            cnt++;
+            for(String query : i.getQueries()) {
+                SootMethod select = new SootMethod(i.getTableName() + "SelectStatement" + nmb, null, RefType.v("Iterator<" + rowClassNames.get(cnt) + ">"), Modifier.PUBLIC);
+                connectionClass.addMethod(select);
+                JimpleBody selectBody = Jimple.v().newBody(select);
+                select.setActiveBody(selectBody);
+                Chain selectUnits = selectBody.getUnits();
+                Local selectRef = Jimple.v().newLocal("thisRef" + nmb, connectionClass.getType());
+                selectBody.getLocals().add(selectRef);
+                selectUnits.add(Jimple.v().newIdentityStmt(selectRef, Jimple.v().newThisRef(connectionClass.getType())));
+                Local tableClass = Jimple.v().newLocal("tableClass" + nmb, RefType.v("LinkedList<>"));
+                selectBody.getLocals().add(tableClass);
+                Local table = Jimple.v().newLocal("table" + nmb, RefType.v(tableClassNames.get(cnt)));
+                selectBody.getLocals().add(table);
+                selectUnits.add(Jimple.v().newAssignStmt(table, Jimple.v().newInstanceFieldRef(selectRef, connectionClass.getFieldByName(i.getTableName() + "Table").makeRef())));
+                selectUnits.add(Jimple.v().newAssignStmt(tableClass, Jimple.v().newInstanceFieldRef(table, Scene.v().getSootClass(tableClassNames.get(cnt)).getFields().getFirst().makeRef())));
+                SootMethod toCall = Scene.v().getSootClass("java.util.LinkedList").getMethodByName("descendingIterator");
+                if (query.equals("*")) {
+                    Local iterator = Jimple.v().newLocal("iterator" + nmb, RefType.v("Iterator<" + rowClassNames.get(cnt) + ">"));
+                    selectBody.getLocals().add(iterator);
+                    selectUnits.add(Jimple.v().newAssignStmt(iterator, Jimple.v().newVirtualInvokeExpr(tableClass, toCall.makeRef())));
+                    selectUnits.add(Jimple.v().newReturnStmt(iterator));
+                }
+                else {
+                    System.out.println(query);
+                    Local iterator = Jimple.v().newLocal("iterator" + nmb, RefType.v("Iterator<" + rowClassNames.get(cnt) + ">"));
+                    selectBody.getLocals().add(iterator);
+                    selectUnits.add(Jimple.v().newAssignStmt(iterator, Jimple.v().newVirtualInvokeExpr(tableClass, toCall.makeRef())));
+                    selectUnits.add(Jimple.v().newReturnStmt(iterator));
+                }
+                selectBody.validate();
+                nmb++;
+            }
+                cnt++;
         }
 
 

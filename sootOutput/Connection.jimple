@@ -86,39 +86,57 @@ class Connection extends java.lang.Object
         return;
     }
 
-    public Iterator<PersonRow> personSelectStatement()
+    public Iterator<PersonRow> personSelectStatement0()
     {
-        Connection thisRef;
-        LinkedList<> tableClass;
-        PersonTable table;
-        Iterator<PersonRow> iterator;
+        Connection thisRef0;
+        LinkedList<> tableClass0;
+        PersonTable table0;
+        Iterator<PersonRow> iterator0;
 
-        thisRef := @this: Connection;
+        thisRef0 := @this: Connection;
 
-        table = thisRef.<Connection: PersonTable personTable>;
+        table0 = thisRef0.<Connection: PersonTable personTable>;
 
-        tableClass = table.<PersonTable: java.util.ArrayList<PersonRow> rows>;
+        tableClass0 = table0.<PersonTable: java.util.ArrayList<PersonRow> rows>;
 
-        iterator = virtualinvoke tableClass.<java.util.LinkedList: java.util.Iterator descendingIterator()>();
+        iterator0 = virtualinvoke tableClass0.<java.util.LinkedList: java.util.Iterator descendingIterator()>();
 
-        return iterator;
+        return iterator0;
     }
 
-    public Iterator<DogRow> dogSelectStatement()
+    public Iterator<DogRow> dogSelectStatement1()
     {
-        Connection thisRef;
-        LinkedList<> tableClass;
-        DogTable table;
-        Iterator<DogRow> iterator;
+        Connection thisRef1;
+        LinkedList<> tableClass1;
+        DogTable table1;
+        Iterator<DogRow> iterator1;
 
-        thisRef := @this: Connection;
+        thisRef1 := @this: Connection;
 
-        table = thisRef.<Connection: DogTable dogTable>;
+        table1 = thisRef1.<Connection: DogTable dogTable>;
 
-        tableClass = table.<DogTable: java.util.ArrayList<DogRow> rows>;
+        tableClass1 = table1.<DogTable: java.util.ArrayList<DogRow> rows>;
 
-        iterator = virtualinvoke tableClass.<java.util.LinkedList: java.util.Iterator descendingIterator()>();
+        iterator1 = virtualinvoke tableClass1.<java.util.LinkedList: java.util.Iterator descendingIterator()>();
 
-        return iterator;
+        return iterator1;
+    }
+
+    public Iterator<DogRow> dogSelectStatement2()
+    {
+        Connection thisRef2;
+        LinkedList<> tableClass2;
+        DogTable table2;
+        Iterator<DogRow> iterator2;
+
+        thisRef2 := @this: Connection;
+
+        table2 = thisRef2.<Connection: DogTable dogTable>;
+
+        tableClass2 = table2.<DogTable: java.util.ArrayList<DogRow> rows>;
+
+        iterator2 = virtualinvoke tableClass2.<java.util.LinkedList: java.util.Iterator descendingIterator()>();
+
+        return iterator2;
     }
 }

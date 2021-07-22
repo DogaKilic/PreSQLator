@@ -1,9 +1,6 @@
 package processor.generator;
 
-import soot.IntType;
-import soot.LongType;
-import soot.RefType;
-import soot.Type;
+import soot.*;
 
 abstract class ClassGenerator {
 
@@ -14,6 +11,20 @@ abstract class ClassGenerator {
                 return IntType.v();
             case "string":
                 return RefType.v("java.lang.String");
+            case "byte":
+                return ByteType.v();
+            case "long":
+                return  LongType.v();
+            case "double":
+                return  DoubleType.v();
+            case "boolean":
+                return BooleanType.v();
+            case "float":
+                return FloatType.v();
+            case "short":
+                return ShortType.v();
+            case "char":
+                return CharType.v();
             default:
                 break;
         }

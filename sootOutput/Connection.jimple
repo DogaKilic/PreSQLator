@@ -49,7 +49,7 @@ class Connection extends java.lang.Object
 
         table = thisRef.<Connection: PersonTable personTable>;
 
-        tableClass = table.<PersonTable: java.util.LinkedList<PersonRow> rows>;
+        tableClass = table.<PersonTable: java.util.ArrayList<PersonRow> rows>;
 
         virtualinvoke tableClass.<java.util.LinkedList: void addLast(java.lang.Object)>(newRow0);
 
@@ -79,7 +79,7 @@ class Connection extends java.lang.Object
 
         table = thisRef.<Connection: DogTable dogTable>;
 
-        tableClass = table.<DogTable: java.util.LinkedList<DogRow> rows>;
+        tableClass = table.<DogTable: java.util.ArrayList<DogRow> rows>;
 
         virtualinvoke tableClass.<java.util.LinkedList: void addLast(java.lang.Object)>(newRow1);
 
@@ -97,7 +97,7 @@ class Connection extends java.lang.Object
 
         table = thisRef.<Connection: PersonTable personTable>;
 
-        tableClass = table.<PersonTable: java.util.LinkedList<PersonRow> rows>;
+        tableClass = table.<PersonTable: java.util.ArrayList<PersonRow> rows>;
 
         iterator = virtualinvoke tableClass.<java.util.LinkedList: java.util.Iterator descendingIterator()>();
 
@@ -115,7 +115,7 @@ class Connection extends java.lang.Object
 
         table = thisRef.<Connection: DogTable dogTable>;
 
-        tableClass = table.<DogTable: java.util.LinkedList<DogRow> rows>;
+        tableClass = table.<DogTable: java.util.ArrayList<DogRow> rows>;
 
         iterator = virtualinvoke tableClass.<java.util.LinkedList: java.util.Iterator descendingIterator()>();
 

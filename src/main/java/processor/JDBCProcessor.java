@@ -37,6 +37,11 @@ public class JDBCProcessor implements IProcessor {
         String javaPath = System.getProperty("java.class.path");
         String sootClassPath = javaPath;
         Options.v().set_soot_classpath(sootClassPath);
+        Scene.v().loadClassAndSupport("java.lang.Object");
+        Scene.v().addBasicClass("java.util.LinkedList", SIGNATURES);
+        Scene.v().addBasicClass("java.util.ArrayList", SIGNATURES);
+        Scene.v().addBasicClass("java.util.Iterator", SIGNATURES);
+        Scene.v().addBasicClass("java.util.List", SIGNATURES);
         //load class, get method list
         SootClass appClass = Scene.v().loadClassAndSupport(className);
         List<SootMethod> methods = appClass.getMethods();
@@ -68,10 +73,7 @@ public class JDBCProcessor implements IProcessor {
         }
 
         //add required imports to Scene
-        Scene.v().loadClassAndSupport("java.lang.Object");
-        Scene.v().addBasicClass("java.util.LinkedList", SIGNATURES);
-        Scene.v().addBasicClass("java.util.Iterator", SIGNATURES);
-        Scene.v().addBasicClass("java.util.List", SIGNATURES);
+
 
         //Create new class
         SootClass processedClass = new SootClass(className + "Processed", Modifier.PUBLIC);

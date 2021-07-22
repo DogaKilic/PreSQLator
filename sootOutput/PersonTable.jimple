@@ -1,21 +1,21 @@
 class PersonTable extends java.lang.Object
 {
-    public java.util.LinkedList<PersonRow> rows;
+    public java.util.ArrayList<PersonRow> rows;
 
     public void <init>()
     {
-        java.util.LinkedList listNew;
+        java.util.ArrayList listNew;
         PersonTable this;
 
         this := @this: PersonTable;
 
         specialinvoke this.<java.lang.Object: void <init>()>();
 
-        listNew = new java.util.LinkedList;
+        listNew = new java.util.ArrayList;
 
-        specialinvoke listNew.<java.util.LinkedList: void <init>()>();
+        specialinvoke listNew.<java.util.ArrayList: void <init>()>();
 
-        this.<PersonTable: java.util.LinkedList<PersonRow> rows> = listNew;
+        this.<PersonTable: java.util.ArrayList<PersonRow> rows> = listNew;
 
         return;
     }

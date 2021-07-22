@@ -1,23 +1,15 @@
 public class Scratch extends java.lang.Object
 {
-    public java.util.LinkedList list;
     public static int secretId;
     public static java.lang.String secretName;
 
     public void <init>()
     {
         Scratch r0;
-        java.util.LinkedList $r1;
 
         r0 := @this: Scratch;
 
         specialinvoke r0.<java.lang.Object: void <init>()>();
-
-        $r1 = new java.util.LinkedList;
-
-        specialinvoke $r1.<java.util.LinkedList: void <init>()>();
-
-        r0.<Scratch: java.util.LinkedList list> = $r1;
 
         return;
     }
@@ -53,7 +45,7 @@ public class Scratch extends java.lang.Object
 
         r3 = interfaceinvoke r15.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("insert into person values(?, ?)");
 
-        r4 = interfaceinvoke r15.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("select * from person");
+        r4 = interfaceinvoke r15.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("select name from person");
 
         $i2 = <Scratch: int secretId>;
 

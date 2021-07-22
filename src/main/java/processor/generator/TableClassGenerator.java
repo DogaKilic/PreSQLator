@@ -25,7 +25,7 @@ public class TableClassGenerator extends ClassGenerator {
         tableClasses.add(tableClass);
         tableClass.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
         Scene.v().addClass(tableClass);
-        SootField listField = new SootField("rows", RefType.v("java.util.LinkedList<" + rowClassName + ">"), Modifier.PUBLIC);
+        SootField listField = new SootField("rows", RefType.v("java.util.ArrayList<" + rowClassName + ">"), Modifier.PUBLIC);
         tableClass.addField(listField);
         SootMethod init = new SootMethod(SootMethod.constructorName, null, VoidType.v(), Modifier.PUBLIC);
         tableClass.addMethod(init);
@@ -33,7 +33,7 @@ public class TableClassGenerator extends ClassGenerator {
         init.setActiveBody(initBody);
         Chain units = initBody.getUnits();
         Local listNew;
-        listNew = soot.jimple.Jimple.v().newLocal("listNew", Scene.v().getRefType("java.util.LinkedList"));
+        listNew = soot.jimple.Jimple.v().newLocal("listNew", Scene.v().getRefType("java.util.ArrayList"));
         initBody.getLocals().add(listNew);
         Local ref;
         ref = soot.jimple.Jimple.v().newLocal("this", tableClass.getType());
@@ -41,8 +41,8 @@ public class TableClassGenerator extends ClassGenerator {
         SpecialInvokeExpr refInv = Jimple.v().newSpecialInvokeExpr(ref, Scene.v().getSootClass("java.lang.Object").getMethod("<init>", new LinkedList<Type>()).makeRef());
         units.add(Jimple.v().newIdentityStmt(ref, Jimple.v().newThisRef(tableClass.getType())));
         units.add(Jimple.v().newInvokeStmt(refInv));
-        units.add(Jimple.v().newAssignStmt(listNew, Jimple.v().newNewExpr(Scene.v().getRefType("java.util.LinkedList"))));
-        SpecialInvokeExpr listInv = Jimple.v().newSpecialInvokeExpr(listNew, Scene.v().getSootClass("java.util.LinkedList").getMethod("<init>", new LinkedList<Type>()).makeRef());
+        units.add(Jimple.v().newAssignStmt(listNew, Jimple.v().newNewExpr(Scene.v().getRefType("java.util.ArrayList"))));
+        SpecialInvokeExpr listInv = Jimple.v().newSpecialInvokeExpr(listNew, Scene.v().getSootClass("java.util.ArrayList").getMethod("<init>", new LinkedList<Type>()).makeRef());
         units.add(Jimple.v().newInvokeStmt(listInv));
         InstanceFieldRef instanceFieldRef = Jimple.v().newInstanceFieldRef(ref, tableClass.getFields().getFirst().makeRef());
         units.add(Jimple.v().newAssignStmt(instanceFieldRef, listNew));

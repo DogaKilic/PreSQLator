@@ -86,7 +86,7 @@ class Connection extends java.lang.Object
         return;
     }
 
-    public Iterator<PersonRow> personSelectStatement0()
+    public Iterator<PersonRow> personSelectStatement()
     {
         Connection thisRef0;
         ArrayList<> tableClass0;
@@ -104,42 +104,21 @@ class Connection extends java.lang.Object
         return iterator0;
     }
 
-    public Iterator<DogRow> dogSelectStatement1()
+    public Iterator<PersonRow> dogSelectStatement()
     {
-        Connection thisRef1;
-        ArrayList<> tableClass1;
-        DogTable table1;
-        Stream<DogRow> Stream1, Stream1;
-        Iterator<DogRow> iterator1;
+        Connection thisRef0;
+        ArrayList<> tableClass0;
+        PersonTable table0;
+        Iterator<PersonRow> iterator0;
 
-        thisRef1 := @this: Connection;
+        thisRef0 := @this: Connection;
 
-        table1 = thisRef1.<Connection: DogTable dogTable>;
+        table0 = thisRef0.<Connection: DogTable dogTable>;
 
-        tableClass1 = table1.<DogTable: java.util.ArrayList<DogRow> rows>;
+        tableClass0 = table0.<PersonTable: java.util.ArrayList<PersonRow> rows>;
 
-        Stream1 = interfaceinvoke tableClass1.<java.util.Collection: java.util.stream.Stream stream()>();
+        iterator0 = virtualinvoke tableClass0.<java.util.ArrayList: java.util.Iterator iterator()>();
 
-        iterator1 = virtualinvoke tableClass1.<java.util.ArrayList: java.util.Iterator iterator()>();
-
-        return iterator1;
-    }
-
-    public Iterator<DogRow> dogSelectStatement2()
-    {
-        Connection thisRef2;
-        ArrayList<> tableClass2;
-        DogTable table2;
-        Iterator<DogRow> iterator2;
-
-        thisRef2 := @this: Connection;
-
-        table2 = thisRef2.<Connection: DogTable dogTable>;
-
-        tableClass2 = table2.<DogTable: java.util.ArrayList<DogRow> rows>;
-
-        iterator2 = virtualinvoke tableClass2.<java.util.ArrayList: java.util.Iterator iterator()>();
-
-        return iterator2;
+        return iterator0;
     }
 }

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,7 +43,7 @@ public class ConnectionClassGenerator extends ClassGenerator {
         Chain units = initBody.getUnits();
         //create ref := @this
         Local ref;
-        ref = soot.jimple.Jimple.v().newLocal("this", connectionClass.getType());
+        ref = Jimple.v().newLocal("this", connectionClass.getType());
         initBody.getLocals().add(ref);
         SpecialInvokeExpr refInv = Jimple.v().newSpecialInvokeExpr(ref, Scene.v().getSootClass("java.lang.Object").getMethod("<init>", new LinkedList<Type>()).makeRef());
         units.add(Jimple.v().newIdentityStmt(ref, Jimple.v().newThisRef(connectionClass.getType())));
@@ -50,7 +51,7 @@ public class ConnectionClassGenerator extends ClassGenerator {
         int cnt = 0;
         for (TableContent i : contents) {
             Local table;
-            table = soot.jimple.Jimple.v().newLocal("table" + cnt, Scene.v().getRefType(tableClassNames.get(cnt)));
+            table = Jimple.v().newLocal("table" + cnt, Scene.v().getRefType(tableClassNames.get(cnt)));
             initBody.getLocals().add(table);
             units.add(Jimple.v().newAssignStmt(table, Jimple.v().newNewExpr(Scene.v().getRefType(tableClassNames.get(cnt)))));
             SpecialInvokeExpr tableInv = Jimple.v().newSpecialInvokeExpr(table, Scene.v().getSootClass(tableClassNames.get(cnt)).getMethod("<init>", new LinkedList<Type>()).makeRef());
@@ -113,8 +114,8 @@ public class ConnectionClassGenerator extends ClassGenerator {
         cnt = 0;
         int nmb = 0;
         for (TableContent i : contents) {
-            for(String query : i.getQueries()) {
-                SootMethod select = new SootMethod(i.getTableName() + "SelectStatement" + nmb, null, RefType.v("Iterator<" + rowClassNames.get(cnt) + ">"), Modifier.PUBLIC);
+            //for(String query : i.getQueries()) {
+                SootMethod select = new SootMethod(i.getTableName() + "SelectStatement" , null, RefType.v("Iterator<" + rowClassNames.get(cnt) + ">"), Modifier.PUBLIC);
                 connectionClass.addMethod(select);
                 JimpleBody selectBody = Jimple.v().newBody(select);
                 select.setActiveBody(selectBody);
@@ -129,12 +130,11 @@ public class ConnectionClassGenerator extends ClassGenerator {
                 selectUnits.add(Jimple.v().newAssignStmt(table, Jimple.v().newInstanceFieldRef(selectRef, connectionClass.getFieldByName(i.getTableName() + "Table").makeRef())));
                 selectUnits.add(Jimple.v().newAssignStmt(tableClass, Jimple.v().newInstanceFieldRef(table, Scene.v().getSootClass(tableClassNames.get(cnt)).getFields().getFirst().makeRef())));
                 SootMethod toCall = Scene.v().getSootClass("java.util.ArrayList").getMethodByName("iterator");
-                if (query.equals("*")) {
                     Local iterator = Jimple.v().newLocal("iterator" + nmb, RefType.v("Iterator<" + rowClassNames.get(cnt) + ">"));
                     selectBody.getLocals().add(iterator);
                     selectUnits.add(Jimple.v().newAssignStmt(iterator, Jimple.v().newVirtualInvokeExpr(tableClass, toCall.makeRef())));
                     selectUnits.add(Jimple.v().newReturnStmt(iterator));
-                }
+                /***********************************************************
                 else {
                     System.out.println(query);
                     Local stream = Jimple.v().newLocal("Stream" + nmb, RefType.v("Stream<" + rowClassNames.get(cnt) + ">"));
@@ -145,17 +145,19 @@ public class ConnectionClassGenerator extends ClassGenerator {
                     Local map = Jimple.v().newLocal("Stream" + nmb, RefType.v("Stream<" + rowClassNames.get(cnt) + ">"));
                     selectBody.getLocals().add(map);
                     SootMethod toCallMap = Scene.v().getSootClass("java.util.stream.Stream").getMethodByName("map");
-                    Stream<String> toDeleteStream = i.getColumns().stream().filter(p -> !Arrays.stream(query.split(",")).anyMatch(y -> y.equals(p)));
+                    SootMethod toCallConcat = Scene.v().getSootClass("java.lang.String").getMethodByName("concat");
+                    Stream<String> toDeleteStream = i.getColumnContent().stream().filter(p -> !Arrays.stream(query.split(",")).anyMatch(y -> y.equals(p[0]))).map(z -> z[0]);
                     List<String> results = toDeleteStream.collect(Collectors.toList());
-
                     for(String result : results) {
                         Local toDeleteLocal = Jimple.v().newLocal("toDelete" + nmb, RefType.v("java.lang.String"));
                         selectBody.getLocals().add(toDeleteLocal);
+                        selectUnits.add(Jimple.v().newAssignStmt(toDeleteLocal, Jimple.v().newNewExpr(Scene.v().getRefType("java.lang.String"))));
+                        System.out.println("java.lang.String(\"(i -> i." + result+ " = null)\")");
+                        //selectUnits.add(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(toDeleteLocal, toCallConcat.makeRef(), "(i -> i." + result+ " = null")));
 
-                        //selectUnits.add(Jimple.v().newAssignStmt(toDeleteLocal, "(i -> i." + result.get(0)+ " = null"));
-                        //selectUnits.add(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(stream, toCallStream.makeRef(), "(i -> i." + result.get(0)+ " = null")));
+                        //selectUnits.add(Jimple.v().newAssignStmt(toDeleteLocal, "(i -> i." + result+ " = null"));
+                        //selectUnits.add(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(stream, toCallMap.makeRef(), "(i -> i." + result+ " = null")));
                     }
-
 
 
 
@@ -169,9 +171,12 @@ public class ConnectionClassGenerator extends ClassGenerator {
                 }
                 selectBody.validate();
                 nmb++;
-            }
-                cnt++;
+                 }
+                 ****************************************/
+
         }
+            cnt++;
+
 
 
         units.add(Jimple.v().newReturnVoidStmt());

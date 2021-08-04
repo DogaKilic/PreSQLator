@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import processor.generator.ConnectionClassGenerator;
+import processor.generator.MainClassGenerator;
 import processor.generator.RowClassGenerator;
 import processor.generator.TableClassGenerator;
 import soot.*;
@@ -29,6 +30,7 @@ public class JDBCProcessor implements IProcessor {
     private TableClassGenerator tableGen = new TableClassGenerator();
     private RowClassGenerator rowGen = new RowClassGenerator();
     private ConnectionClassGenerator connectGen = new ConnectionClassGenerator();
+    private MainClassGenerator mainGen = new MainClassGenerator();
 
     public void processClass(String processPath, String className) {
         //soot setup
@@ -77,10 +79,6 @@ public class JDBCProcessor implements IProcessor {
         //add required imports to Scene
 
 
-        //Create new class
-        SootClass processedClass = new SootClass(className + "Processed", Modifier.PUBLIC);
-        processedClass.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
-        Scene.v().addClass(processedClass);
 
         //Create classes for tables and rows and prepare them
         for (TableContent i : TableBank.getTables()) {
@@ -89,20 +87,13 @@ public class JDBCProcessor implements IProcessor {
         }
         connectGen.generateClass(TableBank.getTables());
 
-        //fill final class
-        SootMethod main = new SootMethod("main",
-                Arrays.asList(new Type[]{ArrayType.v(RefType.v("java.lang.String"), 1)}),
-                VoidType.v(), Modifier.PUBLIC | Modifier.STATIC);
-        processedClass.addMethod(main);
-        JimpleBody body = Jimple.v().newBody(main);
-        main.setActiveBody(body);
-        Chain units = body.getUnits();
-        units.add(Jimple.v().newReturnVoidStmt());
-
-        //save the class as a .class file
-        ClassWriter.writeAsClassFile(processedClass);
-        ClassWriter.writeAsJimpleFile(processedClass);
         ClassWriter.writeAsClassFile(appClass);
         ClassWriter.writeAsJimpleFile(appClass);
+
+        //Create new class
+        mainGen.generateClass(appClass);
+
+
+
     }
 }

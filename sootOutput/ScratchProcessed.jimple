@@ -27,11 +27,16 @@ public class ScratchProcessed extends java.lang.Object
         java.sql.SQLException $r14, r17;
         java.lang.String[] r15;
         java.sql.Connection r16;
+        Connection connection;
 
         r15 := @parameter0: java.lang.String[];
 
      label1:
         r16 = staticinvoke <java.sql.DriverManager: java.sql.Connection getConnection(java.lang.String)>("jdbc:sqlite::memory:");
+
+        connection = new Connection;
+
+        specialinvoke connection.<Connection: void <init>()>();
 
         r0 = interfaceinvoke r16.<java.sql.Connection: java.sql.Statement createStatement()>();
 

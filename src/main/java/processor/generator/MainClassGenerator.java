@@ -3,11 +3,12 @@ package processor.generator;
 import soot.*;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
+import soot.jimple.SpecialInvokeExpr;
 import soot.util.Chain;
 import util.ClassWriter;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class MainClassGenerator extends ClassGenerator {
     public void generateClass(SootClass oldClass) {
@@ -24,12 +25,29 @@ public class MainClassGenerator extends ClassGenerator {
         }
 
         for(SootMethod method : methodList) {
+            String connectionLocal = "";
+            Unit connPred = null;
+            ArrayList<Unit> toRemoveConnection = new ArrayList<>();
             method.setDeclared(false);
-            SootMethod newMethod = new SootMethod(method.getName(), method.getParameterTypes(), method.getReturnType(), method.getModifiers());
-
-
             Body activeBody = method.retrieveActiveBody();
             UnitPatchingChain units = activeBody.getUnits();
+            Iterator<Unit> unitIterator =units.iterator();
+             while (unitIterator.hasNext()) {
+                 Unit unit = unitIterator.next();
+                System.out.println(unit.toString());
+                if (unit.toString().contains("getConnection")){
+                    connPred = unit;
+                    toRemoveConnection.add(unit);
+                    connectionLocal = unit.toString().split(" ")[0];
+
+                }
+
+            }
+             if (connPred != null) {
+                 processConnection(connPred, units, activeBody);
+             }
+            //units.removeAll(toRemoveConnection);
+             toRemoveConnection.clear();
             processedClass.addMethod(method);
             method.setDeclared(true);
         }
@@ -49,5 +67,16 @@ public class MainClassGenerator extends ClassGenerator {
         ClassWriter.writeAsClassFile(processedClass);
         ClassWriter.writeAsJimpleFile(processedClass);
 
+    }
+
+    private void  processConnection(Unit pred, UnitPatchingChain units, Body activeBody) {
+        ArrayList<Unit> newUnits = new ArrayList<>();
+        Local newConn = Jimple.v().newLocal("connection", Scene.v().getRefType("Connection"));
+        activeBody.getLocals().add(newConn);
+        newUnits.add(Jimple.v().newAssignStmt(newConn, Jimple.v().newNewExpr(Scene.v().getRefType("Connection"))));
+        SpecialInvokeExpr listInv = Jimple.v().newSpecialInvokeExpr(newConn, Scene.v().getSootClass("Connection").getMethod("<init>", new LinkedList<Type>()).makeRef());
+        newUnits.add(Jimple.v().newInvokeStmt(listInv));
+
+        units.insertAfter(newUnits, pred);
     }
 }

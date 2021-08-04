@@ -27,18 +27,37 @@ public class MainClassGenerator extends ClassGenerator {
         for(SootMethod method : methodList) {
             String connectionLocal = "";
             Unit connPred = null;
-            ArrayList<Unit> toRemoveConnection = new ArrayList<>();
+            ArrayList<Unit> toRemove = new ArrayList<>();
+            ArrayList<Unit[]> toAddInsert = new ArrayList<>();
+            ArrayList<Unit[]> toAddSelect = new ArrayList<>();
             method.setDeclared(false);
             Body activeBody = method.retrieveActiveBody();
             UnitPatchingChain units = activeBody.getUnits();
             Iterator<Unit> unitIterator =units.iterator();
              while (unitIterator.hasNext()) {
                  Unit unit = unitIterator.next();
+                 String methodContent = unit.toString();
                 System.out.println(unit.toString());
-                if (unit.toString().contains("getConnection")){
+                if (methodContent.contains("getConnection")){
                     connPred = unit;
-                    toRemoveConnection.add(unit);
+                    toRemove.add(unit);
                     connectionLocal = unit.toString().split(" ")[0];
+                }
+                else if (methodContent.contains("create table") || methodContent.contains("createStatement")) {
+                    toRemove.add(unit);
+                }
+                else if (methodContent.contains("prepareStatement")) {
+                    toRemove.add(unit);
+                    String[] unitData = unit.toString().split("\"");
+                    String[] queryData = unitData[1].split(" ");
+                    String[] nameTypeAndTable = new String[3];
+                    nameTypeAndTable[0] = unitData[0].split(" ")[0];
+                    if((queryData[0]).equals("insert")){
+                        nameTypeAndTable[2] = queryData[2];
+                    }
+                    else if((queryData[0]).equals("select")){
+                        nameTypeAndTable[2] = queryData[3];
+                    }
 
                 }
 
@@ -46,23 +65,13 @@ public class MainClassGenerator extends ClassGenerator {
              if (connPred != null) {
                  processConnection(connPred, units, activeBody);
              }
-            //units.removeAll(toRemoveConnection);
-             toRemoveConnection.clear();
+            //units.removeAll(toRemove);
+             toRemove.clear();
+             activeBody.validate();
             processedClass.addMethod(method);
             method.setDeclared(true);
         }
 
-        /************************************************
-        //fill final class
-        SootMethod main = new SootMethod("main",
-                Arrays.asList(new Type[]{ArrayType.v(RefType.v("java.lang.String"), 1)}),
-                VoidType.v(), Modifier.PUBLIC | Modifier.STATIC);
-        processedClass.addMethod(main);
-        JimpleBody body = Jimple.v().newBody(main);
-        main.setActiveBody(body);
-        Chain units = body.getUnits();
-        units.add(Jimple.v().newReturnVoidStmt());
-        ****************************************************/
 
         ClassWriter.writeAsClassFile(processedClass);
         ClassWriter.writeAsJimpleFile(processedClass);

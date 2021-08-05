@@ -25,6 +25,7 @@ public class MainClassGenerator extends ClassGenerator {
         }
 
         for(SootMethod method : methodList) {
+
             ArrayList<String[]> insertStatements = new ArrayList<>();
             ArrayList<String[]> selectStatements = new ArrayList<>();
             String connectionLocal = "";
@@ -40,19 +41,23 @@ public class MainClassGenerator extends ClassGenerator {
                  Unit unit = unitIterator.next();
                  String methodContent = unit.toString();
                 System.out.println(unit.toString());
+
                 if (methodContent.contains("getConnection")){
                     connPred = unit;
                     toRemove.add(unit);
                     connectionLocal = unit.toString().split(" ")[0];
                 }
+
                 else if (methodContent.contains("create table") || methodContent.contains("createStatement")) {
                     toRemove.add(unit);
                 }
+
                 else if (methodContent.contains("prepareStatement")) {
                     toRemove.add(unit);
                     String[] unitData = unit.toString().split("\"");
-                    String[] nameTypeAndTable = new String[3];
+                    String[] nameTypeAndTable = new String[4];
                     String[] queryData = unitData[1].split(" ");
+
                     if (unitData[0].split(" ")[0].equals("interfaceinvoke")){
                         continue;
                     }
@@ -63,10 +68,10 @@ public class MainClassGenerator extends ClassGenerator {
                     if((queryData[0]).equals("insert")){
                         nameTypeAndTable[1] = "insert";
                         nameTypeAndTable[2] = queryData[2];
-                        System.out.println(nameTypeAndTable[0]);
-                        System.out.println(nameTypeAndTable[1]);
-                        System.out.println(nameTypeAndTable[2]);
+                        nameTypeAndTable[3] = String.valueOf(unitData[1].split("\\?").length - 1);
+                        insertStatements.add(nameTypeAndTable);
                     }
+
                     else if((queryData[0]).equals("select")){
                         int tableIndex = 0;
                         String result = "";
@@ -82,10 +87,15 @@ public class MainClassGenerator extends ClassGenerator {
                         }
                         nameTypeAndTable[1] = result;
                         nameTypeAndTable[2] = queryData[tableIndex];
-                        System.out.println(nameTypeAndTable[0]);
-                        System.out.println(nameTypeAndTable[1]);
-                        System.out.println(nameTypeAndTable[2]);
+                        nameTypeAndTable[3] = "";
+                        selectStatements.add(nameTypeAndTable);
                     }
+                }
+
+                else if (insertStatements.stream().anyMatch(x -> methodContent.contains(x[0]))) {
+
+                }
+                else if (selectStatements.stream().anyMatch(x -> methodContent.contains(x[0]))) {
 
                 }
 
@@ -95,8 +105,8 @@ public class MainClassGenerator extends ClassGenerator {
              }
             //units.removeAll(toRemove);
              toRemove.clear();
-             activeBody.validate();
             processedClass.addMethod(method);
+            activeBody.validate();
             method.setDeclared(true);
         }
 

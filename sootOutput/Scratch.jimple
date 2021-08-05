@@ -1,6 +1,5 @@
 public class Scratch extends java.lang.Object
 {
-    public static int secretId;
     public static java.lang.String secretName;
 
     public void <init>()
@@ -18,7 +17,6 @@ public class Scratch extends java.lang.Object
     {
         java.sql.Statement r0;
         java.sql.PreparedStatement r4, r5;
-        int $i2;
         java.lang.String $r6, $r11, $r13;
         java.sql.ResultSet r7;
         boolean $z0;
@@ -49,9 +47,7 @@ public class Scratch extends java.lang.Object
 
         r5 = interfaceinvoke r16.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("select * from person");
 
-        $i2 = <Scratch: int secretId>;
-
-        interfaceinvoke r4.<java.sql.PreparedStatement: void setInt(int,int)>(1, $i2);
+        interfaceinvoke r4.<java.sql.PreparedStatement: void setInt(int,int)>(1, 10);
 
         $r6 = <Scratch: java.lang.String secretName>;
 
@@ -100,8 +96,6 @@ public class Scratch extends java.lang.Object
 
     static void <clinit>()
     {
-        <Scratch: int secretId> = 1;
-
         <Scratch: java.lang.String secretName> = "Hans";
 
         return;

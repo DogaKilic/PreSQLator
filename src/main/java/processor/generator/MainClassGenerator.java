@@ -25,6 +25,8 @@ public class MainClassGenerator extends ClassGenerator {
         }
 
         for(SootMethod method : methodList) {
+            ArrayList<String[]> insertStatements = new ArrayList<>();
+            ArrayList<String[]> selectStatements = new ArrayList<>();
             String connectionLocal = "";
             Unit connPred = null;
             ArrayList<Unit> toRemove = new ArrayList<>();
@@ -49,14 +51,40 @@ public class MainClassGenerator extends ClassGenerator {
                 else if (methodContent.contains("prepareStatement")) {
                     toRemove.add(unit);
                     String[] unitData = unit.toString().split("\"");
-                    String[] queryData = unitData[1].split(" ");
                     String[] nameTypeAndTable = new String[3];
-                    nameTypeAndTable[0] = unitData[0].split(" ")[0];
+                    String[] queryData = unitData[1].split(" ");
+                    if (unitData[0].split(" ")[0].equals("interfaceinvoke")){
+                        continue;
+                    }
+                    else {
+                        nameTypeAndTable[0] = unitData[0].split(" ")[0];
+                    }
+
                     if((queryData[0]).equals("insert")){
+                        nameTypeAndTable[1] = "insert";
                         nameTypeAndTable[2] = queryData[2];
+                        System.out.println(nameTypeAndTable[0]);
+                        System.out.println(nameTypeAndTable[1]);
+                        System.out.println(nameTypeAndTable[2]);
                     }
                     else if((queryData[0]).equals("select")){
-                        nameTypeAndTable[2] = queryData[3];
+                        int tableIndex = 0;
+                        String result = "";
+                        for(int i = 1; i < queryData.length; i++) {
+                            if (queryData[i].endsWith(",")) {
+                                result += queryData[i].split(",")[0];
+                            }
+                            else {
+                                result += queryData[i];
+                                tableIndex = i + 2;
+                                break;
+                            }
+                        }
+                        nameTypeAndTable[1] = result;
+                        nameTypeAndTable[2] = queryData[tableIndex];
+                        System.out.println(nameTypeAndTable[0]);
+                        System.out.println(nameTypeAndTable[1]);
+                        System.out.println(nameTypeAndTable[2]);
                     }
 
                 }

@@ -31,20 +31,33 @@ public class MainClassGenerator extends ClassGenerator {
             ArrayList<InsertStatement> insertStatements = new ArrayList<>();
             ArrayList<String[]> selectStatements = new ArrayList<>();
             String connectionLocal = "";
+            Unit initPred = null;
             Unit connPred = null;
             ArrayList<Unit> toRemove = new ArrayList<>();
-            ArrayList<Unit[]> toAddInsert = new ArrayList<>();
-            ArrayList<Unit[]> toAddSelect = new ArrayList<>();
             method.setDeclared(false);
             Body activeBody = method.retrieveActiveBody();
             UnitPatchingChain units = activeBody.getUnits();
             Iterator<Unit> unitIterator =units.iterator();
+            boolean init = false;
+            boolean clinit = false;
+
              while (unitIterator.hasNext()) {
                  Unit unit = unitIterator.next();
                  String methodContent = unit.toString();
                 System.out.println(unit.toString());
 
-                if (methodContent.contains("getConnection")){
+                if (method.getName().equals("<init>")) {
+                    if (methodContent.contains(oldClass.getName()) || methodContent.contains("<init>")) {
+                        toRemove.add(unit);
+                    }
+                    if (!init) {
+                        initPred = unit;
+                        init = true;
+                    }
+
+                }
+
+                else if (methodContent.contains("getConnection")){
                     connPred = unit;
                     toRemove.add(unit);
                     connectionLocal = unit.toString().split(" ")[0];
@@ -103,10 +116,13 @@ public class MainClassGenerator extends ClassGenerator {
                 }
 
             }
+             if (init) {
+                 processInıt(initPred, units, activeBody, processedClass);
+             }
              if (connPred != null) {
                  processConnection(connPred, units, activeBody);
              }
-            //units.removeAll(toRemove);
+            units.removeAll(toRemove);
              toRemove.clear();
             processedClass.addMethod(method);
             activeBody.validate();
@@ -129,4 +145,21 @@ public class MainClassGenerator extends ClassGenerator {
 
         units.insertAfter(newUnits, pred);
     }
+
+    private void processLocalField(Unit pred, UnitPatchingChain units, Body activeBody) {
+
+    }
+
+    private void processInıt(Unit pred, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
+        ArrayList<Unit> newUnits = new ArrayList<>();
+        Local ref = soot.jimple.Jimple.v().newLocal("this", processedClass.getType());
+        activeBody.getLocals().add(ref);
+        SpecialInvokeExpr refInv = Jimple.v().newSpecialInvokeExpr(ref, Scene.v().getSootClass("java.lang.Object").getMethod("<init>", new LinkedList<Type>()).makeRef());
+        newUnits.add(Jimple.v().newIdentityStmt(ref, Jimple.v().newThisRef(processedClass.getType())));
+        newUnits.add(Jimple.v().newInvokeStmt(refInv));
+
+        units.insertAfter(newUnits, pred);
+
+    }
+
 }

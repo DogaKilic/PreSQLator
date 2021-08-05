@@ -5,10 +5,11 @@ public class ScratchProcessed extends java.lang.Object
     public void <init>()
     {
         Scratch r0;
+        ScratchProcessed this;
 
-        r0 := @this: Scratch;
+        this := @this: ScratchProcessed;
 
-        specialinvoke r0.<java.lang.Object: void <init>()>();
+        specialinvoke this.<java.lang.Object: void <init>()>();
 
         return;
     }
@@ -30,27 +31,9 @@ public class ScratchProcessed extends java.lang.Object
         r15 := @parameter0: java.lang.String[];
 
      label1:
-        r16 = staticinvoke <java.sql.DriverManager: java.sql.Connection getConnection(java.lang.String)>("jdbc:sqlite::memory:");
-
         connection = new Connection;
 
         specialinvoke connection.<Connection: void <init>()>();
-
-        r0 = interfaceinvoke r16.<java.sql.Connection: java.sql.Statement createStatement()>();
-
-        interfaceinvoke r0.<java.sql.Statement: int executeUpdate(java.lang.String)>("create table person (id integer, name string)");
-
-        interfaceinvoke r0.<java.sql.Statement: int executeUpdate(java.lang.String)>("create table dog (petid integer, age integer , name string)");
-
-        interfaceinvoke r16.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("insert into dog values(?, ?, ?)");
-
-        interfaceinvoke r16.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("select age, name from dog");
-
-        interfaceinvoke r16.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("select * from dog");
-
-        r4 = interfaceinvoke r16.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("insert into person values(?, ?)");
-
-        r5 = interfaceinvoke r16.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("select * from person");
 
         interfaceinvoke r4.<java.sql.PreparedStatement: void setInt(int,int)>(1, 10);
 

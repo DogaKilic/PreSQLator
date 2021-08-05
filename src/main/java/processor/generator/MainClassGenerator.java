@@ -1,5 +1,7 @@
 package processor.generator;
 
+import processor.statement.IStatement;
+import processor.statement.InsertStatement;
 import soot.*;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
@@ -26,7 +28,7 @@ public class MainClassGenerator extends ClassGenerator {
 
         for(SootMethod method : methodList) {
 
-            ArrayList<String[]> insertStatements = new ArrayList<>();
+            ArrayList<InsertStatement> insertStatements = new ArrayList<>();
             ArrayList<String[]> selectStatements = new ArrayList<>();
             String connectionLocal = "";
             Unit connPred = null;
@@ -68,8 +70,9 @@ public class MainClassGenerator extends ClassGenerator {
                     if((queryData[0]).equals("insert")){
                         nameTypeAndTable[1] = "insert";
                         nameTypeAndTable[2] = queryData[2];
-                        nameTypeAndTable[3] = String.valueOf(unitData[1].split("\\?").length - 1);
-                        insertStatements.add(nameTypeAndTable);
+                        int count = (unitData[1].split("\\?").length - 1);
+                        InsertStatement newStatement = new InsertStatement(nameTypeAndTable[0], nameTypeAndTable[2], count);
+                        insertStatements.add(newStatement);
                     }
 
                     else if((queryData[0]).equals("select")){
@@ -92,7 +95,7 @@ public class MainClassGenerator extends ClassGenerator {
                     }
                 }
 
-                else if (insertStatements.stream().anyMatch(x -> methodContent.contains(x[0]))) {
+                else if (insertStatements.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
 
                 }
                 else if (selectStatements.stream().anyMatch(x -> methodContent.contains(x[0]))) {

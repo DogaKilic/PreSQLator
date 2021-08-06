@@ -47,10 +47,11 @@ public class MainClassGenerator extends ClassGenerator {
                 System.out.println(unit.toString());
 
                 if (method.getName().equals("<init>")) {
-                    if (methodContent.contains(oldClass.getName()) || methodContent.contains("<init>")) {
+                    if (unit.equals(activeBody.getThisUnit())) {
                         toRemove.add(unit);
                     }
                     if (!init) {
+                        activeBody.getThisLocal().setType(processedClass.getType());
                         initPred = unit;
                         init = true;
                     }
@@ -116,9 +117,12 @@ public class MainClassGenerator extends ClassGenerator {
                 }
 
             }
+
+
              if (init) {
                  processInıt(initPred, units, activeBody, processedClass);
              }
+
              if (connPred != null) {
                  processConnection(connPred, units, activeBody);
              }
@@ -152,11 +156,11 @@ public class MainClassGenerator extends ClassGenerator {
 
     private void processInıt(Unit pred, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
         ArrayList<Unit> newUnits = new ArrayList<>();
-        Local ref = soot.jimple.Jimple.v().newLocal("this", processedClass.getType());
-        activeBody.getLocals().add(ref);
-        SpecialInvokeExpr refInv = Jimple.v().newSpecialInvokeExpr(ref, Scene.v().getSootClass("java.lang.Object").getMethod("<init>", new LinkedList<Type>()).makeRef());
-        newUnits.add(Jimple.v().newIdentityStmt(ref, Jimple.v().newThisRef(processedClass.getType())));
-        newUnits.add(Jimple.v().newInvokeStmt(refInv));
+        //Local ref = soot.jimple.Jimple.v().newLocal("this", processedClass.getType());
+        //activeBody.getLocals().add(ref);
+        //SpecialInvokeExpr refInv = Jimple.v().newSpecialInvokeExpr(ref, Scene.v().getSootClass("java.lang.Object").getMethod("<init>", new LinkedList<Type>()).makeRef());
+        newUnits.add(Jimple.v().newIdentityStmt(activeBody.getThisLocal(), Jimple.v().newThisRef(processedClass.getType())));
+        //newUnits.add(Jimple.v().newInvokeStmt(refInv));
 
         units.insertAfter(newUnits, pred);
 

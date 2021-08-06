@@ -4,12 +4,11 @@ public class ScratchProcessed extends java.lang.Object
 
     public void <init>()
     {
-        Scratch r0;
-        ScratchProcessed this;
+        ScratchProcessed r0;
 
-        this := @this: ScratchProcessed;
+        r0 := @this: ScratchProcessed;
 
-        specialinvoke this.<java.lang.Object: void <init>()>();
+        specialinvoke r0.<java.lang.Object: void <init>()>();
 
         return;
     }

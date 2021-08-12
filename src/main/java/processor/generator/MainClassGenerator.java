@@ -67,9 +67,10 @@ public class MainClassGenerator extends ClassGenerator {
                     if(valueBox.isPresent()) {
                         if(valueBox.get().getValue().toString().contains("<" + oldClass.getName() + ":")) {
                             String[] data = unit.toString().split(">");
-                            String[] fieldAndAssignment = new String[2];
+                            String[] fieldAndAssignment = new String[3];
                             fieldAndAssignment[0] = data[0].split(" ")[2];
                             fieldAndAssignment[1] = data[1].split("= ")[1];
+                            fieldAndAssignment[2] = data[0].split(" ")[1];
                             staticToBeReplaced.add(fieldAndAssignment);
                             toRemove.add(unit);
                             clinitPred = unit;
@@ -146,7 +147,7 @@ public class MainClassGenerator extends ClassGenerator {
              if (clinitPred != null) {
                  for(int i = 0; i < staticToBeReplaced.size(); i++) {
                      String[] current = staticToBeReplaced.get(i);
-                     processClinit(clinitPred, units, activeBody, processedClass, current[0], current[1]);
+                     processClinit(clinitPred, units, activeBody, processedClass, current[0], current[1], current[2]);
                  }
              }
 
@@ -177,9 +178,6 @@ public class MainClassGenerator extends ClassGenerator {
         units.insertAfter(newUnits, pred);
     }
 
-    private void processLocalField(Unit pred, UnitPatchingChain units, Body activeBody) {
-
-    }
 
     private void processInıt(Unit pred, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
         ArrayList<Unit> newUnits = new ArrayList<>();
@@ -188,15 +186,16 @@ public class MainClassGenerator extends ClassGenerator {
         units.insertAfter(newUnits, pred);
     }
 
-    private  void processClinit(Unit pred, UnitPatchingChain units, Body activeBody, SootClass processedClass, String field, String assignment){
+    private  void processClinit(Unit pred, UnitPatchingChain units, Body activeBody, SootClass processedClass, String field, String assignment, String type){
         ArrayList<Unit> newUnits = new ArrayList<>();
-        Type type = pred.getDefBoxes().stream().findFirst().get().getValue().getType();
         StaticFieldRef instanceFieldRef = Jimple.v().newStaticFieldRef((processedClass.getFieldByName(field).makeRef()));
-        switch (type.toString()) {
+        switch (type) {
             case "int":
-                newUnits.add(Jimple.v().newAssignStmt(instanceFieldRef, IntConstant.v(Integer.valueOf(assignment))));
+                newUnits.add(Jimple.v().newAssignStmt(instanceFieldRef, IntConstant.v(Integer.parseInt(assignment))));
+                break;
             case "java.lang.String":
                 newUnits.add(Jimple.v().newAssignStmt(instanceFieldRef, StringConstant.v(assignment.replaceAll("\"", ""))));
+                break;
         }
         localCnt++;
         units.insertAfter(newUnits, pred);

@@ -7,7 +7,7 @@ public class Scratch {
 
     public static void main(String[] args) {
         try {
-
+            String hello = "abc";
             // create a database connection
             Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
             Statement statement = connection.createStatement();

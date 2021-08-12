@@ -1,6 +1,8 @@
 package processor.generator;
 
 import soot.*;
+import soot.jimple.Constant;
+import soot.jimple.IntConstant;
 
 abstract class ClassGenerator {
 

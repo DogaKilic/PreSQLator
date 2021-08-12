@@ -36,6 +36,7 @@ public class JDBCProcessor implements IProcessor {
         //soot setup
         Options.v().set_prepend_classpath(true);
         Options.v().set_process_dir(Arrays.asList(processPath.split(File.pathSeparator)));
+        Options.v().set_wrong_staticness(Options.wrong_staticness_ignore);
         String javaPath = System.getProperty("java.class.path");
         String sootClassPath = javaPath;
         Options.v().set_soot_classpath(sootClassPath);

@@ -2,7 +2,7 @@ import java.sql.*;
 import java.util.LinkedList;
 
 public class Scratch {
-    //public static int secretId = 1;
+    public static int secretId = 1;
     public static String secretName = "Hans";
 
     public static void main(String[] args) {
@@ -20,7 +20,7 @@ public class Scratch {
             PreparedStatement select = connection.prepareStatement("select * from person");
             // do some work to obtain the secret
             // ...
-            insert.setInt(1, 10);
+            insert.setInt(1, secretId);
             insert.setString(2, secretName);
             insert.executeUpdate();
             // ...

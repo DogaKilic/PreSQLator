@@ -1,10 +1,11 @@
 public class ScratchProcessed extends java.lang.Object
 {
+    public static int secretId;
     public static java.lang.String secretName;
 
     public void <init>()
     {
-        ScratchProcessed r0;
+        ScratchProcessed r0, this;
 
         r0 := @this: ScratchProcessed;
 
@@ -17,6 +18,7 @@ public class ScratchProcessed extends java.lang.Object
     {
         java.sql.Statement r0;
         java.sql.PreparedStatement r4, r5;
+        int $i2;
         java.lang.String $r6, $r11, $r13;
         java.sql.ResultSet r7;
         boolean $z0;
@@ -25,6 +27,7 @@ public class ScratchProcessed extends java.lang.Object
         java.sql.SQLException $r14, r17;
         java.lang.String[] r15;
         java.sql.Connection r16;
+        ScratchProcessed this;
         Connection connection;
 
         r15 := @parameter0: java.lang.String[];
@@ -34,7 +37,9 @@ public class ScratchProcessed extends java.lang.Object
 
         specialinvoke connection.<Connection: void <init>()>();
 
-        interfaceinvoke r4.<java.sql.PreparedStatement: void setInt(int,int)>(1, 10);
+        $i2 = <Scratch: int secretId>;
+
+        interfaceinvoke r4.<java.sql.PreparedStatement: void setInt(int,int)>(1, $i2);
 
         $r6 = <Scratch: java.lang.String secretName>;
 
@@ -83,7 +88,11 @@ public class ScratchProcessed extends java.lang.Object
 
     static void <clinit>()
     {
-        <Scratch: java.lang.String secretName> = "Hans";
+        ScratchProcessed this;
+
+        <ScratchProcessed: java.lang.String secretName> = "Hans";
+
+        <ScratchProcessed: int secretId> = "1";
 
         return;
     }

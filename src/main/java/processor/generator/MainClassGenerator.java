@@ -3,7 +3,6 @@ package processor.generator;
 import processor.statement.InsertStatement;
 import soot.*;
 import soot.jimple.*;
-import soot.options.Options;
 import util.ClassWriter;
 import java.util.*;
 
@@ -12,7 +11,6 @@ public class MainClassGenerator extends ClassGenerator {
     private Local ref;
 
     public void generateClass(SootClass oldClass) {
-        Options.v().set_wrong_staticness(Options.wrong_staticness_ignore);
         SootClass processedClass = new SootClass(oldClass.getName() + "Processed", Modifier.PUBLIC);
         processedClass.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
         Scene.v().addClass(processedClass);
@@ -30,16 +28,17 @@ public class MainClassGenerator extends ClassGenerator {
             ArrayList<InsertStatement> insertStatements = new ArrayList<>();
             ArrayList<String[]> selectStatements = new ArrayList<>();
             ArrayList<String[]> staticToBeReplaced = new ArrayList<>();
+            ArrayList<String[]> mFieldToBeReplaced = new ArrayList<>();
             Unit initPred = null;
             Unit connPred = null;
             Unit clinitPred = null;
+            Unit mFieldPred = null;
             ArrayList<Unit> toRemove = new ArrayList<>();
             method.setDeclared(false);
             Body activeBody = method.retrieveActiveBody();
             UnitPatchingChain units = activeBody.getUnits();
             Iterator<Unit> unitIterator =units.iterator();
             boolean init = false;
-            boolean clinit = false;
             setRef(processedClass, activeBody);
 
 
@@ -47,7 +46,7 @@ public class MainClassGenerator extends ClassGenerator {
              while (unitIterator.hasNext()) {
                  Unit unit = unitIterator.next();
                  String methodContent = unit.toString();
-                System.out.println(unit.toString());
+                System.out.println(methodContent);
 
                 if (method.getName().equals("<init>")) {
                     if (unit.equals(activeBody.getThisUnit())) {
@@ -82,7 +81,6 @@ public class MainClassGenerator extends ClassGenerator {
                 else if (methodContent.contains("getConnection")){
                     connPred = unit;
                     toRemove.add(unit);
-                    //connectionLocal = unit.toString().split(" ")[0];
                 }
 
                 else if (methodContent.contains("create table") || methodContent.contains("createStatement")) {
@@ -102,7 +100,7 @@ public class MainClassGenerator extends ClassGenerator {
                         nameTypeAndTable[0] = unitData[0].split(" ")[0];
                     }
 
-                    if((queryData[0]).equals("insert")){
+                    if ((queryData[0]).equals("insert")){
                         nameTypeAndTable[1] = "insert";
                         nameTypeAndTable[2] = queryData[2];
                         int count = (unitData[1].split("\\?").length - 1);
@@ -110,7 +108,7 @@ public class MainClassGenerator extends ClassGenerator {
                         insertStatements.add(newStatement);
                     }
 
-                    else if((queryData[0]).equals("select")){
+                    else if ((queryData[0]).equals("select")){
                         int tableIndex = 0;
                         String result = "";
                         for(int i = 1; i < queryData.length; i++) {
@@ -127,6 +125,19 @@ public class MainClassGenerator extends ClassGenerator {
                         nameTypeAndTable[2] = queryData[tableIndex];
                         nameTypeAndTable[3] = "";
                         selectStatements.add(nameTypeAndTable);
+                    }
+                }
+
+                else if (methodContent.contains("<" + oldClass.getName() + ":")) {
+                    String data = unit.toString();
+                    String[] fieldAndAssignment = new String[3];
+                    fieldAndAssignment[0] = data.split(" ")[4].replaceAll(">", "");
+                    fieldAndAssignment[1] = data.split(" =")[0];
+                    fieldAndAssignment[2] = data.split(" ")[3];
+                    mFieldToBeReplaced.add(fieldAndAssignment);
+                    toRemove.add(unit);
+                    if (mFieldPred == null) {
+                        mFieldPred = unit;
                     }
                 }
 
@@ -154,6 +165,14 @@ public class MainClassGenerator extends ClassGenerator {
              if (connPred != null) {
                  processConnection(connPred, units, activeBody);
              }
+
+             if (!mFieldToBeReplaced.isEmpty()) {
+                 for(int i = 0; i < mFieldToBeReplaced.size(); i++) {
+                     String[] current = mFieldToBeReplaced.get(i);
+                     processMethodField(mFieldPred, units, activeBody, processedClass, current[0], current[1], current[2]);
+                 }
+             }
+
             units.removeAll(toRemove);
              toRemove.clear();
             processedClass.addMethod(method);
@@ -186,6 +205,15 @@ public class MainClassGenerator extends ClassGenerator {
         units.insertAfter(newUnits, pred);
     }
 
+    private void processMethodField (Unit pred, UnitPatchingChain units, Body activeBody, SootClass processedClass, String field, String assignment, String type) {
+        ArrayList<Unit> newUnits = new ArrayList<>();
+        Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(assignment)).findFirst().get();
+        StaticFieldRef instanceFieldRef = Jimple.v().newStaticFieldRef((processedClass.getFieldByName(field).makeRef()));
+        newUnits.add(Jimple.v().newAssignStmt(assigned, instanceFieldRef));
+        units.insertAfter(newUnits, pred);
+
+    }
+
     private  void processClinit(Unit pred, UnitPatchingChain units, Body activeBody, SootClass processedClass, String field, String assignment, String type){
         ArrayList<Unit> newUnits = new ArrayList<>();
         StaticFieldRef instanceFieldRef = Jimple.v().newStaticFieldRef((processedClass.getFieldByName(field).makeRef()));
@@ -197,7 +225,6 @@ public class MainClassGenerator extends ClassGenerator {
                 newUnits.add(Jimple.v().newAssignStmt(instanceFieldRef, StringConstant.v(assignment.replaceAll("\"", ""))));
                 break;
         }
-        localCnt++;
         units.insertAfter(newUnits, pred);
     }
 

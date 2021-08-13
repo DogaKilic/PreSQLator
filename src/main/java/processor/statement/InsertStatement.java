@@ -1,5 +1,7 @@
 package processor.statement;
 
+import java.util.ArrayList;
+
 public class InsertStatement implements IStatement {
 
     public void increment() {
@@ -9,6 +11,10 @@ public class InsertStatement implements IStatement {
                 ready = true;
             }
         }
+    }
+
+    public void addParameter(int pos, String param) {
+        parameters[pos] = param;
     }
 
     public String getLocalName() {
@@ -29,6 +35,7 @@ public class InsertStatement implements IStatement {
 
     private String localName;
     private String tableName;
+    private String[] parameters;
     private int parameterCount;
     private int currentCount;
     private boolean ready;
@@ -38,6 +45,7 @@ public class InsertStatement implements IStatement {
         this.tableName = tableName;
         this.parameterCount = parameterCount;
         this.currentCount = 0;
+        this.parameters = new String[parameterCount];
     }
 
 

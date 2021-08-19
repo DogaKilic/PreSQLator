@@ -4,11 +4,14 @@ import processor.statement.InsertStatement;
 import soot.*;
 import soot.jimple.*;
 import util.ClassWriter;
+
+import java.sql.Statement;
 import java.util.*;
 
 public class MainClassGenerator extends ClassGenerator {
     private int localCnt = 0;
     private Local ref;
+    private Local connectionLocal;
 
     public void generateClass(SootClass oldClass) {
         SootClass processedClass = new SootClass(oldClass.getName() + "Processed", Modifier.PUBLIC);
@@ -48,7 +51,6 @@ public class MainClassGenerator extends ClassGenerator {
              while (unitIterator.hasNext()) {
                  Unit unit = unitIterator.next();
                  String methodContent = unit.toString();
-                System.out.println(methodContent);
 
                 if (method.getName().equals("<init>")) {
                     if (unit.equals(activeBody.getThisUnit())) {
@@ -149,9 +151,8 @@ public class MainClassGenerator extends ClassGenerator {
                         InsertStatement statement = insertStatements.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
                         String type = data[1].split(",")[1].split("\\)")[0];
                         int pos = Integer.valueOf(data[2].split(",")[0]);
-                        String value = data[2].split(",")[1].split("\\)")[0];
+                        String value = data[2].split(",")[1].split("\\)")[0].substring(1);
                         statement.addParameter(pos, value, type);
-                        System.out.println(statement.isReady());
                         toRemove.add(unit);
                     }
                     else if (methodContent.contains("executeUpdate()")) {
@@ -191,6 +192,10 @@ public class MainClassGenerator extends ClassGenerator {
              }
 
              if (!insertToBeReplaced.isEmpty()) {
+                 for (int i = 0; i < insertToBeReplaced.size(); i++) {
+                     InsertStatement current =  insertToBeReplaced.get(i);
+                     processInsertStatement(current, units, activeBody, processedClass);
+                 }
 
              }
 
@@ -214,6 +219,7 @@ public class MainClassGenerator extends ClassGenerator {
         newUnits.add(Jimple.v().newAssignStmt(newConn, Jimple.v().newNewExpr(Scene.v().getRefType("Connection"))));
         SpecialInvokeExpr listInv = Jimple.v().newSpecialInvokeExpr(newConn, Scene.v().getSootClass("Connection").getMethod("<init>", new LinkedList<Type>()).makeRef());
         newUnits.add(Jimple.v().newInvokeStmt(listInv));
+        connectionLocal = newConn;
 
         units.insertAfter(newUnits, pred);
     }
@@ -235,7 +241,7 @@ public class MainClassGenerator extends ClassGenerator {
 
     }
 
-    private  void processClinit(Unit pred, UnitPatchingChain units, Body activeBody, SootClass processedClass, String field, String assignment, String type){
+    private void processClinit(Unit pred, UnitPatchingChain units, Body activeBody, SootClass processedClass, String field, String assignment, String type){
         ArrayList<Unit> newUnits = new ArrayList<>();
         StaticFieldRef instanceFieldRef = Jimple.v().newStaticFieldRef((processedClass.getFieldByName(field).makeRef()));
         switch (type) {
@@ -247,6 +253,37 @@ public class MainClassGenerator extends ClassGenerator {
                 break;
         }
         units.insertAfter(newUnits, pred);
+    }
+
+    private void processInsertStatement(InsertStatement statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
+        ArrayList<Unit> newUnits = new ArrayList<>();
+        ArrayList<Local> parameterList = new ArrayList<>();
+        for (int i = 0; i < statement.getParameterCount(); i++) {
+            String value = statement.getParameter(i);
+            Optional<Local> exists = activeBody.getLocals().stream().filter(x -> x.getName().equals(value)).findFirst();
+            if(exists.isPresent()) {
+                parameterList.add(exists.get());
+            }
+            else {
+                switch (statement.getType(i)) {
+                    case "int":
+                        Local intLocal = Jimple.v().newLocal("param", IntType.v());
+                        activeBody.getLocals().add(intLocal);
+                        newUnits.add(Jimple.v().newAssignStmt(intLocal, IntConstant.v(Integer.parseInt(statement.getParameter(i)))));
+                        parameterList.add(intLocal);
+                        break;
+                    case "java.lang.String":
+                        Local stringLocal = Jimple.v().newLocal("param", Scene.v().getRefType("java.lang.String"));
+                        activeBody.getLocals().add(stringLocal);
+                        newUnits.add(Jimple.v().newAssignStmt(stringLocal, StringConstant.v(statement.getParameter(i))));
+                        parameterList.add(stringLocal);
+                        break;
+                }
+            }
+        }
+        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "InsertStatement");
+        newUnits.add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(connectionLocal, toCall.makeRef(), parameterList)));
+        units.insertAfter(newUnits, statement.getPred());
     }
 
     private void setRef(SootClass processedClass,Body activeBody) {

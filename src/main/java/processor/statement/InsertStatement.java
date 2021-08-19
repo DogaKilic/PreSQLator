@@ -21,8 +21,12 @@ public class InsertStatement implements IStatement {
         increment();
     }
 
+    public String getParameter(int pos) {
+        return parameters[pos];
+    }
+
     public String getType(int pos) {
-        return parameterTypes[pos - 1];
+        return parameterTypes[pos];
     }
 
     public String getLocalName() {

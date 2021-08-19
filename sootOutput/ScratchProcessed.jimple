@@ -28,6 +28,7 @@ public class ScratchProcessed extends java.lang.Object
         java.sql.Connection r16;
         ScratchProcessed this;
         Connection connection;
+        int param;
 
         r15 := @parameter0: java.lang.String[];
 
@@ -38,7 +39,9 @@ public class ScratchProcessed extends java.lang.Object
 
         $r6 = <ScratchProcessed: java.lang.String secretName>;
 
-        interfaceinvoke r4.<java.sql.PreparedStatement: int executeUpdate()>();
+        param = 5;
+
+        specialinvoke connection.<Connection: void personInsertStatement(int,java.lang.String)>(param, $r6);
 
         r7 = interfaceinvoke r5.<java.sql.PreparedStatement: java.sql.ResultSet executeQuery()>();
 

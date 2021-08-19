@@ -1,10 +1,12 @@
 package processor.statement;
 
+import soot.Unit;
+
 import java.util.ArrayList;
 
 public class InsertStatement implements IStatement {
 
-    public void increment() {
+    private void increment() {
         if (currentCount < parameterCount) {
             currentCount++;
             if (currentCount == parameterCount){
@@ -13,8 +15,14 @@ public class InsertStatement implements IStatement {
         }
     }
 
-    public void addParameter(int pos, String param) {
-        parameters[pos] = param;
+    public void addParameter(int pos, String param, String type) {
+        parameters[pos - 1] = param;
+        parameterTypes[pos - 1] = type;
+        increment();
+    }
+
+    public String getType(int pos) {
+        return parameterTypes[pos - 1];
     }
 
     public String getLocalName() {
@@ -33,12 +41,24 @@ public class InsertStatement implements IStatement {
         return ready;
     }
 
+
+    public Unit getPred() {
+        return pred;
+    }
+
+    public void setPred(Unit pred) {
+        this.pred = pred;
+    }
+
+
     private String localName;
     private String tableName;
     private String[] parameters;
+    private String[] parameterTypes;
     private int parameterCount;
     private int currentCount;
     private boolean ready;
+    private Unit pred;
 
     public InsertStatement(String localName, String tableName, int parameterCount) {
         this.localName = localName;
@@ -46,6 +66,8 @@ public class InsertStatement implements IStatement {
         this.parameterCount = parameterCount;
         this.currentCount = 0;
         this.parameters = new String[parameterCount];
+        this.parameterTypes = new String[parameterCount];
+        this.pred = null;
     }
 
 

@@ -29,10 +29,12 @@ public class MainClassGenerator extends ClassGenerator {
             ArrayList<String[]> selectStatements = new ArrayList<>();
             ArrayList<String[]> staticToBeReplaced = new ArrayList<>();
             ArrayList<String[]> mFieldToBeReplaced = new ArrayList<>();
+            ArrayList<InsertStatement> insertToBeReplaced = new ArrayList<>();
             Unit initPred = null;
             Unit connPred = null;
             Unit clinitPred = null;
             Unit mFieldPred = null;
+            Unit insertPred = null;
             ArrayList<Unit> toRemove = new ArrayList<>();
             method.setDeclared(false);
             Body activeBody = method.retrieveActiveBody();
@@ -142,7 +144,22 @@ public class MainClassGenerator extends ClassGenerator {
                 }
 
                 else if (insertStatements.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
-
+                    if(methodContent.contains("void set")) {
+                        String[] data = unit.toString().split("\\(");
+                        InsertStatement statement = insertStatements.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
+                        String type = data[1].split(",")[1].split("\\)")[0];
+                        int pos = Integer.valueOf(data[2].split(",")[0]);
+                        String value = data[2].split(",")[1].split("\\)")[0];
+                        statement.addParameter(pos, value, type);
+                        System.out.println(statement.isReady());
+                        toRemove.add(unit);
+                    }
+                    else if (methodContent.contains("executeUpdate()")) {
+                        InsertStatement statement = insertStatements.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
+                        statement.setPred(unit);
+                        insertToBeReplaced.add(statement);
+                        toRemove.add(unit);
+                    }
                 }
                 else if (selectStatements.stream().anyMatch(x -> methodContent.contains(x[0]))) {
 
@@ -171,6 +188,10 @@ public class MainClassGenerator extends ClassGenerator {
                      String[] current = mFieldToBeReplaced.get(i);
                      processMethodField(mFieldPred, units, activeBody, processedClass, current[0], current[1], current[2]);
                  }
+             }
+
+             if (!insertToBeReplaced.isEmpty()) {
+
              }
 
             units.removeAll(toRemove);

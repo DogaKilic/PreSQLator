@@ -1,6 +1,7 @@
 package processor.generator;
 
 import processor.statement.InsertStatement;
+import processor.statement.SelectStatement;
 import soot.*;
 import soot.jimple.*;
 import util.ClassWriter;
@@ -29,15 +30,15 @@ public class MainClassGenerator extends ClassGenerator {
         for(SootMethod method : methodList) {
 
             ArrayList<InsertStatement> insertStatements = new ArrayList<>();
-            ArrayList<String[]> selectStatements = new ArrayList<>();
+            ArrayList<SelectStatement> selectStatements = new ArrayList<>();
             ArrayList<String[]> staticToBeReplaced = new ArrayList<>();
             ArrayList<String[]> mFieldToBeReplaced = new ArrayList<>();
             ArrayList<InsertStatement> insertToBeReplaced = new ArrayList<>();
+            ArrayList<SelectStatement> selectToBeReplaced = new ArrayList<>();
             Unit initPred = null;
             Unit connPred = null;
             Unit clinitPred = null;
             Unit mFieldPred = null;
-            Unit insertPred = null;
             ArrayList<Unit> toRemove = new ArrayList<>();
             method.setDeclared(false);
             Body activeBody = method.retrieveActiveBody();
@@ -128,7 +129,8 @@ public class MainClassGenerator extends ClassGenerator {
                         nameTypeAndTable[1] = result;
                         nameTypeAndTable[2] = queryData[tableIndex];
                         nameTypeAndTable[3] = "";
-                        selectStatements.add(nameTypeAndTable);
+                        SelectStatement newStatement = new SelectStatement(nameTypeAndTable[0], nameTypeAndTable[2], nameTypeAndTable[1]);
+                        selectStatements.add(newStatement);
                     }
                 }
 
@@ -162,8 +164,15 @@ public class MainClassGenerator extends ClassGenerator {
                         toRemove.add(unit);
                     }
                 }
-                else if (selectStatements.stream().anyMatch(x -> methodContent.contains(x[0]))) {
-
+                else if (selectStatements.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
+                    if (methodContent.contains("java.sql.ResultSet executeQuery()")) {
+                        SelectStatement statement = selectStatements.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
+                        statement.setAssignedLocal(methodContent.split(" ")[0]);
+                        System.out.println(statement.getAssignedLocal());
+                        statement.setPred(unit);
+                        selectToBeReplaced.add(statement);
+                        toRemove.add(unit);
+                    }
                 }
 
             }
@@ -196,7 +205,13 @@ public class MainClassGenerator extends ClassGenerator {
                      InsertStatement current =  insertToBeReplaced.get(i);
                      processInsertStatement(current, units, activeBody, processedClass);
                  }
+             }
 
+             if (!selectToBeReplaced.isEmpty()) {
+                 for (int i = 0; i < selectToBeReplaced.size(); i++) {
+                     SelectStatement current = selectToBeReplaced.get(i);
+                     processSelectStatement(current, units, activeBody, processedClass);
+                 }
              }
 
             units.removeAll(toRemove);
@@ -283,6 +298,15 @@ public class MainClassGenerator extends ClassGenerator {
         }
         SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "InsertStatement");
         newUnits.add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(connectionLocal, toCall.makeRef(), parameterList)));
+        units.insertAfter(newUnits, statement.getPred());
+    }
+
+    private void processSelectStatement(SelectStatement statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
+        ArrayList<Unit> newUnits = new ArrayList<>();
+        Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getAssignedLocal())).findFirst().get();
+        assigned.setType(Scene.v().getRefType("java.util.Iterator"));
+        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "SelectStatement");
+        newUnits.add(Jimple.v().newAssignStmt(assigned, Jimple.v().newVirtualInvokeExpr(connectionLocal, toCall.makeRef())));
         units.insertAfter(newUnits, statement.getPred());
     }
 

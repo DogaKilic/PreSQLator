@@ -19,7 +19,7 @@ public class ScratchProcessed extends java.lang.Object
         java.sql.Statement r0;
         java.sql.PreparedStatement r4, r5;
         java.lang.String $r6, $r11, $r13;
-        java.sql.ResultSet r7;
+        java.util.Iterator r7;
         boolean $z0;
         java.lang.StringBuilder $r8, $r10, $r12;
         java.io.PrintStream $r9;
@@ -43,7 +43,7 @@ public class ScratchProcessed extends java.lang.Object
 
         specialinvoke connection.<Connection: void personInsertStatement(int,java.lang.String)>(param, $r6);
 
-        r7 = interfaceinvoke r5.<java.sql.PreparedStatement: java.sql.ResultSet executeQuery()>();
+        r7 = virtualinvoke connection.<Connection: Iterator<PersonRow> personSelectStatement()>();
 
      label2:
         $z0 = interfaceinvoke r7.<java.sql.ResultSet: boolean next()>();

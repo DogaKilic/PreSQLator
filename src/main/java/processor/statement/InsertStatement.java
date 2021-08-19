@@ -2,8 +2,6 @@ package processor.statement;
 
 import soot.Unit;
 
-import java.util.ArrayList;
-
 public class InsertStatement implements IStatement {
 
     private void increment() {

@@ -54,7 +54,6 @@ public class JDBCProcessor implements IProcessor {
         //set up predicates to filter text
         Predicate<String> basicPredicate = PredicateGenerator.generateBasicPredicate();
         //filter text to get information on sqlite statements
-        System.out.println(methods.get(1).retrieveActiveBody().getUnits().toString() + "\n");
         Stream<String> statementStream = methods.get(1).retrieveActiveBody().getUnits().stream().map(i -> i.toString()).filter(basicPredicate).map(i -> i.split("\"")[1]);
         String finalStatementString = "";
         Iterator<String> statementIterator = statementStream.iterator();
@@ -62,7 +61,6 @@ public class JDBCProcessor implements IProcessor {
             finalStatementString = finalStatementString + statementIterator.next() + "\n";
         }
 
-        System.out.println(finalStatementString);
 
         //configure antlr and start walking
         SQLiteLexer sqLiteLexer = new SQLiteLexer(CharStreams.fromString(finalStatementString));

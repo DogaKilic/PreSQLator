@@ -32,7 +32,7 @@ public class JDBCProcessor implements IProcessor {
     private ConnectionClassGenerator connectGen = new ConnectionClassGenerator();
     private MainClassGenerator mainGen = new MainClassGenerator();
 
-    public void processClass(String processPath, String className) {
+    public void processClass(String processPath, String className, String arg) {
         //soot setup
         Options.v().set_prepend_classpath(true);
         Options.v().set_process_dir(Arrays.asList(processPath.split(File.pathSeparator)));
@@ -70,6 +70,27 @@ public class JDBCProcessor implements IProcessor {
         SQLiteSootListener sqLiteSootListener = new SQLiteSootListener();
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(sqLiteSootListener, tree);
+        if ( arg != null) {
+            String sum = "";
+            try {
+                FileInputStream fstream = null;
+                fstream = new FileInputStream(arg);
+                String strLine;
+                BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+                while ((strLine = br.readLine()) != null) {
+                    sum += "\n" + strLine;
+                }
+                SQLiteLexer createLexer = new SQLiteLexer(CharStreams.fromString(sum));
+                CommonTokenStream createTokens = new CommonTokenStream(createLexer);
+                SQLiteParser createParser = new SQLiteParser(createTokens);
+                ParseTree createTree = createParser.parse();
+                walker.walk(sqLiteSootListener, createTree);
+                fstream.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         for (TableContent i : TableBank.getTables()) {
             i.testPrint();

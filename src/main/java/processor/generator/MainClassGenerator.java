@@ -9,7 +9,6 @@ import util.ClassWriter;
 import java.util.*;
 
 public class MainClassGenerator extends ClassGenerator {
-    private int localCnt = 0;
     private Local ref;
     private Local connectionLocal;
 
@@ -31,6 +30,7 @@ public class MainClassGenerator extends ClassGenerator {
             ArrayList<SelectStatement> selectStatements = new ArrayList<>();
             ArrayList<String[]> staticToBeReplaced = new ArrayList<>();
             ArrayList<String[]> mFieldToBeReplaced = new ArrayList<>();
+            ArrayList<String[]> initFieldToBeReplaced = new ArrayList<>();
             ArrayList<InsertStatement> insertToBeReplaced = new ArrayList<>();
             ArrayList<SelectStatement> selectToBeReplaced = new ArrayList<>();
             ArrayList<RSStatement> rsStatements = new ArrayList<>();
@@ -55,9 +55,11 @@ public class MainClassGenerator extends ClassGenerator {
                  String methodContent = unit.toString();
 
                 if (method.getName().equals("<init>")) {
+
                     if (unit.equals(activeBody.getThisUnit())) {
                         toRemove.add(unit);
                     }
+
                     if (!init) {
                         activeBody.getThisLocal().setType(processedClass.getType());
                         initPred = unit;
@@ -69,7 +71,9 @@ public class MainClassGenerator extends ClassGenerator {
                 else if (method.getName().equals("<clinit>")) {
                     Optional<ValueBox> valueBox;
                     valueBox = unit.getDefBoxes().stream().findFirst();
+
                     if(valueBox.isPresent()) {
+
                         if(valueBox.get().getValue().toString().contains("<" + oldClass.getName() + ":")) {
                             String[] data = unit.toString().split(">");
                             String[] fieldAndAssignment = new String[3];
@@ -102,6 +106,7 @@ public class MainClassGenerator extends ClassGenerator {
                     if (unitData[0].split(" ")[0].equals("interfaceinvoke")){
                         continue;
                     }
+
                     else {
                         nameTypeAndTable[0] = unitData[0].split(" ")[0];
                     }
@@ -117,10 +122,13 @@ public class MainClassGenerator extends ClassGenerator {
                     else if ((queryData[0]).equals("select")){
                         int tableIndex = 0;
                         String result = "";
+
                         for(int i = 1; i < queryData.length; i++) {
+
                             if (queryData[i].endsWith(",")) {
                                 result += queryData[i].split(",")[0];
                             }
+
                             else {
                                 result += queryData[i];
                                 tableIndex = i + 2;
@@ -143,6 +151,7 @@ public class MainClassGenerator extends ClassGenerator {
                     fieldAndAssignment[2] = data.split(" ")[3];
                     mFieldToBeReplaced.add(fieldAndAssignment);
                     toRemove.add(unit);
+
                     if (mFieldPred == null) {
                         mFieldPred = unit;
                     }
@@ -150,6 +159,7 @@ public class MainClassGenerator extends ClassGenerator {
 
                 else if (insertStatements.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
                     InsertStatement statement = insertStatements.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
+
                     if(methodContent.contains("void set")) {
                         String[] data = unit.toString().split("\\(");
                         String type = data[1].split(",")[1].split("\\)")[0];
@@ -158,12 +168,14 @@ public class MainClassGenerator extends ClassGenerator {
                         statement.addParameter(pos, value, type);
                         toRemove.add(unit);
                     }
+
                     else if (methodContent.contains("executeUpdate()")) {
                         statement.setPred(unit);
                         insertToBeReplaced.add(statement);
                         toRemove.add(unit);
                     }
                 }
+
                 else if (selectStatements.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
                     if (methodContent.contains("java.sql.ResultSet executeQuery()")) {
                         SelectStatement statement = selectStatements.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
@@ -175,11 +187,11 @@ public class MainClassGenerator extends ClassGenerator {
                         toRemove.add(unit);
                     }
                 }
+
                 else if (rsStatements.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
                     RSStatement statement = rsStatements.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
                     if (methodContent.contains("java.sql.ResultSet: boolean next()") && !methodContent.contains("goto")) {
                         statement.setPred(unit);
-                        System.out.println(methodContent);
                         statement.setAssignedLocalName(methodContent.split(" ")[0]);
                         nextToBeReplaced.add(statement);
                         toRemove.add(unit);
@@ -191,9 +203,8 @@ public class MainClassGenerator extends ClassGenerator {
 
             }
 
-
              if (init) {
-                 processInıt(initPred, units, activeBody, processedClass);
+                 processInit(initPred, units, activeBody, processedClass);
              }
 
              if (clinitPred != null) {
@@ -261,7 +272,7 @@ public class MainClassGenerator extends ClassGenerator {
     }
 
 
-    private void processInıt(Unit pred, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
+    private void processInit(Unit pred, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
         ArrayList<Unit> newUnits = new ArrayList<>();
         newUnits.add(Jimple.v().newIdentityStmt(activeBody.getThisLocal(), Jimple.v().newThisRef(processedClass.getType())));
 
@@ -344,6 +355,4 @@ public class MainClassGenerator extends ClassGenerator {
         ref = soot.jimple.Jimple.v().newLocal("this", processedClass.getType());
         activeBody.getLocals().add(ref);
     }
-
-
 }

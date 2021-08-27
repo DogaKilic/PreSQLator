@@ -63,7 +63,6 @@ public class ConnectionClassGenerator extends ClassGenerator {
         //add insertStatement methods
         cnt = 0;
         for (TableContent i : contents) {
-            if (i.hasPreparedInsert()) {
                 ArrayList<Local> parameterList = new ArrayList<>();
                 ArrayList<Type> types = new ArrayList<>();
                 for (String[] data : i.getColumnContent()) {
@@ -108,7 +107,7 @@ public class ConnectionClassGenerator extends ClassGenerator {
                 insertUnits.add(Jimple.v().newReturnVoidStmt());
                 cnt++;
                 insertBody.validate();
-            }
+
         }
         //add selectStatement methods
         cnt = 0;

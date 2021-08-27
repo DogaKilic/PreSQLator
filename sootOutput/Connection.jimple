@@ -20,6 +20,36 @@ class Connection extends java.lang.Object
         return;
     }
 
+    public void videoInsertStatement(int, java.lang.String, java.lang.String)
+    {
+        Connection thisRef;
+        int parm0;
+        java.lang.String parm1, parm2;
+        VideoRow newRow0;
+        ArrayList<> tableClass;
+        VideoTable table;
+
+        thisRef := @this: Connection;
+
+        parm0 := @parameter0: int;
+
+        parm1 := @parameter1: java.lang.String;
+
+        parm2 := @parameter2: java.lang.String;
+
+        newRow0 = new VideoRow;
+
+        specialinvoke newRow0.<VideoRow: void <init>(int,java.lang.String,java.lang.String)>(parm0, parm1, parm2);
+
+        table = thisRef.<Connection: VideoTable videoTable>;
+
+        tableClass = table.<VideoTable: java.util.ArrayList<VideoRow> rows>;
+
+        virtualinvoke tableClass.<java.util.ArrayList: boolean add(java.lang.Object)>(newRow0);
+
+        return;
+    }
+
     public Iterator<VideoRow> videoSelectStatement()
     {
         Connection thisRef0;

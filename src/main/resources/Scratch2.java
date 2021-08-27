@@ -16,7 +16,6 @@ public class Scratch2 {
     private boolean connectDatabase() {
         c = null;
         try {
-            Class.forName("org.postgresql.Driver");
             this.c = DriverManager
                     .getConnection("jdbc:postgresql://" + HOST + ":" + PORT + "/" + DB_NAME, USER, PASSWORD);
         } catch (Exception e) {
@@ -29,7 +28,7 @@ public class Scratch2 {
 
 
     public boolean saveProcessedVideoAndMeta(String videoName, String metaName) {
-        if (!connectDatabase()) return false;
+        if (!connectDatabase()) {return false;}
         // send sql command and catch possible exeptions
         try {
             // sql command
@@ -46,7 +45,7 @@ public class Scratch2 {
 
     public String getVideoInfo(int videoId) {
         String vI = null;
-        if (!connectDatabase()) return null;
+        if (!connectDatabase()) {return null;}
         // execute sql command and insert result in ArrayList
         try {
             PreparedStatement select = c.prepareStatement("select video_name, id from video");
@@ -57,8 +56,6 @@ public class Scratch2 {
                 int id = Integer.parseInt(rs.getString("id"));
                 vI = video_name + ":" + id;
             }
-            rs.close();
-            this.c.close();
         } catch (NullPointerException | SQLException e) {
             Logger.getGlobal().warning("Select SQL command has not been executed successfully: ");
         }

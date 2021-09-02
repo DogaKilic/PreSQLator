@@ -1,6 +1,10 @@
 package processor.statement;
 
 import soot.Unit;
+import soot.Value;
+import soot.jimple.Constant;
+
+import java.util.ArrayList;
 
 public class MFieldStatement implements IStatement{
     public void setFieldLocal(String fieldLocal) {
@@ -41,6 +45,19 @@ public class MFieldStatement implements IStatement{
     private String field;
     private int type;
     private Unit pred;
+    private ArrayList<Value> parameters;
+
+    public void addParameter(Value value){
+        parameters.add(value);
+    }
+
+    public int getParameterCount(){
+        return parameters.size();
+    }
+
+    public ArrayList<Value> getParameters() {
+        return parameters;
+    }
 
     public String getAssignedLocal() {
         return assignedLocal;
@@ -68,5 +85,6 @@ public class MFieldStatement implements IStatement{
         this.field = field;
         this.assignedLocal = assignedLocal;
         this.pred = null;
+        this.parameters = new ArrayList<>();
     }
 }

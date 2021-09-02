@@ -55,12 +55,17 @@ public class MainClassGenerator extends ClassGenerator {
             setRef(processedClass, activeBody);
 
 
+            if (method.getReturnType().equals(Scene.v().getRefType("java.sql.ResultSet"))){
+                method.setReturnType(Scene.v().getRefType("java.util.Iterator"));
+            }
 
              while (unitIterator.hasNext()) {
                  Unit unit = unitIterator.next();
                  String methodContent = unit.toString();
+                if (methodContent.contains("goto")) {
 
-                if (method.getName().equals("<init>")) {
+                 }
+                else if (method.getName().equals("<init>")) {
 
                     if (unit.equals(activeBody.getThisUnit())) {
                         toRemove.add(unit);
@@ -185,10 +190,40 @@ public class MainClassGenerator extends ClassGenerator {
                             String assignedLocal = methodContent.split(" =")[0];
                             String fieldLocal;
                             String field;
-                            if(methodContent.contains("specialinvoke")) {
+                            if(methodContent.contains("virtualinvoke") || methodContent.contains("specialinvoke")) {
+                                MFieldStatement statement = null;
                                 fieldLocal = methodContent.split(" ")[3].split("\\.")[0];
                                 field = methodContent.split(" ")[5].split("\\(")[0];
-                                MFieldStatement statement = new MFieldStatement(assignedLocal, field, 3);
+                                if (methodContent.contains("specialinvoke")) {
+
+                                    statement = new MFieldStatement(assignedLocal, field, 3);
+                                }
+                                else if(methodContent.contains("virtualinvoke")) {
+                                    statement = new MFieldStatement(assignedLocal, field, 5);
+                                }
+                                if (methodContent.split(">\\(").length > 1 && !methodContent.split(">\\(")[1].equals(")")) {
+                                    String[] content = methodContent.split(">\\(")[1].split("\\)")[0].split(",");
+                                    String[] types = methodContent.split("\\)>")[0].split("\\(")[1].split(",");
+                                    for(int i = 0; i < content.length; i++) {
+                                        String result = content[i].replaceAll(" ","");
+                                        Optional<Local> exists = activeBody.getLocals().stream().filter(x -> x.getName().equals(result)).findFirst();
+                                        if(exists.isPresent()) {
+                                            statement.addParameter((exists.get()));
+                                        }
+                                        else {
+                                            String temp = types[i].replaceAll(" ","");
+                                            switch (temp) {
+                                                case "int":
+                                                    statement.addParameter(IntConstant.v(Integer.parseInt(temp)));
+                                                    break;
+                                                case "java.lang.String":
+                                                    statement.addParameter(StringConstant.v(temp));
+                                                    break;
+                                            }
+                                        }
+
+                                    }
+                                }
                                 statement.setFieldLocal(fieldLocal);
                                 statement.setPred(unit);
                                 mFieldToBeReplaced.add(statement);
@@ -205,11 +240,10 @@ public class MainClassGenerator extends ClassGenerator {
                             toRemove.add(unit);
                         }
                         else {
-                            String data = unit.toString();
                             String[] fieldAndAssignment = new String[3];
-                            fieldAndAssignment[0] = data.split(" ")[4].replaceAll(">", "");
-                            fieldAndAssignment[1] = data.split(" =")[0];
-                            fieldAndAssignment[2] = data.split(" ")[3];
+                            fieldAndAssignment[0] = methodContent.split(" ")[4].replaceAll(">", "");
+                            fieldAndAssignment[1] = methodContent.split(" =")[0];
+                            fieldAndAssignment[2] = methodContent.split(" ")[3];
                             MFieldStatement statement = new MFieldStatement(fieldAndAssignment[1], fieldAndAssignment[0], 1);
                             statement.setPred(unit);
                             mFieldToBeReplaced.add(statement);
@@ -362,7 +396,6 @@ public class MainClassGenerator extends ClassGenerator {
 
     private void processMethodField (MFieldStatement statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
         ArrayList<Unit> newUnits = new ArrayList<>();
-        System.out.println(statement.getPred());
         FieldRef fieldRef;
         if (statement.getType() == 1) {
             Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getAssignedLocal())).findFirst().get();
@@ -407,8 +440,13 @@ public class MainClassGenerator extends ClassGenerator {
             newUnits.add(Jimple.v().newAssignStmt(assigned, fieldRef));
 
         }
+        else if (statement.getType() == 5) {
+            Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getAssignedLocal())).findFirst().get();
+            Local fieldLocal = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getFieldLocal())).findFirst().get();
+            VirtualInvokeExpr inv = Jimple.v().newVirtualInvokeExpr(fieldLocal, processedClass.getMethodByName(statement.getField()).makeRef(), statement.getParameters());
+            newUnits.add(Jimple.v().newAssignStmt(assigned, inv));
+        }
         units.insertAfter(newUnits, statement.getPred());
-
     }
 
     private void processClinit(Unit pred, UnitPatchingChain units, Body activeBody, SootClass processedClass, String field, String assignment, String type){

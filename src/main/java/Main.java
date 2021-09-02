@@ -17,6 +17,6 @@ public class Main {
             path = args[0];
         }
         //absolute path, change as you need
-        jdbcProcessor.processClass("C:\\Users\\dogas\\IdeaProjects\\TestProj\\src\\main\\resources", "Scratch2", path);
+        jdbcProcessor.processClass("C:\\Users\\dogas\\IdeaProjects\\TestProj\\src\\main\\resources", "Scratch4", path);
     }
 }

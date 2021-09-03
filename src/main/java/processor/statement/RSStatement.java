@@ -29,6 +29,7 @@ public class RSStatement {
     }
 
     public RSStatement (String localName) {
+        this.assignedLocalName = "";
         this.localName = localName;
         this.pred = null;
     }

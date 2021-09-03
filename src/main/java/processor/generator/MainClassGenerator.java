@@ -10,6 +10,7 @@ import util.ClassWriter;
 import java.util.*;
 
 public class MainClassGenerator extends ClassGenerator {
+    private ArrayList<String> processedRsMethods = new ArrayList<>();
     private Local ref;
     private Local connectionLocal;
 
@@ -27,6 +28,13 @@ public class MainClassGenerator extends ClassGenerator {
             processedClass.addField(field);
             field.setDeclared(true);
         }
+
+        for (SootMethod method : methodList) {
+            if (method.getReturnType().equals(Scene.v().getRefType("java.sql.ResultSet"))){
+                processedRsMethods.add(method.getName());
+            }
+        }
+
 
         for(SootMethod method : methodList) {
 
@@ -55,16 +63,25 @@ public class MainClassGenerator extends ClassGenerator {
             setRef(processedClass, activeBody);
 
 
-            if (method.getReturnType().equals(Scene.v().getRefType("java.sql.ResultSet"))){
+            if (processedRsMethods.contains(method.getName())) {
                 method.setReturnType(Scene.v().getRefType("java.util.Iterator"));
             }
 
              while (unitIterator.hasNext()) {
                  Unit unit = unitIterator.next();
                  String methodContent = unit.toString();
-                if (methodContent.contains("goto")) {
 
+
+                if (processedRsMethods.stream().filter(x -> methodContent.contains(x)).findFirst().isPresent()) {
+                    String local = methodContent.split(" =")[0];
+                    RSStatement statement = new RSStatement(local);
+                    rsStatements.add(statement);
+                }
+
+                 if (methodContent.contains("goto")) {
+                     continue;
                  }
+
                 else if (method.getName().equals("<init>")) {
 
                     if (unit.equals(activeBody.getThisUnit())) {
@@ -363,7 +380,7 @@ public class MainClassGenerator extends ClassGenerator {
             units.removeAll(toRemove);
              toRemove.clear();
             processedClass.addMethod(method);
-            activeBody.validate();
+            //activeBody.validate();
             method.setDeclared(true);
         }
 

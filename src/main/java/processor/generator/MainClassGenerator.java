@@ -1,5 +1,7 @@
 package processor.generator;
 
+import content.TableBank;
+import content.TableContent;
 import processor.statement.InsertStatement;
 import processor.statement.MFieldStatement;
 import processor.statement.RSStatement;
@@ -10,6 +12,9 @@ import util.ClassWriter;
 import java.util.*;
 
 public class MainClassGenerator extends ClassGenerator {
+    public static Unit currentPred;
+    public static UnitPatchingChain currentUnits;
+    public static Body currentBody;
     private ArrayList<String> processedRsMethods = new ArrayList<>();
     private Local ref;
     private Local connectionLocal;
@@ -78,9 +83,7 @@ public class MainClassGenerator extends ClassGenerator {
                     rsStatements.add(statement);
                 }
 
-                 if (methodContent.contains("goto")) {
-                     continue;
-                 }
+                 if (methodContent.contains("goto")) {}
 
                 else if (method.getName().equals("<init>")) {
 
@@ -173,22 +176,26 @@ public class MainClassGenerator extends ClassGenerator {
                     }
 
                     else if ((queryData[0]).equals("select")){
+                        System.out.println(methodContent);
                         int tableIndex = 0;
                         String result = "";
-
-                        for(int i = 1; i < queryData.length; i++) {
-
-                            if (queryData[i].endsWith(",")) {
-                                result += queryData[i].split(",")[0];
-                            }
-
-                            else {
-                                result += queryData[i];
-                                tableIndex = i + 2;
-                                break;
-                            }
+                        if(queryData[1] == "*"){
+                            nameTypeAndTable[1] = "*";
+                            tableIndex = 3;
                         }
-                        nameTypeAndTable[1] = result;
+                        else {
+                            for (int i = 1; i < queryData.length; i++) {
+
+                                if (queryData[i].endsWith(",")) {
+                                    result += queryData[i].split(",")[0] + ",";
+                                } else {
+                                    result += queryData[i];
+                                    tableIndex = i + 2;
+                                    break;
+                                }
+                            }
+                            nameTypeAndTable[1] = result;
+                        }
                         nameTypeAndTable[2] = queryData[tableIndex];
                         nameTypeAndTable[3] = "";
                         SelectStatement newStatement = new SelectStatement(nameTypeAndTable[0], nameTypeAndTable[2], nameTypeAndTable[1]);
@@ -366,6 +373,9 @@ public class MainClassGenerator extends ClassGenerator {
              if (!selectToBeReplaced.isEmpty()) {
                  for (int i = 0; i < selectToBeReplaced.size(); i++) {
                      SelectStatement current = selectToBeReplaced.get(i);
+                     currentPred = current.getPred();
+                     currentUnits = units;
+                     currentBody = activeBody;
                      processSelectStatement(current, units, activeBody, processedClass);
                  }
              }
@@ -380,7 +390,7 @@ public class MainClassGenerator extends ClassGenerator {
             units.removeAll(toRemove);
              toRemove.clear();
             processedClass.addMethod(method);
-            //activeBody.validate();
+            activeBody.validate();
             method.setDeclared(true);
         }
 
@@ -535,7 +545,7 @@ public class MainClassGenerator extends ClassGenerator {
         ArrayList<Unit> newUnits = new ArrayList<>();
         Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getAssignedLocal())).findFirst().get();
         assigned.setType(Scene.v().getRefType("java.util.Iterator"));
-        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "SelectStatement");
+        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "SelectStatement" + statement.getLocalCount());
         newUnits.add(Jimple.v().newAssignStmt(assigned, Jimple.v().newVirtualInvokeExpr(connectionLocal, toCall.makeRef())));
         units.insertAfter(newUnits, statement.getPred());
     }

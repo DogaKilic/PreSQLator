@@ -80,4 +80,12 @@ public class TableBank {
             }
         }
     }
+
+    public static void addWhereResults(String tableName, ArrayList<String> whereResults) {
+        for (TableContent i : tables) {
+            if (i.getTableName().equals(tableName)) {
+                i.addWhere((ArrayList<String>) whereResults.clone());
+            }
+        }
+    }
 }

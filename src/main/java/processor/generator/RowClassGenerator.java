@@ -2,9 +2,7 @@ package processor.generator;
 
 import content.TableBank;
 import soot.*;
-import soot.jimple.InstanceFieldRef;
-import soot.jimple.Jimple;
-import soot.jimple.JimpleBody;
+import soot.jimple.*;
 import soot.util.Chain;
 import util.ClassWriter;
 
@@ -21,6 +19,7 @@ public class RowClassGenerator extends ClassGenerator {
         SootClass rowClass = new SootClass(className);
         rowClasses.add(rowClass);
         rowClass.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
+        rowClass.setSuperclass(Scene.v().getSootClass("util.Row"));
         Scene.v().addClass(rowClass);
         ArrayList<String[]> columnContent = TableBank.getColumnContent(tableName);
         ArrayList<Type> types = new ArrayList<>();
@@ -58,6 +57,8 @@ public class RowClassGenerator extends ClassGenerator {
             parm = parameterList.get(parmCount);
             InstanceFieldRef instanceFieldRef = Jimple.v().newInstanceFieldRef(ref, rowClass.getFieldByName(data[0]).makeRef());
             units.add(Jimple.v().newAssignStmt(instanceFieldRef, parm));
+            SpecialInvokeExpr toCall = Jimple.v().newSpecialInvokeExpr(ref, Scene.v().getSootClass("util.Row").getMethodByName("addParameter").makeRef(), parm);
+            units.add(Jimple.v().newInvokeStmt(toCall));
             parmCount++;
         }
 

@@ -9,6 +9,7 @@ public class TableContent implements ITableContent {
     private Boolean hasPreparedInsert;
     private final ArrayList<String> columns;
     private final ArrayList<String> queries;
+    private final ArrayList<ArrayList<String>> wheres;
     private final ArrayList<String[]> columnContent;
 
 
@@ -17,6 +18,7 @@ public class TableContent implements ITableContent {
         hasPreparedInsert = false;
         columns = new ArrayList<>();
         queries = new ArrayList<>();
+        wheres = new ArrayList<>();
         columnContent = new ArrayList<>();
     }
 
@@ -24,6 +26,8 @@ public class TableContent implements ITableContent {
     public void addQuery(String query) {
         queries.add(query);
     }
+
+    public void addWhere(ArrayList<String> where) { wheres.add(where); }
 
 
     public String getTableName() {
@@ -55,9 +59,15 @@ public class TableContent implements ITableContent {
         return columns;
     }
 
-    public ArrayList<String> getQueries() {
-        return queries;
+    public String getQuery(int i) {
+        return queries.get(i);
     }
+
+    public int getQueryCount() { return queries.size();}
+
+    public ArrayList<String> getWheres(int i) { return wheres.get(i); }
+
+    public int getWheresSize() { return wheres.size();}
 
     public ArrayList<String[]> getColumnContent() {
         return columnContent;

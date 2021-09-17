@@ -16,19 +16,21 @@ public class Scratch {
             statement.executeUpdate("create table person (id integer, name string)");
             statement.executeUpdate("create table dog (petid integer, age integer , name string)");
             PreparedStatement dogInsert = connection.prepareStatement("insert into dog values(?, ?, ?)");
-            PreparedStatement dogSelect = connection.prepareStatement("select age, name from dog");
+            PreparedStatement dogSelect = connection.prepareStatement("select age, name from dog where age < 18");
 			PreparedStatement dogSelect2 = connection.prepareStatement("select * from dog");
             PreparedStatement insert = connection.prepareStatement("insert into person values(?, ?)");
-            PreparedStatement select = connection.prepareStatement("select * from person");
+            PreparedStatement select = connection.prepareStatement("select * from person where name != \'josh\'");
             // do some work to obtain the secret
             // ...
             insert.setInt(1, secretId);
             insert.setString(2, secretName);
             insert.executeUpdate();
             // ...
+            ResultSet dogRs1 = dogSelect.executeQuery();
+            ResultSet dogRs2 = dogSelect2.executeQuery();
             ResultSet rs = select.executeQuery();
             while (rs.next()) {
-                System.out.println("name = " + rs.getString("name"));
+                System.out.println("name = " + rs.getString("name") + dogRs1.getString("name") + dogRs2.getString("name"));
             }
         } catch (SQLException e) {
         }

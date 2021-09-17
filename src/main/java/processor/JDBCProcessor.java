@@ -47,6 +47,9 @@ public class JDBCProcessor implements IProcessor {
         Scene.v().addBasicClass("java.util.ArrayList", SIGNATURES);
         Scene.v().addBasicClass("java.util.Iterator", SIGNATURES);
         Scene.v().addBasicClass("java.util.List", SIGNATURES);
+        Scene.v().addBasicClass("util.ConnectionHelper", SIGNATURES);
+        Scene.v().addBasicClass("util.Row", SIGNATURES);
+        Scene.v().addBasicClass("java.util.function.Predicate", SIGNATURES);
         //load class, get method list
         SootClass appClass = Scene.v().loadClassAndSupport(className);
         List<SootMethod> methods = appClass.getMethods();
@@ -60,6 +63,7 @@ public class JDBCProcessor implements IProcessor {
         while (statementIterator.hasNext()) {
             finalStatementString = finalStatementString + statementIterator.next() + "\n";
         }
+        finalStatementString = finalStatementString.replaceAll("\\\\","");
 
 
         //configure antlr and start walking
@@ -70,7 +74,7 @@ public class JDBCProcessor implements IProcessor {
         SQLiteSootListener sqLiteSootListener = new SQLiteSootListener();
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(sqLiteSootListener, tree);
-        if ( arg != null) {
+        if ( arg != "") {
             String sum = "";
             try {
                 FileInputStream fstream = null;
@@ -94,6 +98,10 @@ public class JDBCProcessor implements IProcessor {
 
         for (TableContent i : TableBank.getTables()) {
             i.testPrint();
+            for (int j = 0; j < i.getQueryCount(); j++) {
+                System.out.println(i.getQuery(j));
+                System.out.println(i.getWheres(j));
+            }
         }
 
         //add required imports to Scene
@@ -105,6 +113,7 @@ public class JDBCProcessor implements IProcessor {
             rowGen.generateClass(i.getTableName());
             tableGen.generateClass(i.getTableName());
         }
+
         connectGen.generateClass(TableBank.getTables());
 
         ClassWriter.writeAsClassFile(appClass);

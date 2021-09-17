@@ -37,6 +37,7 @@ public class SQLiteSootListener extends SQLiteParserBaseListener {
     public void enterSelect_stmt(SQLiteParser.Select_stmtContext ctx) {
         List<SQLiteParser.Select_coreContext> selectCores = ctx.select_core();
         ArrayList<String> currentResults = new ArrayList<>();
+        ArrayList<String> whereResults = new ArrayList<>();
         String tableName = "";
         String query = "";
         for(int i = 0; i < selectCores.stream().count(); i++){
@@ -44,8 +45,13 @@ public class SQLiteSootListener extends SQLiteParserBaseListener {
             for(int k = 0; k < selectCores.get(i).result_column().stream().count(); k++) {
                 currentResults.add(selectCores.get(i).result_column().get(k).getText());
             }
+            for (int k = 0; k < selectCores.get(i).expr().size(); k++) {
+                    whereResults.add(selectCores.get(i).expr(k).getText());
+            }
             TableBank.addPreparedSelectQuery(tableName, currentResults);
+            TableBank.addWhereResults(tableName, whereResults);
             currentResults.clear();
+            whereResults.clear();
         }
     }
 }

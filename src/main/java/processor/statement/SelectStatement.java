@@ -2,10 +2,26 @@ package processor.statement;
 
 import soot.Unit;
 
+import java.util.ArrayList;
+
 public class SelectStatement implements IStatement{
+    private static ArrayList<String> count = new ArrayList<>();
+
+
+    public int getLocalCount() {
+        return localCount;
+    }
+
+    private int localCount;
     private String localName;
     private String tableName;
-    private String queries;
+
+    public String getQuery() {
+        return query;
+    }
+
+
+    private String query;
     private String assignedLocal;
     private Unit pred;
 
@@ -33,11 +49,13 @@ public class SelectStatement implements IStatement{
         return tableName;
     }
 
-    public SelectStatement(String localName, String tableName, String queries) {
+    public SelectStatement(String localName, String tableName, String query) {
         this.localName = localName;
         this.tableName = tableName;
-        this.queries = queries;
+        this.query = query;
         this.assignedLocal = "";
         this.pred = null;
+        this.localCount = count.stream().filter(x -> x.equals(tableName)).toArray().length;
+        count.add(tableName);
     }
 }

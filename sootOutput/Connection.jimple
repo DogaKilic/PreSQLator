@@ -1,31 +1,23 @@
 class Connection extends java.lang.Object
 {
-    public PersonTable personTable;
-    public DogTable dogTable;
+    public VideoTable videoTable;
     public util.ConnectionHelper helper;
 
     public void <init>()
     {
         Connection this;
-        PersonTable table0;
-        DogTable table1;
+        VideoTable table0;
         util.ConnectionHelper helper;
 
         this := @this: Connection;
 
         specialinvoke this.<java.lang.Object: void <init>()>();
 
-        table0 = new PersonTable;
+        table0 = new VideoTable;
 
-        specialinvoke table0.<PersonTable: void <init>()>();
+        specialinvoke table0.<VideoTable: void <init>()>();
 
-        this.<Connection: PersonTable personTable> = table0;
-
-        table1 = new DogTable;
-
-        specialinvoke table1.<DogTable: void <init>()>();
-
-        this.<Connection: DogTable dogTable> = table1;
+        this.<Connection: VideoTable videoTable> = table0;
 
         helper = new util.ConnectionHelper;
 
@@ -36,14 +28,14 @@ class Connection extends java.lang.Object
         return;
     }
 
-    public void personInsertStatement(int, java.lang.String)
+    public void videoInsertStatement(int, java.lang.String, java.lang.String)
     {
         Connection thisRef;
         int parm0;
-        java.lang.String parm1;
-        PersonRow newRow0;
+        java.lang.String parm1, parm2;
+        VideoRow newRow0;
         ArrayList<> tableClass;
-        PersonTable table;
+        VideoTable table;
 
         thisRef := @this: Connection;
 
@@ -51,113 +43,33 @@ class Connection extends java.lang.Object
 
         parm1 := @parameter1: java.lang.String;
 
-        newRow0 = new PersonRow;
+        parm2 := @parameter2: java.lang.String;
 
-        specialinvoke newRow0.<PersonRow: void <init>(int,java.lang.String)>(parm0, parm1);
+        newRow0 = new VideoRow;
 
-        table = thisRef.<Connection: PersonTable personTable>;
+        specialinvoke newRow0.<VideoRow: void <init>(int,java.lang.String,java.lang.String)>(parm0, parm1, parm2);
 
-        tableClass = table.<PersonTable: java.util.ArrayList<PersonRow> rows>;
+        table = thisRef.<Connection: VideoTable videoTable>;
+
+        tableClass = table.<VideoTable: java.util.ArrayList<VideoRow> rows>;
 
         virtualinvoke tableClass.<java.util.ArrayList: boolean add(java.lang.Object)>(newRow0);
 
         return;
     }
 
-    public void dogInsertStatement(int, int, java.lang.String)
-    {
-        Connection thisRef;
-        int parm0, parm1;
-        java.lang.String parm2;
-        DogRow newRow1;
-        ArrayList<> tableClass;
-        DogTable table;
-
-        thisRef := @this: Connection;
-
-        parm0 := @parameter0: int;
-
-        parm1 := @parameter1: int;
-
-        parm2 := @parameter2: java.lang.String;
-
-        newRow1 = new DogRow;
-
-        specialinvoke newRow1.<DogRow: void <init>(int,int,java.lang.String)>(parm0, parm1, parm2);
-
-        table = thisRef.<Connection: DogTable dogTable>;
-
-        tableClass = table.<DogTable: java.util.ArrayList<DogRow> rows>;
-
-        virtualinvoke tableClass.<java.util.ArrayList: boolean add(java.lang.Object)>(newRow1);
-
-        return;
-    }
-
-    public Iterator<PersonRow> personSelectStatement0()
+    public Iterator<VideoRow> videoSelectStatement0()
     {
         Connection thisRef0;
-        PersonTable table0;
-        ArrayList<> tableClass0;
-        java.util.stream.Stream stream0, newStream0;
-        PersonRowPredicate0 filterParm;
-        java.util.Iterator iterator0;
-
-        thisRef0 := @this: Connection;
-
-        table0 = thisRef0.<Connection: PersonTable personTable>;
-
-        tableClass0 = table0.<PersonTable: java.util.ArrayList<PersonRow> rows>;
-
-        stream0 = interfaceinvoke tableClass0.<java.util.Collection: java.util.stream.Stream stream()>();
-
-        filterParm = new PersonRowPredicate0;
-
-        newStream0 = interfaceinvoke stream0.<java.util.stream.Stream: java.util.stream.Stream filter(java.util.function.Predicate)>(filterParm);
-
-        iterator0 = interfaceinvoke newStream0.<java.util.stream.BaseStream: java.util.Iterator iterator()>();
-
-        return iterator0;
-    }
-
-    public Iterator<DogRow> dogSelectStatement0()
-    {
-        Connection thisRef0;
-        DogTable table0;
-        ArrayList<> tableClass0;
-        java.util.stream.Stream stream0, newStream0;
-        DogRowPredicate0 filterParm;
-        java.util.Iterator iterator0;
-
-        thisRef0 := @this: Connection;
-
-        table0 = thisRef0.<Connection: DogTable dogTable>;
-
-        tableClass0 = table0.<DogTable: java.util.ArrayList<DogRow> rows>;
-
-        stream0 = interfaceinvoke tableClass0.<java.util.Collection: java.util.stream.Stream stream()>();
-
-        filterParm = new DogRowPredicate0;
-
-        newStream0 = interfaceinvoke stream0.<java.util.stream.Stream: java.util.stream.Stream filter(java.util.function.Predicate)>(filterParm);
-
-        iterator0 = interfaceinvoke newStream0.<java.util.stream.BaseStream: java.util.Iterator iterator()>();
-
-        return iterator0;
-    }
-
-    public Iterator<DogRow> dogSelectStatement1()
-    {
-        Connection thisRef0;
-        DogTable table0;
+        VideoTable table0;
         ArrayList<> tableClass0;
         Iterator iterator0;
 
         thisRef0 := @this: Connection;
 
-        table0 = thisRef0.<Connection: DogTable dogTable>;
+        table0 = thisRef0.<Connection: VideoTable videoTable>;
 
-        tableClass0 = table0.<DogTable: java.util.ArrayList<DogRow> rows>;
+        tableClass0 = table0.<VideoTable: java.util.ArrayList<VideoRow> rows>;
 
         iterator0 = virtualinvoke tableClass0.<java.util.ArrayList: java.util.Iterator iterator()>();
 

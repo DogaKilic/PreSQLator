@@ -57,13 +57,16 @@ public class JDBCProcessor implements IProcessor {
         //set up predicates to filter text
         Predicate<String> basicPredicate = PredicateGenerator.generateBasicPredicate();
         //filter text to get information on sqlite statements
-        Stream<String> statementStream = methods.get(1).retrieveActiveBody().getUnits().stream().map(i -> i.toString()).filter(basicPredicate).map(i -> i.split("\"")[1]);
         String finalStatementString = "";
+        for (int i = 0; i < methods.size(); i++) {
+        Stream<String> statementStream = methods.get(i).retrieveActiveBody().getUnits().stream().map(j -> j.toString()).filter(basicPredicate).map(j -> j.split("\"")[1]);
         Iterator<String> statementIterator = statementStream.iterator();
         while (statementIterator.hasNext()) {
             finalStatementString = finalStatementString + statementIterator.next() + "\n";
         }
+    }
         finalStatementString = finalStatementString.replaceAll("\\\\","");
+
 
 
         //configure antlr and start walking
@@ -73,7 +76,7 @@ public class JDBCProcessor implements IProcessor {
         ParseTree tree = parser.parse();
         SQLiteSootListener sqLiteSootListener = new SQLiteSootListener();
         ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk(sqLiteSootListener, tree);
+
         if ( arg != "") {
             String sum = "";
             try {
@@ -96,12 +99,10 @@ public class JDBCProcessor implements IProcessor {
             }
         }
 
+        walker.walk(sqLiteSootListener, tree);
+
         for (TableContent i : TableBank.getTables()) {
             i.testPrint();
-            for (int j = 0; j < i.getQueryCount(); j++) {
-                System.out.println(i.getQuery(j));
-                System.out.println(i.getWheres(j));
-            }
         }
 
         //add required imports to Scene

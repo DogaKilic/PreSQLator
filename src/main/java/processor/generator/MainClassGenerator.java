@@ -176,7 +176,6 @@ public class MainClassGenerator extends ClassGenerator {
                     }
 
                     else if ((queryData[0]).equals("select")){
-                        System.out.println(methodContent);
                         int tableIndex = 0;
                         String result = "";
                         if(queryData[1] == "*"){

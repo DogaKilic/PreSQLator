@@ -1,15 +1,18 @@
+
+
 import java.sql.*;
 import java.util.LinkedList;
 
+
 public class Scratch {
-    public static LinkedList<String> theList = new LinkedList<>();
+
     public static int secretId = 1;
     public static String secretName = "Hans";
     //public static HelloWorld helloWorld = new HelloWorld();
 
+
     public static void main(String[] args) {
         try {
-            theList.add("asb");
             // create a database connection
             Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
             Statement statement = connection.createStatement();
@@ -31,6 +34,7 @@ public class Scratch {
             ResultSet rs = select.executeQuery();
             while (rs.next()) {
                 System.out.println("name = " + rs.getString("name") + dogRs1.getString("name") + dogRs2.getString("name"));
+                System.out.println("Hello World!");
             }
         } catch (SQLException e) {
         }

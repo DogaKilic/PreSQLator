@@ -49,9 +49,17 @@ public class SQLiteSootListener extends SQLiteParserBaseListener {
                     whereResults.add(selectCores.get(i).expr(k).getText());
             }
             TableBank.addPreparedSelectQuery(tableName, currentResults);
-            TableBank.addWhereResults(tableName, whereResults);
+            TableBank.addSelectWhereResults(tableName, whereResults);
             currentResults.clear();
             whereResults.clear();
         }
+    }
+
+    @Override
+    public void enterDelete_stmt(SQLiteParser.Delete_stmtContext ctx) {
+        String tableName = ctx.qualified_table_name().getText();
+        String whereResult = ctx.expr().getText();
+        TableBank.addPreparedDelete(tableName, whereResult);
+
     }
 }

@@ -125,11 +125,11 @@ public class ConnectionClassGenerator extends ClassGenerator {
         cnt = 0;
         int nmb = 0;
             for (TableContent i : contents) {
-                for (int j = 0; j < i.getWheresSize(); j++) {
+                for (int j = 0; j < i.getSelectWheresSize(); j++) {
 
-                    ArrayList<String> where = i.getWheres(j);
-                    String query = i.getQuery(j);
-                    SootMethod select = new SootMethod(i.getTableName() + "SelectStatement" + j,  null, RefType.v("Iterator<" + rowClassNames.get(cnt) + ">"), Modifier.PUBLIC);
+                    ArrayList<String> where = i.getSelectWheres(j);
+                    String query = i.getSelect(j);
+                    SootMethod select = new SootMethod(i.getTableName() + "SelectStatement" + j, null, RefType.v("Iterator<" + rowClassNames.get(cnt) + ">"), Modifier.PUBLIC);
                     connectionClass.addMethod(select);
                     JimpleBody selectBody = Jimple.v().newBody(select);
                     select.setActiveBody(selectBody);
@@ -143,159 +143,149 @@ public class ConnectionClassGenerator extends ClassGenerator {
                     selectBody.getLocals().add(tableList);
                     selectUnits.add(Jimple.v().newAssignStmt(table, Jimple.v().newInstanceFieldRef(selectRef, connectionClass.getFieldByName(i.getTableName() + "Table").makeRef())));
                     selectUnits.add(Jimple.v().newAssignStmt(tableList, Jimple.v().newInstanceFieldRef(table, Scene.v().getSootClass(tableClassNames.get(cnt)).getFields().getFirst().makeRef())));
-                    if (where.isEmpty()){
-                            SootMethod toCall = Scene.v().getSootClass("java.util.ArrayList").getMethodByName("iterator");
-                            Local iterator = Jimple.v().newLocal("iterator" + nmb, RefType.v("Iterator"));
-                            selectBody.getLocals().add(iterator);
-                            selectUnits.add(Jimple.v().newAssignStmt(iterator, Jimple.v().newVirtualInvokeExpr(tableList, toCall.makeRef())));
-                            selectUnits.add(Jimple.v().newReturnStmt(iterator));
-                    }
-                    else {
+                    if (where.isEmpty()) {
+                        SootMethod toCall = Scene.v().getSootClass("java.util.ArrayList").getMethodByName("iterator");
+                        Local iterator = Jimple.v().newLocal("iterator" + nmb, RefType.v("Iterator"));
+                        selectBody.getLocals().add(iterator);
+                        selectUnits.add(Jimple.v().newAssignStmt(iterator, Jimple.v().newVirtualInvokeExpr(tableList, toCall.makeRef())));
+                        selectUnits.add(Jimple.v().newReturnStmt(iterator));
+                    } else {
                         String current = where.get(0);
                         String[] data;
-                            SootClass predicateClass = new SootClass(rowClassNames.get(cnt) + "Predicate" + j);
-                            predicateClass.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
-                            predicateClass.addInterface(Scene.v().getSootClass("java.util.function.Predicate"));
-                            Scene.v().addClass(predicateClass);
-                            ArrayList<Type> types = new ArrayList<>();
-                            types.add(RefType.v("util.Row"));
-                            SootMethod test = new SootMethod("test", types, BooleanType.v(), Modifier.PUBLIC);
-                            predicateClass.addMethod(test);
-                            JimpleBody testBody = Jimple.v().newBody(test);
-                            test.setActiveBody(testBody);
-                            Chain testUnits = testBody.getUnits();
-                            Local rowLocal = Jimple.v().newLocal("row", RefType.v("util.Row"));
-                            testBody.getLocals().add(rowLocal);
-                            testUnits.add(Jimple.v().newIdentityStmt(rowLocal, Jimple.v().newParameterRef(RefType.v("util.row"), 0)));
+                        SootClass predicateClass = new SootClass(rowClassNames.get(cnt) + "SelectPredicate" + j);
+                        predicateClass.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
+                        predicateClass.addInterface(Scene.v().getSootClass("java.util.function.Predicate"));
+                        Scene.v().addClass(predicateClass);
+                        ArrayList<Type> types = new ArrayList<>();
+                        types.add(RefType.v("util.Row"));
+                        SootMethod test = new SootMethod("test", types, BooleanType.v(), Modifier.PUBLIC);
+                        predicateClass.addMethod(test);
+                        JimpleBody testBody = Jimple.v().newBody(test);
+                        test.setActiveBody(testBody);
+                        Chain testUnits = testBody.getUnits();
+                        Local rowLocal = Jimple.v().newLocal("row", RefType.v("util.Row"));
+                        testBody.getLocals().add(rowLocal);
+                        testUnits.add(Jimple.v().newIdentityStmt(rowLocal, Jimple.v().newParameterRef(RefType.v("util.row"), 0)));
 
-                                if (current.contains("=") || current.contains("!=")) {
-                                    boolean neq = current.contains("!=");
-                                    String equals;
-                                    int paramNumb = 0;
-                                    int temp = 0;
-                                    if (!neq) {
-                                        data = current.split("=");
-                                    }
-                                    else {
-                                        data = current.split("!=");
-                                    }
-                                    for(String[] content : TableBank.getColumnContent(rowClassNames.get(cnt).split("Row")[0].toLowerCase())) {
-                                        if(data[0].equals(content[0])){
-                                            paramNumb = temp;
-                                            break;
-                                        }
-                                        temp++;
-                                    }
-                                    if (data[1].contains("\'")) {
-                                        equals = data[1].replaceAll("\'", "");
-                                    }
-                                    else{
-                                        equals = data[1];
-                                    }
-                                    int finalParamNumb = paramNumb;
-                                    Local get = Jimple.v().newLocal("get", RefType.v("java.lang.String"));
-                                    testBody.getLocals().add(get);
-                                    SootMethod toCall = Scene.v().getSootClass("util.Row").getMethodByName("getParameter");
-                                    testUnits.add(Jimple.v().newAssignStmt(get, Jimple.v().newVirtualInvokeExpr(rowLocal, toCall.makeRef(), IntConstant.v(finalParamNumb))));
-                                    SootMethod equalsToCall = Scene.v().getSootClass("java.lang.Object").getMethodByName("equals");
-                                    Local boolLocal = Jimple.v().newLocal("bool", BooleanType.v());
-                                    testBody.getLocals().add(boolLocal);
-                                    testUnits.add(Jimple.v().newAssignStmt(boolLocal, Jimple.v().newVirtualInvokeExpr(get, equalsToCall.makeRef(), StringConstant.v(equals))));
-
-                                        if (!neq) {
-                                            testUnits.add(Jimple.v().newReturnStmt(boolLocal));
-                                        } else {
-                                            ArrayList<Value> boolParms = new ArrayList<>();
-                                            SootMethod v = Scene.v().getSootClass("java.lang.Boolean").getMethodByName("logicalXor");
-                                            boolParms.add(boolLocal);
-                                            Local one = Jimple.v().newLocal("one", BooleanType.v());
-                                            testBody.getLocals().add(one);
-                                            testUnits.add(Jimple.v().newAssignStmt(one, IntConstant.v(1)));
-                                            boolParms.add(one);
-                                            testUnits.add(Jimple.v().newAssignStmt(boolLocal, Jimple.v().newStaticInvokeExpr(v.makeRef(), boolParms)));
-                                            testUnits.add(Jimple.v().newReturnStmt(boolLocal));
-                                        }
-
+                        if (current.contains("=") || current.contains("!=")) {
+                            boolean neq = current.contains("!=");
+                            String equals;
+                            int paramNumb = 0;
+                            int temp = 0;
+                            if (!neq) {
+                                data = current.split("=");
+                            } else {
+                                data = current.split("!=");
+                            }
+                            for (String[] content : TableBank.getColumnContent(rowClassNames.get(cnt).split("Row")[0].toLowerCase())) {
+                                if (data[0].equals(content[0])) {
+                                    paramNumb = temp;
+                                    break;
                                 }
-                                else if (current.contains("<") || current.contains(">")) {
-                                    int type;
-                                    if (current.contains("<")){
-                                        if (current.contains("<=")) {
-                                            type = 0;
-                                            data = current.split("<=");
-                                        }
-                                        else{
-                                            type = 1;
-                                            data = current.split("<");
-                                        }
-                                    }
-                                    else {
-                                        if (current.contains(">=")) {
-                                            type = 2;
-                                            data = current.split(">=");
-                                        }
-                                        else {
-                                            type = 3;
-                                            data = current.split(">");
-                                        }
-                                    }
-                                    int paramNumb = 0;
-                                    int temp = 0;
-                                    for(String[] content : TableBank.getColumnContent(rowClassNames.get(cnt).split("Row")[0].toLowerCase())) {
-                                        if(data[0].equals(content[0])){
-                                            paramNumb = temp;
-                                            break;
-                                        }
-                                        temp++;
-                                    }
-                                    String equals = data[1];
-                                    int finalParamNumb = paramNumb;
-                                    Local get = Jimple.v().newLocal("get", RefType.v("java.lang.String"));
-                                    testBody.getLocals().add(get);
-                                    SootMethod toCall = Scene.v().getSootClass("util.Row").getMethodByName("getParameter");
-                                    testUnits.add(Jimple.v().newAssignStmt(get, Jimple.v().newVirtualInvokeExpr(rowLocal, toCall.makeRef(), IntConstant.v(finalParamNumb))));
-                                    Local boolLocal = Jimple.v().newLocal("bool", BooleanType.v());
-                                    testBody.getLocals().add(boolLocal);
-                                    Local intLocal = Jimple.v().newLocal("intLoc", IntType.v());
-                                    testBody.getLocals().add(intLocal);
-                                    ArrayList<Local> tempList = new ArrayList<>();
-                                    tempList.add(get);
-                                    ArrayList<Type> tempTypes = new ArrayList<>();
-                                    tempTypes.add(RefType.v("java.lang.String"));
-                                    testUnits.add(Jimple.v().newAssignStmt(intLocal, Jimple.v().newStaticInvokeExpr(Scene.v().getSootClass("java.lang.Integer").getMethod("valueOf", tempTypes).makeRef(), tempList)));
-                                    Local equalsInt = Jimple.v().newLocal("equalsInt", IntType.v());
-                                    testBody.getLocals().add(equalsInt);
-                                    testUnits.add(Jimple.v().newAssignStmt(equalsInt,IntConstant.v(Integer.valueOf(equals))));
-                                    Unit end = Jimple.v().newReturnStmt(boolLocal);
-                                    Unit un = Jimple.v().newAssignStmt(boolLocal, IntConstant.v(1));
-                                    Unit un2 = Jimple.v().newAssignStmt(boolLocal, IntConstant.v(0));
-                                    UnitBox box = Jimple.v().newStmtBox(un);
-                                    Unit gotoUn = Jimple.v().newGotoStmt(end);
-                                    testUnits.add(un2);
+                                temp++;
+                            }
+                            if (data[1].contains("\'")) {
+                                equals = data[1].replaceAll("\'", "");
+                            } else {
+                                equals = data[1];
+                            }
+                            int finalParamNumb = paramNumb;
+                            Local get = Jimple.v().newLocal("get", RefType.v("java.lang.String"));
+                            testBody.getLocals().add(get);
+                            SootMethod toCall = Scene.v().getSootClass("util.Row").getMethodByName("getParameter");
+                            testUnits.add(Jimple.v().newAssignStmt(get, Jimple.v().newVirtualInvokeExpr(rowLocal, toCall.makeRef(), IntConstant.v(finalParamNumb))));
+                            SootMethod equalsToCall = Scene.v().getSootClass("java.lang.Object").getMethodByName("equals");
+                            Local boolLocal = Jimple.v().newLocal("bool", BooleanType.v());
+                            testBody.getLocals().add(boolLocal);
+                            testUnits.add(Jimple.v().newAssignStmt(boolLocal, Jimple.v().newVirtualInvokeExpr(get, equalsToCall.makeRef(), StringConstant.v(equals))));
 
-                                    if (type == 0){
-                                        testUnits.add(Jimple.v().newIfStmt(Jimple.v().newLeExpr(intLocal,equalsInt), box));
-                                        //afterWhere = afterWhere.filter(x -> ((int) x.getParameter(finalParamNumb)) <= Integer.valueOf(data[1]));
-                                    }
-                                    else if (type == 1) {
+                            if (!neq) {
+                                testUnits.add(Jimple.v().newReturnStmt(boolLocal));
+                            } else {
+                                ArrayList<Value> boolParms = new ArrayList<>();
+                                SootMethod v = Scene.v().getSootClass("java.lang.Boolean").getMethodByName("logicalXor");
+                                boolParms.add(boolLocal);
+                                Local one = Jimple.v().newLocal("one", BooleanType.v());
+                                testBody.getLocals().add(one);
+                                testUnits.add(Jimple.v().newAssignStmt(one, IntConstant.v(1)));
+                                boolParms.add(one);
+                                testUnits.add(Jimple.v().newAssignStmt(boolLocal, Jimple.v().newStaticInvokeExpr(v.makeRef(), boolParms)));
+                                testUnits.add(Jimple.v().newReturnStmt(boolLocal));
+                            }
 
-                                        testUnits.add(Jimple.v().newIfStmt(Jimple.v().newLtExpr(intLocal,equalsInt), box));
-
-                                    }
-                                    else if (type == 2) {
-                                        testUnits.add(Jimple.v().newIfStmt(Jimple.v().newGeExpr(intLocal,equalsInt), box));
-                                        //afterWhere = afterWhere.filter(x -> ((int) x.getParameter(finalParamNumb)) >= Integer.valueOf(data[1]));
-                                    }
-                                    else {
-                                        testUnits.add(Jimple.v().newIfStmt(Jimple.v().newGtExpr(intLocal,equalsInt), box));
-                                        //afterWhere = afterWhere.filter(x -> ((int) x.getParameter(finalParamNumb)) > Integer.valueOf(data[1]));
-                                    }
-                                    testUnits.add(gotoUn);
-                                    testUnits.add(un);
-                                    testUnits.add(end);
+                        } else if (current.contains("<") || current.contains(">")) {
+                            int type;
+                            if (current.contains("<")) {
+                                if (current.contains("<=")) {
+                                    type = 0;
+                                    data = current.split("<=");
+                                } else {
+                                    type = 1;
+                                    data = current.split("<");
                                 }
-                            predicateClass.validate();
-                            ClassWriter.writeAsClassFile(predicateClass);
+                            } else {
+                                if (current.contains(">=")) {
+                                    type = 2;
+                                    data = current.split(">=");
+                                } else {
+                                    type = 3;
+                                    data = current.split(">");
+                                }
+                            }
+                            int paramNumb = 0;
+                            int temp = 0;
+                            for (String[] content : TableBank.getColumnContent(rowClassNames.get(cnt).split("Row")[0].toLowerCase())) {
+                                if (data[0].equals(content[0])) {
+                                    paramNumb = temp;
+                                    break;
+                                }
+                                temp++;
+                            }
+                            String equals = data[1];
+                            int finalParamNumb = paramNumb;
+                            Local get = Jimple.v().newLocal("get", RefType.v("java.lang.String"));
+                            testBody.getLocals().add(get);
+                            SootMethod toCall = Scene.v().getSootClass("util.Row").getMethodByName("getParameter");
+                            testUnits.add(Jimple.v().newAssignStmt(get, Jimple.v().newVirtualInvokeExpr(rowLocal, toCall.makeRef(), IntConstant.v(finalParamNumb))));
+                            Local boolLocal = Jimple.v().newLocal("bool", BooleanType.v());
+                            testBody.getLocals().add(boolLocal);
+                            Local intLocal = Jimple.v().newLocal("intLoc", IntType.v());
+                            testBody.getLocals().add(intLocal);
+                            ArrayList<Local> tempList = new ArrayList<>();
+                            tempList.add(get);
+                            ArrayList<Type> tempTypes = new ArrayList<>();
+                            tempTypes.add(RefType.v("java.lang.String"));
+                            testUnits.add(Jimple.v().newAssignStmt(intLocal, Jimple.v().newStaticInvokeExpr(Scene.v().getSootClass("java.lang.Integer").getMethod("valueOf", tempTypes).makeRef(), tempList)));
+                            Local equalsInt = Jimple.v().newLocal("equalsInt", IntType.v());
+                            testBody.getLocals().add(equalsInt);
+                            testUnits.add(Jimple.v().newAssignStmt(equalsInt, IntConstant.v(Integer.valueOf(equals))));
+                            Unit end = Jimple.v().newReturnStmt(boolLocal);
+                            Unit un = Jimple.v().newAssignStmt(boolLocal, IntConstant.v(1));
+                            Unit un2 = Jimple.v().newAssignStmt(boolLocal, IntConstant.v(0));
+                            UnitBox box = Jimple.v().newStmtBox(un);
+                            Unit gotoUn = Jimple.v().newGotoStmt(end);
+                            testUnits.add(un2);
+
+                            if (type == 0) {
+                                testUnits.add(Jimple.v().newIfStmt(Jimple.v().newLeExpr(intLocal, equalsInt), box));
+                                //afterWhere = afterWhere.filter(x -> ((int) x.getParameter(finalParamNumb)) <= Integer.valueOf(data[1]));
+                            } else if (type == 1) {
+
+                                testUnits.add(Jimple.v().newIfStmt(Jimple.v().newLtExpr(intLocal, equalsInt), box));
+
+                            } else if (type == 2) {
+                                testUnits.add(Jimple.v().newIfStmt(Jimple.v().newGeExpr(intLocal, equalsInt), box));
+                                //afterWhere = afterWhere.filter(x -> ((int) x.getParameter(finalParamNumb)) >= Integer.valueOf(data[1]));
+                            } else {
+                                testUnits.add(Jimple.v().newIfStmt(Jimple.v().newGtExpr(intLocal, equalsInt), box));
+                                //afterWhere = afterWhere.filter(x -> ((int) x.getParameter(finalParamNumb)) > Integer.valueOf(data[1]));
+                            }
+                            testUnits.add(gotoUn);
+                            testUnits.add(un);
+                            testUnits.add(end);
+                        }
+                        predicateClass.validate();
+                        ClassWriter.writeAsClassFile(predicateClass);
                         SootMethod toCallStream = Scene.v().getSootClass("java.util.Collection").getMethodByName("stream");
                         Local stream = Jimple.v().newLocal("stream" + nmb, RefType.v("java.util.stream.Stream"));
                         selectBody.getLocals().add(stream);
@@ -309,16 +299,182 @@ public class ConnectionClassGenerator extends ClassGenerator {
                         ArrayList<Local> filterList = new ArrayList<>();
                         filterList.add(filterParam);
                         selectUnits.add(Jimple.v().newAssignStmt(newStream, Jimple.v().newInterfaceInvokeExpr(stream, toCallFilter.makeRef(), filterList)));
-                        Local iterator = Jimple.v().newLocal("iterator"+ nmb, RefType.v("java.util.Iterator"));
+                        Local iterator = Jimple.v().newLocal("iterator" + nmb, RefType.v("java.util.Iterator"));
                         selectBody.getLocals().add(iterator);
                         SootMethod toCallIterator = Scene.v().getSootClass("java.util.stream.BaseStream").getMethodByName("iterator");
                         selectUnits.add(Jimple.v().newAssignStmt(iterator, Jimple.v().newInterfaceInvokeExpr(newStream, toCallIterator.makeRef())));
                         selectUnits.add(Jimple.v().newReturnStmt(iterator));
                     }
-                        }
-
+                }
             cnt++;
-        }
+            }
+
+            cnt = 0;
+            for (TableContent i : contents) {
+                for(int j = 0;j < i.getDeleteWheresSize(); j++) {
+                    String where = i.getDeleteWhere(j);
+                    SootMethod delete = new SootMethod(i.getTableName() + "DeleteStatement" + j, null, VoidType.v(), Modifier.PUBLIC);
+                    connectionClass.addMethod(delete);
+                    JimpleBody deleteBody = Jimple.v().newBody(delete);
+                    delete.setActiveBody(deleteBody);
+                    Chain deleteUnits = deleteBody.getUnits();
+                    Local deleteRef = Jimple.v().newLocal("thisRef" + nmb, connectionClass.getType());
+                    deleteBody.getLocals().add(deleteRef);
+                    deleteUnits.add(Jimple.v().newIdentityStmt(deleteRef, Jimple.v().newThisRef(connectionClass.getType())));
+                    Local table = Jimple.v().newLocal("table" + nmb, RefType.v(tableClassNames.get(cnt)));
+                    deleteBody.getLocals().add(table);
+                    Local tableList = Jimple.v().newLocal("tableClass" + nmb, RefType.v("ArrayList<>"));
+                    deleteBody.getLocals().add(tableList);
+                    deleteUnits.add(Jimple.v().newAssignStmt(table, Jimple.v().newInstanceFieldRef(deleteRef, connectionClass.getFieldByName(i.getTableName() + "Table").makeRef())));
+                    deleteUnits.add(Jimple.v().newAssignStmt(tableList, Jimple.v().newInstanceFieldRef(table, Scene.v().getSootClass(tableClassNames.get(cnt)).getFields().getFirst().makeRef())));
+
+                        String[] data;
+                        SootClass predicateClass = new SootClass(rowClassNames.get(cnt) + "DeletePredicate" + j);
+                        predicateClass.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
+                        predicateClass.addInterface(Scene.v().getSootClass("java.util.function.Predicate"));
+                        Scene.v().addClass(predicateClass);
+                        ArrayList<Type> types = new ArrayList<>();
+                        types.add(RefType.v("util.Row"));
+                        SootMethod test = new SootMethod("test", types, BooleanType.v(), Modifier.PUBLIC);
+                        predicateClass.addMethod(test);
+                        JimpleBody testBody = Jimple.v().newBody(test);
+                        test.setActiveBody(testBody);
+                        Chain testUnits = testBody.getUnits();
+                        Local rowLocal = Jimple.v().newLocal("row", RefType.v("util.Row"));
+                        testBody.getLocals().add(rowLocal);
+                        testUnits.add(Jimple.v().newIdentityStmt(rowLocal, Jimple.v().newParameterRef(RefType.v("util.row"), 0)));
+
+                        if (where.contains("=") || where.contains("!=")) {
+                            boolean neq = where.contains("!=");
+                            String equals;
+                            int paramNumb = 0;
+                            int temp = 0;
+                            if (!neq) {
+                                data = where.split("=");
+                            } else {
+                                data = where.split("!=");
+                            }
+                            for (String[] content : TableBank.getColumnContent(rowClassNames.get(cnt).split("Row")[0].toLowerCase())) {
+                                if (data[0].equals(content[0])) {
+                                    paramNumb = temp;
+                                    break;
+                                }
+                                temp++;
+                            }
+                            if (data[1].contains("\'")) {
+                                equals = data[1].replaceAll("\'", "");
+                            } else {
+                                equals = data[1];
+                            }
+                            int finalParamNumb = paramNumb;
+                            Local get = Jimple.v().newLocal("get", RefType.v("java.lang.String"));
+                            testBody.getLocals().add(get);
+                            SootMethod toCall = Scene.v().getSootClass("util.Row").getMethodByName("getParameter");
+                            testUnits.add(Jimple.v().newAssignStmt(get, Jimple.v().newVirtualInvokeExpr(rowLocal, toCall.makeRef(), IntConstant.v(finalParamNumb))));
+                            SootMethod equalsToCall = Scene.v().getSootClass("java.lang.Object").getMethodByName("equals");
+                            Local boolLocal = Jimple.v().newLocal("bool", BooleanType.v());
+                            testBody.getLocals().add(boolLocal);
+                            testUnits.add(Jimple.v().newAssignStmt(boolLocal, Jimple.v().newVirtualInvokeExpr(get, equalsToCall.makeRef(), StringConstant.v(equals))));
+
+                            if (!neq) {
+                                testUnits.add(Jimple.v().newReturnStmt(boolLocal));
+                            } else {
+                                ArrayList<Value> boolParms = new ArrayList<>();
+                                SootMethod v = Scene.v().getSootClass("java.lang.Boolean").getMethodByName("logicalXor");
+                                boolParms.add(boolLocal);
+                                Local one = Jimple.v().newLocal("one", BooleanType.v());
+                                testBody.getLocals().add(one);
+                                testUnits.add(Jimple.v().newAssignStmt(one, IntConstant.v(1)));
+                                boolParms.add(one);
+                                testUnits.add(Jimple.v().newAssignStmt(boolLocal, Jimple.v().newStaticInvokeExpr(v.makeRef(), boolParms)));
+                                testUnits.add(Jimple.v().newReturnStmt(boolLocal));
+                            }
+
+                        } else if (where.contains("<") || where.contains(">")) {
+                            int type;
+                            if (where.contains("<")) {
+                                if (where.contains("<=")) {
+                                    type = 0;
+                                    data = where.split("<=");
+                                } else {
+                                    type = 1;
+                                    data = where.split("<");
+                                }
+                            } else {
+                                if (where.contains(">=")) {
+                                    type = 2;
+                                    data = where.split(">=");
+                                } else {
+                                    type = 3;
+                                    data = where.split(">");
+                                }
+                            }
+                            int paramNumb = 0;
+                            int temp = 0;
+                            for (String[] content : TableBank.getColumnContent(rowClassNames.get(cnt).split("Row")[0].toLowerCase())) {
+                                if (data[0].equals(content[0])) {
+                                    paramNumb = temp;
+                                    break;
+                                }
+                                temp++;
+                            }
+                            String equals = data[1];
+                            int finalParamNumb = paramNumb;
+                            Local get = Jimple.v().newLocal("get", RefType.v("java.lang.String"));
+                            testBody.getLocals().add(get);
+                            SootMethod toCall = Scene.v().getSootClass("util.Row").getMethodByName("getParameter");
+                            testUnits.add(Jimple.v().newAssignStmt(get, Jimple.v().newVirtualInvokeExpr(rowLocal, toCall.makeRef(), IntConstant.v(finalParamNumb))));
+                            Local boolLocal = Jimple.v().newLocal("bool", BooleanType.v());
+                            testBody.getLocals().add(boolLocal);
+                            Local intLocal = Jimple.v().newLocal("intLoc", IntType.v());
+                            testBody.getLocals().add(intLocal);
+                            ArrayList<Local> tempList = new ArrayList<>();
+                            tempList.add(get);
+                            ArrayList<Type> tempTypes = new ArrayList<>();
+                            tempTypes.add(RefType.v("java.lang.String"));
+                            testUnits.add(Jimple.v().newAssignStmt(intLocal, Jimple.v().newStaticInvokeExpr(Scene.v().getSootClass("java.lang.Integer").getMethod("valueOf", tempTypes).makeRef(), tempList)));
+                            Local equalsInt = Jimple.v().newLocal("equalsInt", IntType.v());
+                            testBody.getLocals().add(equalsInt);
+                            testUnits.add(Jimple.v().newAssignStmt(equalsInt, IntConstant.v(Integer.valueOf(equals))));
+                            Unit end = Jimple.v().newReturnStmt(boolLocal);
+                            Unit un = Jimple.v().newAssignStmt(boolLocal, IntConstant.v(1));
+                            Unit un2 = Jimple.v().newAssignStmt(boolLocal, IntConstant.v(0));
+                            UnitBox box = Jimple.v().newStmtBox(un);
+                            Unit gotoUn = Jimple.v().newGotoStmt(end);
+                            testUnits.add(un2);
+
+                            if (type == 0) {
+                                testUnits.add(Jimple.v().newIfStmt(Jimple.v().newLeExpr(intLocal, equalsInt), box));
+                                //afterWhere = afterWhere.filter(x -> ((int) x.getParameter(finalParamNumb)) <= Integer.valueOf(data[1]));
+                            } else if (type == 1) {
+
+                                testUnits.add(Jimple.v().newIfStmt(Jimple.v().newLtExpr(intLocal, equalsInt), box));
+
+                            } else if (type == 2) {
+                                testUnits.add(Jimple.v().newIfStmt(Jimple.v().newGeExpr(intLocal, equalsInt), box));
+                                //afterWhere = afterWhere.filter(x -> ((int) x.getParameter(finalParamNumb)) >= Integer.valueOf(data[1]));
+                            } else {
+                                testUnits.add(Jimple.v().newIfStmt(Jimple.v().newGtExpr(intLocal, equalsInt), box));
+                                //afterWhere = afterWhere.filter(x -> ((int) x.getParameter(finalParamNumb)) > Integer.valueOf(data[1]));
+                            }
+                            testUnits.add(gotoUn);
+                            testUnits.add(un);
+                            testUnits.add(end);
+                        }
+                        predicateClass.validate();
+                        ClassWriter.writeAsClassFile(predicateClass);
+
+                        SootMethod toCallStream = Scene.v().getSootClass("java.util.Collection").getMethodByName("removeIf");
+                        Local filterParam = Jimple.v().newLocal("filterParm", RefType.v(predicateClass));
+                        deleteBody.getLocals().add(filterParam);
+                        deleteUnits.add(Jimple.v().newAssignStmt(filterParam, Jimple.v().newNewExpr(RefType.v(predicateClass))));
+                        ArrayList<Local> filterList = new ArrayList<>();
+                        filterList.add(filterParam);
+                        deleteUnits.add(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(tableList, toCallStream.makeRef(), filterList)));
+                        deleteUnits.add(Jimple.v().newReturnVoidStmt());
+                }
+                cnt++;
+            }
 
 
         units.add(Jimple.v().newReturnVoidStmt());

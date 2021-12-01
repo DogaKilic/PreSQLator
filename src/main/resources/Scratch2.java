@@ -16,7 +16,7 @@ public class Scratch2 {
     private boolean connectDatabase() {
         c = null;
         try {
-            this.c = DriverManager
+            c = DriverManager
                     .getConnection("jdbc:postgresql://" + HOST + ":" + PORT + "/" + DB_NAME, USER, PASSWORD);
         } catch (Exception e) {
             e.printStackTrace();

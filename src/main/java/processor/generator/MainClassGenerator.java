@@ -26,6 +26,8 @@ public class MainClassGenerator extends ClassGenerator {
         Scene.v().addClass(processedClass);
 
         List<SootMethod> methodList = oldClass.getMethods();
+        List<String> oldMethods;
+        System.out.println(oldClass.getMethods());
         for(SootField field : oldClass.getFields()){
             field.setDeclared(false);
             if (field.getType().toString().equals("java.sql.Connection")){
@@ -34,6 +36,7 @@ public class MainClassGenerator extends ClassGenerator {
             processedClass.addField(field);
             field.setDeclared(true);
         }
+
 
         for (SootMethod method : methodList) {
             if (method.getReturnType().equals(Scene.v().getRefType("java.sql.ResultSet"))){
@@ -84,7 +87,7 @@ public class MainClassGenerator extends ClassGenerator {
 
 
         for(SootMethod method : methodList) {
-
+            System.out.println(method.getName());
             ArrayList<InsertStatement> insertStatements = new ArrayList<>();
             ArrayList<SelectStatement> selectStatements = new ArrayList<>();
             ArrayList<String[]> staticToBeReplaced = new ArrayList<>();
@@ -114,9 +117,26 @@ public class MainClassGenerator extends ClassGenerator {
                 method.setReturnType(Scene.v().getRefType("java.util.Iterator"));
             }
 
+            if (activeBody.getLocals().stream().filter(x -> x.getType().equals(oldClass.getType())).findFirst().isPresent()
+                    || activeBody.getLocals().stream().filter(x -> x.getType().equals(Scene.v().getRefType("java.sql.Connection"))).findFirst().isPresent()) {
+                Iterator<Local> localIterator = activeBody.getLocals().iterator();
+                while (localIterator.hasNext()) {
+                    Local local = localIterator.next();
+                    if (local.getType().equals(oldClass.getType())) {
+                        local.setType(processedClass.getType());
+                    }
+                    if (local.getType().equals(Scene.v().getRefType("java.sql.Connection"))) {
+                        local.setType(Scene.v().getRefType("Connection"));
+                    }
+                }
+            }
+             boolean skipNext = false;
+
              while (unitIterator.hasNext()) {
+
                  Unit unit = unitIterator.next();
                  String methodContent = unit.toString();
+
 
 
                 if (processedRsMethods.stream().filter(x -> methodContent.contains(x)).findFirst().isPresent()) {
@@ -139,7 +159,7 @@ public class MainClassGenerator extends ClassGenerator {
 
                  if (methodContent.contains("goto")) {}
 
-                else if (method.getName().equals("<init>")) {
+                else if (!methodContent.contains("java.sql.Connection getConnection") && method.getName().equals("<init>")) {
 
                     if (unit.equals(activeBody.getThisUnit())) {
                         toRemove.add(unit);
@@ -257,87 +277,107 @@ public class MainClassGenerator extends ClassGenerator {
                 }
 
                 else if (methodContent.contains("<" + oldClass.getName() + ":")) {
-                    if (methodContent.split("=")[1].contains("java.sql.Connection") && connectionLocal == null) {
-                        String temp = methodContent.split(" =")[0];
-                        Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(temp)).findFirst().get();
-                        connectionLocal = assigned;
-                    }
-                    if (methodContent.split("=")[1].contains("<" + oldClass.getName() + ":")) {
-                        if (methodContent.split("<")[0].contains(".")){
-                            String assignedLocal = methodContent.split(" =")[0];
-                            String fieldLocal;
-                            String field;
-                            if(methodContent.contains("virtualinvoke") || methodContent.contains("specialinvoke")) {
-                                MFieldStatement statement = null;
-                                fieldLocal = methodContent.split(" ")[3].split("\\.")[0];
-                                field = methodContent.split(" ")[5].split("\\(")[0];
-                                if (methodContent.contains("specialinvoke")) {
-
-                                    statement = new MFieldStatement(assignedLocal, field, 3);
-                                }
-                                else if(methodContent.contains("virtualinvoke")) {
-                                    statement = new MFieldStatement(assignedLocal, field, 5);
-                                }
-                                if (methodContent.split(">\\(").length > 1 && !methodContent.split(">\\(")[1].equals(")")) {
-                                    String[] content = methodContent.split(">\\(")[1].split("\\)")[0].split(",");
-                                    String[] types = methodContent.split("\\)>")[0].split("\\(")[1].split(",");
-                                    for(int i = 0; i < content.length; i++) {
-                                        String result = content[i].replaceAll(" ","");
-                                        Optional<Local> exists = activeBody.getLocals().stream().filter(x -> x.getName().equals(result)).findFirst();
-                                        if(exists.isPresent()) {
-                                            statement.addParameter((exists.get()));
-                                        }
-                                        else {
-                                            String temp = types[i].replaceAll(" ","");
-                                            switch (temp) {
-                                                case "int":
-                                                    statement.addParameter(IntConstant.v(Integer.parseInt(temp)));
-                                                    break;
-                                                case "java.lang.String":
-                                                    statement.addParameter(StringConstant.v(temp));
-                                                    break;
-                                            }
-                                        }
-
-                                    }
-                                }
-                                statement.setFieldLocal(fieldLocal);
-                                statement.setPred(unit);
-                                mFieldToBeReplaced.add(statement);
-                            }
-                            else {
-                                fieldLocal = methodContent.split(" ")[2].split("\\.")[0];
-                                field = methodContent.split(" ")[4].split(">")[0];
-                                MFieldStatement statement = new MFieldStatement(assignedLocal, field, 4);
-                                statement.setFieldLocal(fieldLocal);
-                                statement.setPred(unit);
-                                statement.setLocalType(methodContent.split(" ")[3]);
-                                mFieldToBeReplaced.add(statement);
-                            }
-                            toRemove.add(unit);
+                    boolean assignment = methodContent.contains("=");
+                        if (assignment && methodContent.split("=")[1].contains("java.sql.Connection") && connectionLocal == null) {
+                            String temp = methodContent.split(" =")[0];
+                            Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(temp)).findFirst().get();
+                            connectionLocal = assigned;
                         }
-                        else {
-                            String[] fieldAndAssignment = new String[3];
-                            fieldAndAssignment[0] = methodContent.split(" ")[4].replaceAll(">", "");
-                            fieldAndAssignment[1] = methodContent.split(" =")[0];
-                            fieldAndAssignment[2] = methodContent.split(" ")[3];
-                            MFieldStatement statement = new MFieldStatement(fieldAndAssignment[1], fieldAndAssignment[0], 1);
+                        if (!assignment || methodContent.split("=")[1].contains("<" + oldClass.getName() + ":")) {
+                            if (methodContent.split("<")[0].contains(".")) {
+                                String assignedLocal;
+                                if (assignment) {
+                                    assignedLocal = methodContent.split(" =")[0];
+                                }
+                                else { assignedLocal = "";}
+                                String fieldLocal;
+                                String field;
+                                if (methodContent.contains("virtualinvoke") || methodContent.contains("specialinvoke")) {
+                                    MFieldStatement statement = null;
+                                    if(assignment) {
+                                        fieldLocal = methodContent.split(" ")[3].split("\\.")[0];
+                                        field = methodContent.split(" ")[5].split("\\(")[0];
+                                    }
+                                    else {
+                                        fieldLocal = methodContent.split(" ")[1].split("\\.")[0];
+                                        field = methodContent.split(" ")[3].split("\\(")[0];
+                                    }
+                                    if (methodContent.contains("specialinvoke")) {
+
+                                        statement = new MFieldStatement(assignedLocal, field, 3);
+                                    } else if (methodContent.contains("virtualinvoke")) {
+                                        statement = new MFieldStatement(assignedLocal, field, 5);
+                                    }
+                                    if (methodContent.split(">\\(").length > 1 && !methodContent.split(">\\(")[1].equals(")")) {
+                                        String[] content = methodContent.split(">\\(")[1].split("\\)")[0].split(",");
+                                        String[] types = methodContent.split("\\)>")[0].split("\\(")[1].split(",");
+                                        for (int i = 0; i < content.length; i++) {
+                                            String result = content[i].replaceAll(" ", "");
+                                            Optional<Local> exists = activeBody.getLocals().stream().filter(x -> x.getName().equals(result)).findFirst();
+                                            if (exists.isPresent()) {
+                                                statement.addParameter((exists.get()));
+                                            } else {
+                                                String temp = types[i].replaceAll(" ", "");
+                                                switch (temp) {
+                                                    case "int":
+                                                        statement.addParameter(IntConstant.v(Integer.parseInt(result)));
+                                                        break;
+                                                    case "java.lang.String":
+                                                        statement.addParameter(StringConstant.v(result));
+                                                        break;
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                    statement.setFieldLocal(fieldLocal);
+                                    statement.setPred(unit);
+                                    mFieldToBeReplaced.add(statement);
+                                } else {
+                                    fieldLocal = methodContent.split(" ")[2].split("\\.")[0];
+                                    field = methodContent.split(" ")[4].split(">")[0];
+                                    MFieldStatement statement = new MFieldStatement(assignedLocal, field, 4);
+                                    statement.setFieldLocal(fieldLocal);
+                                    statement.setPred(unit);
+                                    statement.setLocalType(methodContent.split(" ")[3]);
+                                    mFieldToBeReplaced.add(statement);
+                                }
+                                toRemove.add(unit);
+                            } else {
+                                System.out.println(methodContent);
+                                String[] fieldAndAssignment = new String[3];
+                                fieldAndAssignment[0] = methodContent.split(" ")[4].replaceAll(">", "");
+                                fieldAndAssignment[1] = methodContent.split(" =")[0];
+                                fieldAndAssignment[2] = methodContent.split(" ")[3];
+                                MFieldStatement statement = new MFieldStatement(fieldAndAssignment[1], fieldAndAssignment[0], 1);
+                                statement.setPred(unit);
+                                mFieldToBeReplaced.add(statement);
+                                toRemove.add(unit);
+                            }
+                        } else if (methodContent.split("=")[0].contains("<" + oldClass.getName() + ":")) {
+                            String field = methodContent.split(" ")[2].replaceAll(">", "");
+                            MFieldStatement statement = new MFieldStatement("", field, 2);
+                            statement.setFieldLocal(methodContent.split("\\.")[0]);
+                            statement.setValueLocal(methodContent.split("= ")[1]);
+                            statement.setLocalType(methodContent.split(" ")[1]);
                             statement.setPred(unit);
                             mFieldToBeReplaced.add(statement);
                             toRemove.add(unit);
                         }
-                    }
-                    else if (methodContent.split("=")[0].contains("<" + oldClass.getName() + ":")) {
-                        String field = methodContent.split(" ")[2].replaceAll(">", "");
-                        MFieldStatement statement = new MFieldStatement("", field,2);
-                        statement.setFieldLocal(methodContent.split("\\.")[0]);
-                        statement.setValueLocal(methodContent.split("= ")[1]);
-                        statement.setLocalType(methodContent.split(" ")[1]);
+                }
+
+                else if (methodContent.contains(oldClass.getName())) {
+                    if(methodContent.contains("= new")) {
+                        String assigned = methodContent.split(" =")[0];
+                        MFieldStatement statement = new MFieldStatement(assigned, "", 6);
                         statement.setPred(unit);
                         mFieldToBeReplaced.add(statement);
                         toRemove.add(unit);
+                        toRemove.add(unitIterator.next());
+                        continue;
                     }
-                }
+
+                 }
 
                 else if (insertStatements.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
                     InsertStatement statement = insertStatements.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
@@ -414,7 +454,7 @@ public class MainClassGenerator extends ClassGenerator {
 
 
              if (connPred != null) {
-                 processConnection(connPred, units, activeBody, connLocal);
+                 processConnection(connPred, units, activeBody, connLocal, init, processedClass);
              }
 
              if (!mFieldToBeReplaced.isEmpty()) {
@@ -456,10 +496,13 @@ public class MainClassGenerator extends ClassGenerator {
 
             units.removeAll(toRemove);
              toRemove.clear();
+            method.setDeclaringClass(processedClass);
             processedClass.addMethod(method);
-            activeBody.validate();
             method.setDeclared(true);
+            activeBody.validate();
+
         }
+
 
 
         ClassWriter.writeAsClassFile(processedClass);
@@ -467,7 +510,7 @@ public class MainClassGenerator extends ClassGenerator {
 
     }
 
-    private void  processConnection(Unit pred, UnitPatchingChain units, Body activeBody, String connLocal) {
+    private void  processConnection(Unit pred, UnitPatchingChain units, Body activeBody, String connLocal, boolean init, SootClass processedClass) {
         ArrayList<Unit> newUnits = new ArrayList<>();
         Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(connLocal)).findFirst().get();
         assigned.setType(Scene.v().getRefType("Connection"));
@@ -475,6 +518,9 @@ public class MainClassGenerator extends ClassGenerator {
         SpecialInvokeExpr listInv = Jimple.v().newSpecialInvokeExpr(assigned, Scene.v().getSootClass("Connection").getMethod("<init>", new LinkedList<Type>()).makeRef());
         newUnits.add(Jimple.v().newInvokeStmt(listInv));
         connectionLocal = assigned;
+        if (init) {
+            newUnits.add(Jimple.v().newAssignStmt(Jimple.v().newInstanceFieldRef(activeBody.getThisLocal(), processedClass.getFieldByName("c").makeRef()), assigned));
+        }
 
         units.insertAfter(newUnits, pred);
     }
@@ -492,11 +538,13 @@ public class MainClassGenerator extends ClassGenerator {
         ArrayList<Unit> newUnits = new ArrayList<>();
         FieldRef fieldRef;
         if (statement.getType() == 1) {
+
             Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getAssignedLocal())).findFirst().get();
             fieldRef = Jimple.v().newStaticFieldRef((processedClass.getFieldByName(statement.getField()).makeRef()));
             newUnits.add(Jimple.v().newAssignStmt(assigned, fieldRef));
         }
         else if (statement.getType() == 2) {
+
             Local fieldLocal = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getFieldLocal())).findFirst().get();
             fieldRef = Jimple.v().newInstanceFieldRef(fieldLocal, processedClass.getFieldByName(statement.getField()).makeRef());
             if(activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getValueLocal())).findFirst().isPresent()) {
@@ -518,10 +566,15 @@ public class MainClassGenerator extends ClassGenerator {
             }
         }
         else if (statement.getType() == 3){
-            Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getAssignedLocal())).findFirst().get();
             Local fieldLocal = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getFieldLocal())).findFirst().get();
             SpecialInvokeExpr inv = Jimple.v().newSpecialInvokeExpr(fieldLocal, processedClass.getMethodByName(statement.getField()).makeRef());
-            newUnits.add(Jimple.v().newAssignStmt(assigned, inv));
+            if(statement.getAssignedLocal().equals("")) {
+                Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getAssignedLocal())).findFirst().get();
+                newUnits.add(Jimple.v().newAssignStmt(assigned, inv));
+            }
+            else {
+                newUnits.add(Jimple.v().newInvokeStmt(inv));
+            }
         }
 
         else if (statement.getType() == 4) {
@@ -535,10 +588,20 @@ public class MainClassGenerator extends ClassGenerator {
 
         }
         else if (statement.getType() == 5) {
-            Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getAssignedLocal())).findFirst().get();
             Local fieldLocal = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getFieldLocal())).findFirst().get();
             VirtualInvokeExpr inv = Jimple.v().newVirtualInvokeExpr(fieldLocal, processedClass.getMethodByName(statement.getField()).makeRef(), statement.getParameters());
-            newUnits.add(Jimple.v().newAssignStmt(assigned, inv));
+            if (!statement.getAssignedLocal().equals("")) {
+                Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getAssignedLocal())).findFirst().get();
+                newUnits.add(Jimple.v().newAssignStmt(assigned, inv));
+            }
+            else {
+                newUnits.add(Jimple.v().newInvokeStmt(inv));
+            }
+        }
+        else if (statement.getType() == 6) {
+            Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getAssignedLocal())).findFirst().get();
+            newUnits.add(Jimple.v().newAssignStmt(assigned, Jimple.v().newNewExpr(processedClass.getType())));
+            newUnits.add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(assigned, processedClass.getMethodByName(SootMethod.constructorName).makeRef())));
         }
         units.insertAfter(newUnits, statement.getPred());
     }

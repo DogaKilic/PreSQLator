@@ -81,10 +81,18 @@ public class TableBank {
         }
     }
 
-    public static void addWhereResults(String tableName, ArrayList<String> whereResults) {
+    public static void addSelectWhereResults(String tableName, ArrayList<String> whereResults) {
         for (TableContent i : tables) {
             if (i.getTableName().equals(tableName)) {
-                i.addWhere((ArrayList<String>) whereResults.clone());
+                i.addSelectWhere((ArrayList<String>) whereResults.clone());
+            }
+        }
+    }
+
+    public static void addPreparedDelete(String tableName, String where) {
+        for (TableContent i : tables) {
+            if( i.getTableName().equals(tableName)) {
+                i.addDeleteWhere(where);
             }
         }
     }

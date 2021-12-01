@@ -1,23 +1,23 @@
 class Connection extends java.lang.Object
 {
-    public VideoTable videoTable;
+    public PersonTable personTable;
     public util.ConnectionHelper helper;
 
     public void <init>()
     {
         Connection this;
-        VideoTable table0;
+        PersonTable table0;
         util.ConnectionHelper helper;
 
         this := @this: Connection;
 
         specialinvoke this.<java.lang.Object: void <init>()>();
 
-        table0 = new VideoTable;
+        table0 = new PersonTable;
 
-        specialinvoke table0.<VideoTable: void <init>()>();
+        specialinvoke table0.<PersonTable: void <init>()>();
 
-        this.<Connection: VideoTable videoTable> = table0;
+        this.<Connection: PersonTable personTable> = table0;
 
         helper = new util.ConnectionHelper;
 
@@ -28,51 +28,66 @@ class Connection extends java.lang.Object
         return;
     }
 
-    public void videoInsertStatement(int, java.lang.String, java.lang.String)
+    public void personInsertStatement(int)
     {
         Connection thisRef;
         int parm0;
-        java.lang.String parm1, parm2;
-        VideoRow newRow0;
+        PersonRow newRow0;
         ArrayList<> tableClass;
-        VideoTable table;
+        PersonTable table;
 
         thisRef := @this: Connection;
 
         parm0 := @parameter0: int;
 
-        parm1 := @parameter1: java.lang.String;
+        newRow0 = new PersonRow;
 
-        parm2 := @parameter2: java.lang.String;
+        specialinvoke newRow0.<PersonRow: void <init>(int)>(parm0);
 
-        newRow0 = new VideoRow;
+        table = thisRef.<Connection: PersonTable personTable>;
 
-        specialinvoke newRow0.<VideoRow: void <init>(int,java.lang.String,java.lang.String)>(parm0, parm1, parm2);
-
-        table = thisRef.<Connection: VideoTable videoTable>;
-
-        tableClass = table.<VideoTable: java.util.ArrayList<VideoRow> rows>;
+        tableClass = table.<PersonTable: java.util.ArrayList<PersonRow> rows>;
 
         virtualinvoke tableClass.<java.util.ArrayList: boolean add(java.lang.Object)>(newRow0);
 
         return;
     }
 
-    public Iterator<VideoRow> videoSelectStatement0()
+    public Iterator<PersonRow> personSelectStatement0()
     {
         Connection thisRef0;
-        VideoTable table0;
+        PersonTable table0;
         ArrayList<> tableClass0;
         Iterator iterator0;
 
         thisRef0 := @this: Connection;
 
-        table0 = thisRef0.<Connection: VideoTable videoTable>;
+        table0 = thisRef0.<Connection: PersonTable personTable>;
 
-        tableClass0 = table0.<VideoTable: java.util.ArrayList<VideoRow> rows>;
+        tableClass0 = table0.<PersonTable: java.util.ArrayList<PersonRow> rows>;
 
         iterator0 = virtualinvoke tableClass0.<java.util.ArrayList: java.util.Iterator iterator()>();
 
         return iterator0;
+    }
+
+    public void personDeleteStatement0()
+    {
+        Connection thisRef0;
+        PersonTable table0;
+        ArrayList<> tableClass0;
+        PersonRowDeletePredicate0 filterParm;
+
+        thisRef0 := @this: Connection;
+
+        table0 = thisRef0.<Connection: PersonTable personTable>;
+
+        tableClass0 = table0.<PersonTable: java.util.ArrayList<PersonRow> rows>;
+
+        filterParm = new PersonRowDeletePredicate0;
+
+        interfaceinvoke tableClass0.<java.util.Collection: boolean removeIf(java.util.function.Predicate)>(filterParm);
+
+        return;
     }
 }

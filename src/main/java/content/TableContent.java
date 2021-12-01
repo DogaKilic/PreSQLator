@@ -8,8 +8,9 @@ public class TableContent implements ITableContent {
     private String tableName;
     private Boolean hasPreparedInsert;
     private final ArrayList<String> columns;
-    private final ArrayList<String> queries;
-    private final ArrayList<ArrayList<String>> wheres;
+    private final ArrayList<String> selects;
+    private final ArrayList<ArrayList<String>> selectWheres;
+    private final ArrayList<String> deleteWheres;
     private final ArrayList<String[]> columnContent;
 
 
@@ -17,17 +18,25 @@ public class TableContent implements ITableContent {
         setTableName(tableName);
         hasPreparedInsert = false;
         columns = new ArrayList<>();
-        queries = new ArrayList<>();
-        wheres = new ArrayList<>();
+        selects = new ArrayList<>();
+        deleteWheres = new ArrayList<>();
+        selectWheres = new ArrayList<>();
         columnContent = new ArrayList<>();
     }
 
 
     public void addQuery(String query) {
-        queries.add(query);
+        selects.add(query);
     }
 
-    public void addWhere(ArrayList<String> where) { wheres.add(where); }
+    public void addSelectWhere(ArrayList<String> where) { selectWheres.add(where); }
+
+
+    public void addDeleteWhere(String where) { deleteWheres.add(where);}
+
+    public int getDeleteWheresSize() {
+        return deleteWheres.size();
+    }
 
 
     public String getTableName() {
@@ -51,23 +60,17 @@ public class TableContent implements ITableContent {
         }
     }
 
-    public Boolean hasPreparedInsert() {
-        return hasPreparedInsert;
+
+    public String getSelect(int i) {
+        return selects.get(i);
     }
 
-    public ArrayList<String> getColumns() {
-        return columns;
-    }
 
-    public String getQuery(int i) {
-        return queries.get(i);
-    }
+    public ArrayList<String> getSelectWheres(int i) { return selectWheres.get(i); }
 
-    public int getQueryCount() { return queries.size();}
+    public String getDeleteWhere(int i) {return deleteWheres.get(i);}
 
-    public ArrayList<String> getWheres(int i) { return wheres.get(i); }
-
-    public int getWheresSize() { return wheres.size();}
+    public int getSelectWheresSize() { return selectWheres.size();}
 
     public ArrayList<String[]> getColumnContent() {
         return columnContent;
@@ -77,7 +80,8 @@ public class TableContent implements ITableContent {
         System.out.println("***********************************************************************");
         System.out.println("Table name: " + tableName);
         System.out.println("Table columns: " + columns.toString());
-        System.out.println("Table queries: " + queries.toString());
+        System.out.println("Table queries: " + selects.toString());
+        System.out.println("Delete statements: " + deleteWheres.toString());
         System.out.println("***********************************************************************");
     }
 

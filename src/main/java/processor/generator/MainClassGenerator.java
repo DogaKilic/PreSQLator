@@ -2,10 +2,7 @@ package processor.generator;
 
 import content.TableBank;
 import content.TableContent;
-import processor.statement.InsertStatement;
-import processor.statement.MFieldStatement;
-import processor.statement.RSStatement;
-import processor.statement.SelectStatement;
+import processor.statement.*;
 import soot.*;
 import soot.jimple.*;
 import util.ClassWriter;
@@ -90,11 +87,13 @@ public class MainClassGenerator extends ClassGenerator {
             System.out.println(method.getName());
             ArrayList<InsertStatement> insertStatements = new ArrayList<>();
             ArrayList<SelectStatement> selectStatements = new ArrayList<>();
+            ArrayList<DeleteStatement> deleteStatements = new ArrayList<>();
             ArrayList<String[]> staticToBeReplaced = new ArrayList<>();
             ArrayList<MFieldStatement> mFieldToBeReplaced = new ArrayList<>();
             ArrayList<String[]> initFieldToBeReplaced = new ArrayList<>();
             ArrayList<InsertStatement> insertToBeReplaced = new ArrayList<>();
             ArrayList<SelectStatement> selectToBeReplaced = new ArrayList<>();
+            ArrayList<DeleteStatement> deleteToBeReplaced = new ArrayList<>();
             ArrayList<RSStatement> rsStatements = new ArrayList<>();
             ArrayList<RSStatement> nextToBeReplaced = new ArrayList<>();
             ArrayList<RSStatement> getToBeReplaced = new ArrayList<>();
@@ -111,6 +110,7 @@ public class MainClassGenerator extends ClassGenerator {
             Iterator<Unit> unitIterator =units.iterator();
             boolean init = false;
             setRef(processedClass, activeBody);
+
 
 
             if (processedRsMethods.contains(method.getName())) {
@@ -274,6 +274,11 @@ public class MainClassGenerator extends ClassGenerator {
                         SelectStatement newStatement = new SelectStatement(nameTypeAndTable[0], nameTypeAndTable[2], nameTypeAndTable[1]);
                         selectStatements.add(newStatement);
                     }
+                    else if ((queryData[0]).equals("delete")) {
+                        String table = queryData[2];
+                        DeleteStatement newStatement = new DeleteStatement(nameTypeAndTable[0], table);
+                        deleteStatements.add(newStatement);
+                    }
                 }
 
                 else if (methodContent.contains("<" + oldClass.getName() + ":")) {
@@ -411,6 +416,15 @@ public class MainClassGenerator extends ClassGenerator {
                     }
                 }
 
+                else if (deleteStatements.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
+                     if (methodContent.contains("executeUpdate()")) {
+                         DeleteStatement statement = deleteStatements.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
+                         statement.setPred(unit);
+                         deleteToBeReplaced.add(statement);
+                         toRemove.add(unit);
+                     }
+                 }
+
                 else if (rsStatements.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
                     RSStatement statement = rsStatements.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
                     if (methodContent.contains("java.sql.ResultSet: boolean next()") && !methodContent.contains("goto")) {
@@ -470,6 +484,13 @@ public class MainClassGenerator extends ClassGenerator {
                  }
              }
 
+             if (!deleteToBeReplaced.isEmpty()) {
+                 for (int i = 0; i < insertToBeReplaced.size(); i++) {
+                     DeleteStatement current =  deleteToBeReplaced.get(i);
+                     processDeleteStatement(current, units, activeBody, processedClass);
+                 }
+             }
+
              if (!selectToBeReplaced.isEmpty()) {
                  for (int i = 0; i < selectToBeReplaced.size(); i++) {
                      SelectStatement current = selectToBeReplaced.get(i);
@@ -509,6 +530,8 @@ public class MainClassGenerator extends ClassGenerator {
         ClassWriter.writeAsJimpleFile(processedClass);
 
     }
+
+
 
     private void  processConnection(Unit pred, UnitPatchingChain units, Body activeBody, String connLocal, boolean init, SootClass processedClass) {
         ArrayList<Unit> newUnits = new ArrayList<>();
@@ -677,6 +700,13 @@ public class MainClassGenerator extends ClassGenerator {
         assigned.setType(Scene.v().getRefType("java.util.Iterator"));
         SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "SelectStatement" + statement.getLocalCount());
         newUnits.add(Jimple.v().newAssignStmt(assigned, Jimple.v().newVirtualInvokeExpr(connectionLocal, toCall.makeRef())));
+        units.insertAfter(newUnits, statement.getPred());
+    }
+
+    private void processDeleteStatement(DeleteStatement statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
+        ArrayList<Unit> newUnits = new ArrayList<>();
+        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "DeleteStatement" + statement.getLocalCount());
+        newUnits.add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(connectionLocal, toCall.makeRef())));
         units.insertAfter(newUnits, statement.getPred());
     }
 

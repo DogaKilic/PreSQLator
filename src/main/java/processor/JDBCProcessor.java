@@ -12,11 +12,7 @@ import processor.generator.MainClassGenerator;
 import processor.generator.RowClassGenerator;
 import processor.generator.TableClassGenerator;
 import soot.*;
-import soot.JastAddJ.Opt;
-import soot.jimple.Jimple;
-import soot.jimple.JimpleBody;
 import soot.options.Options;
-import soot.util.Chain;
 import util.ClassWriter;
 import util.PredicateGenerator;
 
@@ -122,8 +118,6 @@ public class JDBCProcessor implements IProcessor {
 
         //Create new class
         mainGen.generateClass(appClass);
-
-
 
     }
 }

@@ -11,6 +11,8 @@ public class TableContent implements ITableContent {
     private final ArrayList<String> selects;
     private final ArrayList<ArrayList<String>> selectWheres;
     private final ArrayList<String> deleteWheres;
+    private final ArrayList<String> updateWheres;
+    private final ArrayList<String> updateAssignments;
     private final ArrayList<String[]> columnContent;
 
 
@@ -20,6 +22,8 @@ public class TableContent implements ITableContent {
         columns = new ArrayList<>();
         selects = new ArrayList<>();
         deleteWheres = new ArrayList<>();
+        updateWheres = new ArrayList<>();
+        updateAssignments = new ArrayList<>();
         selectWheres = new ArrayList<>();
         columnContent = new ArrayList<>();
     }
@@ -76,14 +80,25 @@ public class TableContent implements ITableContent {
         return columnContent;
     }
 
+    public void addUpdateAssignments(String output) {
+        updateAssignments.add(output);
+    }
+
+    public void addUpdateWhere(String where) {
+        updateWheres.add(where);
+    }
+
     public void testPrint() {
         System.out.println("***********************************************************************");
         System.out.println("Table name: " + tableName);
         System.out.println("Table columns: " + columns.toString());
         System.out.println("Table queries: " + selects.toString());
         System.out.println("Delete statements: " + deleteWheres.toString());
+        System.out.println("Update conditions: " + updateWheres.toString());
+        System.out.println("Update assignments: " + updateAssignments.toString());
         System.out.println("***********************************************************************");
     }
+
 
 
 }

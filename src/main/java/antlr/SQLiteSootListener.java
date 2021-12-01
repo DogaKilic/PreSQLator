@@ -38,8 +38,7 @@ public class SQLiteSootListener extends SQLiteParserBaseListener {
         List<SQLiteParser.Select_coreContext> selectCores = ctx.select_core();
         ArrayList<String> currentResults = new ArrayList<>();
         ArrayList<String> whereResults = new ArrayList<>();
-        String tableName = "";
-        String query = "";
+        String tableName;
         for(int i = 0; i < selectCores.stream().count(); i++){
             tableName = selectCores.get(i).table_or_subquery().get(0).getText();
             for(int k = 0; k < selectCores.get(i).result_column().stream().count(); k++) {
@@ -62,4 +61,20 @@ public class SQLiteSootListener extends SQLiteParserBaseListener {
         TableBank.addPreparedDelete(tableName, whereResult);
 
     }
+
+    @Override
+    public void enterUpdate_stmt(SQLiteParser.Update_stmtContext ctx) {
+        int size = ctx.column_name().size();
+        String tableName = ctx.qualified_table_name().getText();
+        String whereResult;
+        ArrayList<String> assignments = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            assignments.add(ctx.column_name(i).getText() + "=" + ctx.expr(i).getText());
+        }
+        whereResult = ctx.expr(size).getText();
+        TableBank.addPreparedUpdate(tableName, whereResult, assignments);
+
+    }
+
+
 }

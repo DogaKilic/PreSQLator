@@ -15,10 +15,10 @@ public class Main {
             path = args[0];
         }
         String processPath = "C:\\Users\\dogas\\IdeaProjects\\TestProj\\src\\main\\resources";
-        String className = "Deletion";
+        String className = "Modification";
 
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        //compiler.run(null, null, null, processPath + "\\" + className + ".java");
+        compiler.run(null, null, null, processPath + "\\" + className + ".java");
         jdbcProcessor.processClass(processPath, className, path);
     }
 }

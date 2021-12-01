@@ -70,24 +70,4 @@ class Connection extends java.lang.Object
 
         return iterator0;
     }
-
-    public void personDeleteStatement0()
-    {
-        Connection thisRef0;
-        PersonTable table0;
-        ArrayList<> tableClass0;
-        PersonRowDeletePredicate0 filterParm;
-
-        thisRef0 := @this: Connection;
-
-        table0 = thisRef0.<Connection: PersonTable personTable>;
-
-        tableClass0 = table0.<PersonTable: java.util.ArrayList<PersonRow> rows>;
-
-        filterParm = new PersonRowDeletePredicate0;
-
-        interfaceinvoke tableClass0.<java.util.Collection: boolean removeIf(java.util.function.Predicate)>(filterParm);
-
-        return;
-    }
 }

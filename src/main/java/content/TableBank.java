@@ -93,6 +93,34 @@ public class TableBank {
         for (TableContent i : tables) {
             if( i.getTableName().equals(tableName)) {
                 i.addDeleteWhere(where);
+                break;
+            }
+        }
+    }
+
+    public static void addPreparedUpdate(String tableName, String where, ArrayList<String> assignments) {
+        for (TableContent i : tables) {
+            if( i.getTableName().equals(tableName)) {
+                i.addUpdateWhere(where);
+
+                if (assignments.stream().count() == 1) {
+                    i.addUpdateAssignments(assignments.get(0));
+                }
+                else {
+                    int cnt = 0;
+                    String output = "";
+                    for (String k : assignments){
+                        if(cnt == 0){
+                            output = output + k;
+                        }
+                        else {
+                            output = output + "," + k;
+                        }
+                        cnt++;
+                    }
+                    i.addUpdateAssignments(output);
+                }
+                break;
             }
         }
     }

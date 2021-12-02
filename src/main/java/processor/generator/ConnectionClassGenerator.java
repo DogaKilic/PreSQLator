@@ -67,7 +67,7 @@ public class ConnectionClassGenerator extends ClassGenerator {
                     Type type = getType(data[1]);
                     types.add(type);
                 }
-                SootMethod insert = new SootMethod(i.getTableName() + "InsertReplace", types, VoidType.v(), Modifier.PUBLIC);
+                SootMethod insert = new SootMethod(i.getTableName() + "InsertStatement", types, VoidType.v(), Modifier.PUBLIC);
                 connectionClass.addMethod(insert);
                 JimpleBody insertBody = Jimple.v().newBody(insert);
                 insert.setActiveBody(insertBody);
@@ -113,7 +113,7 @@ public class ConnectionClassGenerator extends ClassGenerator {
 
                     ArrayList<String> where = i.getSelectWheres(j);
                     String query = i.getSelect(j);
-                    SootMethod select = new SootMethod(i.getTableName() + "SelectReplace" + j, null, RefType.v("Iterator<" + rowClassNames.get(cnt) + ">"), Modifier.PUBLIC);
+                    SootMethod select = new SootMethod(i.getTableName() + "SelectStatement" + j, null, RefType.v("Iterator<" + rowClassNames.get(cnt) + ">"), Modifier.PUBLIC);
                     connectionClass.addMethod(select);
                     JimpleBody selectBody = Jimple.v().newBody(select);
                     select.setActiveBody(selectBody);
@@ -297,7 +297,7 @@ public class ConnectionClassGenerator extends ClassGenerator {
             for (TableContent i : contents) {
                 for(int j = 0;j < i.getDeleteWheresSize(); j++) {
                     String where = i.getDeleteWhere(j);
-                    SootMethod delete = new SootMethod(i.getTableName() + "DeleteReplace" + j, null, VoidType.v(), Modifier.PUBLIC);
+                    SootMethod delete = new SootMethod(i.getTableName() + "DeleteStatement" + j, null, VoidType.v(), Modifier.PUBLIC);
                     connectionClass.addMethod(delete);
                     JimpleBody deleteBody = Jimple.v().newBody(delete);
                     delete.setActiveBody(deleteBody);
@@ -464,7 +464,7 @@ public class ConnectionClassGenerator extends ClassGenerator {
         for (TableContent i : contents) {
             for(int j = 0;j < i.getUpdateWheresSize(); j++) {
                 String where = i.getUpdateWhere(j);
-                SootMethod update = new SootMethod(i.getTableName() + "UpdateReplace" + j, null, VoidType.v(), Modifier.PUBLIC);
+                SootMethod update = new SootMethod(i.getTableName() + "UpdateStatement" + j, null, VoidType.v(), Modifier.PUBLIC);
                 connectionClass.addMethod(update);
                 JimpleBody updateBody = Jimple.v().newBody(update);
                 update.setActiveBody(updateBody);

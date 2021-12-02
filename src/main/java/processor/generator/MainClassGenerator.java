@@ -711,7 +711,7 @@ public class MainClassGenerator extends ClassGenerator {
                 }
             }
         }
-        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "InsertReplace");
+        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "InsertStatement");
         newUnits.add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(connectionLocal, toCall.makeRef(), parameterList)));
         units.insertAfter(newUnits, statement.getPred());
     }
@@ -720,21 +720,21 @@ public class MainClassGenerator extends ClassGenerator {
         ArrayList<Unit> newUnits = new ArrayList<>();
         Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getAssignedLocal())).findFirst().get();
         assigned.setType(Scene.v().getRefType("java.util.Iterator"));
-        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "SelectReplace" + statement.getLocalCount());
+        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "SelectStatement" + statement.getLocalCount());
         newUnits.add(Jimple.v().newAssignStmt(assigned, Jimple.v().newVirtualInvokeExpr(connectionLocal, toCall.makeRef())));
         units.insertAfter(newUnits, statement.getPred());
     }
 
     private void processDeleteStatement(DeleteReplace statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
         ArrayList<Unit> newUnits = new ArrayList<>();
-        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "DeleteReplace" + statement.getLocalCount());
+        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "DeleteStatement" + statement.getLocalCount());
         newUnits.add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(connectionLocal, toCall.makeRef())));
         units.insertAfter(newUnits, statement.getPred());
     }
 
     private void processUpdateStatement(UpdateReplace statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
         ArrayList<Unit> newUnits = new ArrayList<>();
-        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "UpdateReplace" + statement.getLocalCount());
+        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "UpdateStatement" + statement.getLocalCount());
         newUnits.add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(connectionLocal, toCall.makeRef())));
         units.insertAfter(newUnits, statement.getPred());
     }

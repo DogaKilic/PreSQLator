@@ -1,0 +1,73 @@
+class Connection extends java.lang.Object
+{
+    public PersonTable personTable;
+
+    public void <init>()
+    {
+        Connection this;
+        PersonTable table0;
+
+        this := @this: Connection;
+
+        specialinvoke this.<java.lang.Object: void <init>()>();
+
+        table0 = new PersonTable;
+
+        specialinvoke table0.<PersonTable: void <init>()>();
+
+        this.<Connection: PersonTable personTable> = table0;
+
+        return;
+    }
+
+    public void personInsertStatement(int)
+    {
+        Connection thisRef;
+        int parm0;
+        PersonRow newRow0;
+        ArrayList<> tableClass;
+        PersonTable table;
+
+        thisRef := @this: Connection;
+
+        parm0 := @parameter0: int;
+
+        newRow0 = new PersonRow;
+
+        specialinvoke newRow0.<PersonRow: void <init>(int)>(parm0);
+
+        table = thisRef.<Connection: PersonTable personTable>;
+
+        tableClass = table.<PersonTable: java.util.ArrayList<PersonRow> rows>;
+
+        virtualinvoke tableClass.<java.util.ArrayList: boolean add(java.lang.Object)>(newRow0);
+
+        return;
+    }
+
+    public Iterator<PersonRow> personSelectStatement0()
+    {
+        Connection thisRef0;
+        PersonTable table0;
+        ArrayList<> tableClass0;
+        java.util.stream.Stream stream0, newStream0;
+        PersonRowSelectPredicate0 filterParm;
+        java.util.Iterator iterator0;
+
+        thisRef0 := @this: Connection;
+
+        table0 = thisRef0.<Connection: PersonTable personTable>;
+
+        tableClass0 = table0.<PersonTable: java.util.ArrayList<PersonRow> rows>;
+
+        stream0 = interfaceinvoke tableClass0.<java.util.Collection: java.util.stream.Stream stream()>();
+
+        filterParm = new PersonRowSelectPredicate0;
+
+        newStream0 = interfaceinvoke stream0.<java.util.stream.Stream: java.util.stream.Stream filter(java.util.function.Predicate)>(filterParm);
+
+        iterator0 = interfaceinvoke newStream0.<java.util.stream.BaseStream: java.util.Iterator iterator()>();
+
+        return iterator0;
+    }
+}

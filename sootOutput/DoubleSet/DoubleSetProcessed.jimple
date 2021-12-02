@@ -1,0 +1,103 @@
+public class DoubleSetProcessed extends java.lang.Object
+{
+    private static int secretId;
+    private static java.lang.String secretName;
+
+    public void <init>()
+    {
+        DoubleSetProcessed r0, this;
+
+        r0 := @this: DoubleSetProcessed;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.sql.Statement r0;
+        java.sql.PreparedStatement r1, r2;
+        int $i1, $i3, param;
+        java.util.Iterator r3;
+        boolean $z0;
+        java.lang.StringBuilder $r4, $r6, $r8, $r9, $r10;
+        java.io.PrintStream $r5;
+        java.lang.String $r7, $r11;
+        java.sql.SQLException $r12, r15;
+        java.lang.String[] r13;
+        Connection r14;
+        DoubleSetProcessed this;
+        util.Row rowLocalr3;
+
+        r13 := @parameter0: java.lang.String[];
+
+     label1:
+        r14 = new Connection;
+
+        specialinvoke r14.<Connection: void <init>()>();
+
+        $i1 = <DoubleSetProcessed: int secretId>;
+
+        param = 5555555;
+
+        specialinvoke r14.<Connection: void personInsertStatement(int)>(param);
+
+        r3 = virtualinvoke r14.<Connection: Iterator<PersonRow> personSelectStatement0()>();
+
+     label2:
+        $z0 = interfaceinvoke r3.<java.util.Iterator: boolean hasNext()>();
+
+        if $z0 == 0 goto label3;
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        $r4 = new java.lang.StringBuilder;
+
+        specialinvoke $r4.<java.lang.StringBuilder: void <init>()>();
+
+        $r6 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("name = ");
+
+        rowLocalr3 = interfaceinvoke r3.<java.util.Iterator: java.lang.Object next()>();
+
+        $r7 = virtualinvoke rowLocalr3.<util.Row: java.lang.String getParameter(int)>(0);
+
+        $r8 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r7);
+
+        $r9 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(", id = ");
+
+        $i3 = virtualinvoke rowLocalr3.<util.Row: java.lang.String getParameter(int)>(0);
+
+        $r10 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i3);
+
+        $r11 = virtualinvoke $r10.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>($r11);
+
+        goto label2;
+
+     label3:
+        goto label5;
+
+     label4:
+        $r12 := @caughtexception;
+
+        r15 = $r12;
+
+     label5:
+        return;
+
+        catch java.sql.SQLException from label1 to label3 with label4;
+    }
+
+    static void <clinit>()
+    {
+        DoubleSetProcessed this;
+
+        <DoubleSetProcessed: java.lang.String secretName> = "Hans";
+
+        <DoubleSetProcessed: int secretId> = 123456;
+
+        return;
+    }
+}

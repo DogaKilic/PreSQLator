@@ -1,0 +1,86 @@
+public class UpdateBackProcessed extends java.lang.Object
+{
+    private static int secretId;
+
+    public void <init>()
+    {
+        UpdateBackProcessed r0, this;
+
+        r0 := @this: UpdateBackProcessed;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.sql.Statement r0;
+        java.sql.PreparedStatement r1, r2, r3, r4;
+        int $i1, $i5;
+        java.util.Iterator r5;
+        boolean $z0;
+        java.io.PrintStream $r6;
+        java.sql.SQLException $r7, r10;
+        java.lang.String[] r8;
+        Connection r9;
+        UpdateBackProcessed this;
+        util.Row rowLocalr5;
+
+        r8 := @parameter0: java.lang.String[];
+
+     label1:
+        r9 = new Connection;
+
+        specialinvoke r9.<Connection: void <init>()>();
+
+        $i1 = <UpdateBackProcessed: int secretId>;
+
+        specialinvoke r9.<Connection: void personInsertStatement(int)>($i1);
+
+        specialinvoke r9.<Connection: void personUpdateStatement0()>();
+
+        specialinvoke r9.<Connection: void personUpdateStatement1()>();
+
+        r5 = virtualinvoke r9.<Connection: Iterator<PersonRow> personSelectStatement0()>();
+
+     label2:
+        $z0 = interfaceinvoke r5.<java.util.Iterator: boolean hasNext()>();
+
+        if $z0 == 0 goto label3;
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        rowLocalr5 = interfaceinvoke r5.<java.util.Iterator: java.lang.Object next()>();
+
+        $i5 = virtualinvoke rowLocalr5.<util.Row: java.lang.String getParameter(int)>(0);
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(int)>($i5);
+
+        goto label2;
+
+     label3:
+        goto label5;
+
+     label4:
+        $r7 := @caughtexception;
+
+        r10 = $r7;
+
+        virtualinvoke r10.<java.sql.SQLException: void printStackTrace()>();
+
+     label5:
+        return;
+
+        catch java.sql.SQLException from label1 to label3 with label4;
+    }
+
+    static void <clinit>()
+    {
+        UpdateBackProcessed this;
+
+        <UpdateBackProcessed: int secretId> = 123456;
+
+        return;
+    }
+}

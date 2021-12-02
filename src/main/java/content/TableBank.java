@@ -58,27 +58,25 @@ public class TableBank {
     }
 
     public static void addPreparedSelectQuery(String tableName, List<String> query) {
-        for (TableContent i : tables) {
-            if (i.getTableName().equals(tableName)) {
-                if (query.stream().count() == 1) {
-                    i.addQuery(query.get(0));
-                }
-                else {
-                    int cnt = 0;
-                    String output = "";
-                    for (String k : query){
-                        if(cnt == 0){
-                            output = output + k;
+            for (TableContent i : tables) {
+                if (i.getTableName().equals(tableName)) {
+                    if (query.stream().count() == 1) {
+                        i.addQuery(query.get(0));
+                    } else {
+                        int cnt = 0;
+                        String output = "";
+                        for (String k : query) {
+                            if (cnt == 0) {
+                                output = output + k;
+                            } else {
+                                output = output + "," + k;
+                            }
+                            cnt++;
                         }
-                        else {
-                            output = output + "," + k;
-                        }
-                        cnt++;
+                        i.addQuery(output);
                     }
-                    i.addQuery(output);
                 }
             }
-        }
     }
 
     public static void addSelectWhereResults(String tableName, ArrayList<String> whereResults) {

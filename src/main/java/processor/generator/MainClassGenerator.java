@@ -80,6 +80,13 @@ public class MainClassGenerator extends ClassGenerator {
             }
         }
 
+        if (processedRsMethods.size() > processedRsTableName.size()) {
+            int diff = processedRsMethods.size() - processedRsTableName.size();
+            for (int i = 0; i < diff; i++) {
+                processedRsTableName.add(processedRsTableName.get(0));
+            }
+        }
+
 
         for(SootMethod method : methodList) {
             ArrayList<InsertReplace> insertReplaces = new ArrayList<>();
@@ -141,10 +148,12 @@ public class MainClassGenerator extends ClassGenerator {
 
 
                 if (processedRsMethods.stream().filter(x -> methodContent.contains(x)).findFirst().isPresent()) {
+                    System.out.println(methodContent);
                     Iterator<String> stringIterator = processedRsMethods.stream().iterator();
                     int index = 0;
                     while (stringIterator.hasNext()) {
                         String current = stringIterator.next();
+                        System.out.println(current);
                         if (methodContent.contains(current)) {
                             break;
                         }
@@ -354,7 +363,10 @@ public class MainClassGenerator extends ClassGenerator {
                                     mFieldToBeReplaced.add(statement);
                                 }
                                 toRemove.add(unit);
-                            } else {
+                            }
+                            else if (methodContent.contains("staticinvoke")) {
+                            }
+                            else {
                                 String[] fieldAndAssignment = new String[3];
                                 fieldAndAssignment[0] = methodContent.split(" ")[4].replaceAll(">", "");
                                 fieldAndAssignment[1] = methodContent.split(" =")[0];
@@ -583,7 +595,6 @@ public class MainClassGenerator extends ClassGenerator {
         ArrayList<Unit> newUnits = new ArrayList<>();
         FieldRef fieldRef;
         if (statement.getType() == 1) {
-
             Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getAssignedLocal())).findFirst().get();
             fieldRef = Jimple.v().newStaticFieldRef((processedClass.getFieldByName(statement.getField()).makeRef()));
             newUnits.add(Jimple.v().newAssignStmt(assigned, fieldRef));

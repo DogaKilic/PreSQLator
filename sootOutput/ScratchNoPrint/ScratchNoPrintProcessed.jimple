@@ -1,0 +1,81 @@
+public class ScratchNoPrintProcessed extends java.lang.Object
+{
+    private static int secretId;
+    private static java.lang.String secretName;
+
+    public void <init>()
+    {
+        ScratchNoPrintProcessed r0, this;
+
+        r0 := @this: ScratchNoPrintProcessed;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.sql.Statement r0;
+        java.sql.PreparedStatement r1, r2;
+        int $i1;
+        java.lang.String $r3;
+        java.util.Iterator r4;
+        boolean $z0;
+        java.io.PrintStream $r5;
+        java.sql.SQLException $r6, r9;
+        java.lang.String[] r7;
+        Connection r8;
+        ScratchNoPrintProcessed this;
+
+        r7 := @parameter0: java.lang.String[];
+
+     label1:
+        r8 = new Connection;
+
+        specialinvoke r8.<Connection: void <init>()>();
+
+        $i1 = <ScratchNoPrintProcessed: int secretId>;
+
+        $r3 = <ScratchNoPrintProcessed: java.lang.String secretName>;
+
+        specialinvoke r8.<Connection: void personInsertStatement(int,java.lang.String)>($i1, $r3);
+
+        r4 = virtualinvoke r8.<Connection: Iterator<PersonRow> personSelectStatement0()>();
+
+     label2:
+        $z0 = interfaceinvoke r4.<java.util.Iterator: boolean hasNext()>();
+
+        if $z0 == 0 goto label3;
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("HelloWorld!");
+
+        goto label2;
+
+     label3:
+        goto label5;
+
+     label4:
+        $r6 := @caughtexception;
+
+        r9 = $r6;
+
+     label5:
+        return;
+
+        catch java.sql.SQLException from label1 to label3 with label4;
+    }
+
+    static void <clinit>()
+    {
+        ScratchNoPrintProcessed this;
+
+        <ScratchNoPrintProcessed: java.lang.String secretName> = "Hans";
+
+        <ScratchNoPrintProcessed: int secretId> = 123456;
+
+        return;
+    }
+}

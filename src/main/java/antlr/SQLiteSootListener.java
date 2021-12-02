@@ -2,6 +2,7 @@ package antlr;
 
 import content.TableBank;
 import content.TableContent;
+import javafx.scene.control.Tab;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -41,6 +42,10 @@ public class SQLiteSootListener extends SQLiteParserBaseListener {
         String tableName;
         for(int i = 0; i < selectCores.stream().count(); i++){
             tableName = selectCores.get(i).table_or_subquery().get(0).getText();
+            if(!TableBank.hasTable(tableName)) {
+                TableContent newTable = new TableContent(tableName);
+                TableBank.addTable(newTable);
+            }
             for(int k = 0; k < selectCores.get(i).result_column().stream().count(); k++) {
                 currentResults.add(selectCores.get(i).result_column().get(k).getText());
             }

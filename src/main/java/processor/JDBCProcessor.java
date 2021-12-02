@@ -65,7 +65,7 @@ public class JDBCProcessor implements IProcessor {
     }
         finalStatementString = finalStatementString.replaceAll("\\\\","");
 
-
+        System.out.println(finalStatementString);
 
         //configure antlr and start walking
         SQLiteLexer sqLiteLexer = new SQLiteLexer(CharStreams.fromString(finalStatementString));

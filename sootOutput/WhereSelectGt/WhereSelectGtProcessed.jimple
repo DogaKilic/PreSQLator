@@ -1,0 +1,82 @@
+public class WhereSelectGtProcessed extends java.lang.Object
+{
+    private static int secretId;
+
+    public void <init>()
+    {
+        WhereSelectGtProcessed r0, this;
+
+        r0 := @this: WhereSelectGtProcessed;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.sql.Statement r0;
+        java.sql.PreparedStatement r1, r2;
+        int $i1, $i3;
+        java.util.Iterator r3;
+        boolean $z0;
+        java.io.PrintStream $r4;
+        java.sql.SQLException $r5, r8;
+        java.lang.String[] r6;
+        Connection r7;
+        WhereSelectGtProcessed this;
+        util.Row rowLocalr3;
+
+        r6 := @parameter0: java.lang.String[];
+
+     label1:
+        r7 = new Connection;
+
+        specialinvoke r7.<Connection: void <init>()>();
+
+        $i1 = <WhereSelectGtProcessed: int secretId>;
+
+        specialinvoke r7.<Connection: void personInsertStatement(int)>($i1);
+
+        r3 = virtualinvoke r7.<Connection: Iterator<PersonRow> personSelectStatement0()>();
+
+     label2:
+        $z0 = interfaceinvoke r3.<java.util.Iterator: boolean hasNext()>();
+
+        if $z0 == 0 goto label3;
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        rowLocalr3 = interfaceinvoke r3.<java.util.Iterator: java.lang.Object next()>();
+
+        $i3 = virtualinvoke rowLocalr3.<util.Row: java.lang.String getParameter(int)>(0);
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>($i3);
+
+        goto label2;
+
+     label3:
+        goto label5;
+
+     label4:
+        $r5 := @caughtexception;
+
+        r8 = $r5;
+
+        virtualinvoke r8.<java.sql.SQLException: void printStackTrace()>();
+
+     label5:
+        return;
+
+        catch java.sql.SQLException from label1 to label3 with label4;
+    }
+
+    static void <clinit>()
+    {
+        WhereSelectGtProcessed this;
+
+        <WhereSelectGtProcessed: int secretId> = 123456;
+
+        return;
+    }
+}

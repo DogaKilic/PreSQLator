@@ -1,0 +1,86 @@
+public class DeleteNoExec extends java.lang.Object
+{
+    private static int secretId;
+
+    public void <init>()
+    {
+        DeleteNoExec r0;
+
+        r0 := @this: DeleteNoExec;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.sql.Statement r0;
+        java.sql.PreparedStatement r1, r3;
+        int $i1, $i3;
+        java.sql.ResultSet r4;
+        boolean $z0;
+        java.io.PrintStream $r5;
+        java.sql.SQLException $r6, r9;
+        java.lang.String[] r7;
+        java.sql.Connection r8;
+
+        r7 := @parameter0: java.lang.String[];
+
+     label1:
+        r8 = staticinvoke <java.sql.DriverManager: java.sql.Connection getConnection(java.lang.String)>("jdbc:sqlite::memory:");
+
+        r0 = interfaceinvoke r8.<java.sql.Connection: java.sql.Statement createStatement()>();
+
+        interfaceinvoke r0.<java.sql.Statement: int executeUpdate(java.lang.String)>("create table person (id integer)");
+
+        r1 = interfaceinvoke r8.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("insert into person values(?)");
+
+        $i1 = <DeleteNoExec: int secretId>;
+
+        interfaceinvoke r1.<java.sql.PreparedStatement: void setInt(int,int)>(1, $i1);
+
+        interfaceinvoke r1.<java.sql.PreparedStatement: int executeUpdate()>();
+
+        interfaceinvoke r8.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("delete from person WHERE id = 123456");
+
+        r3 = interfaceinvoke r8.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("select * from person");
+
+        r4 = interfaceinvoke r3.<java.sql.PreparedStatement: java.sql.ResultSet executeQuery()>();
+
+     label2:
+        $z0 = interfaceinvoke r4.<java.sql.ResultSet: boolean next()>();
+
+        if $z0 == 0 goto label3;
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        $i3 = interfaceinvoke r4.<java.sql.ResultSet: int getInt(java.lang.String)>("id");
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>($i3);
+
+        goto label2;
+
+     label3:
+        goto label5;
+
+     label4:
+        $r6 := @caughtexception;
+
+        r9 = $r6;
+
+        virtualinvoke r9.<java.sql.SQLException: void printStackTrace()>();
+
+     label5:
+        return;
+
+        catch java.sql.SQLException from label1 to label3 with label4;
+    }
+
+    static void <clinit>()
+    {
+        <DeleteNoExec: int secretId> = 123456;
+
+        return;
+    }
+}

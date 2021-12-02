@@ -24,7 +24,6 @@ public class MainClassGenerator extends ClassGenerator {
 
         List<SootMethod> methodList = oldClass.getMethods();
         List<String> oldMethods;
-        System.out.println(oldClass.getMethods());
         for(SootField field : oldClass.getFields()){
             field.setDeclared(false);
             if (field.getType().toString().equals("java.sql.Connection")){
@@ -84,7 +83,6 @@ public class MainClassGenerator extends ClassGenerator {
 
 
         for(SootMethod method : methodList) {
-            System.out.println(method.getName());
             ArrayList<InsertStatement> insertStatements = new ArrayList<>();
             ArrayList<SelectStatement> selectStatements = new ArrayList<>();
             ArrayList<DeleteStatement> deleteStatements = new ArrayList<>();
@@ -356,7 +354,6 @@ public class MainClassGenerator extends ClassGenerator {
                                 }
                                 toRemove.add(unit);
                             } else {
-                                System.out.println(methodContent);
                                 String[] fieldAndAssignment = new String[3];
                                 fieldAndAssignment[0] = methodContent.split(" ")[4].replaceAll(">", "");
                                 fieldAndAssignment[1] = methodContent.split(" =")[0];

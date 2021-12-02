@@ -51,6 +51,7 @@ public class JDBCProcessor implements IProcessor {
         SootClass appClass = Scene.v().loadClassAndSupport(className);
         List<SootMethod> methods = appClass.getMethods();
         Scene.v().loadNecessaryClasses();
+        ClassWriter.setDir("sootOutput/" + className + "/" );
         //set up predicates to filter text
         Predicate<String> basicPredicate = PredicateGenerator.generateBasicPredicate();
         //filter text to get information on sqlite statements

@@ -42,6 +42,10 @@ public class TableContent implements ITableContent {
         return deleteWheres.size();
     }
 
+    public int getUpdateWheresSize() {
+        return updateWheres.size();
+    }
+
 
     public String getTableName() {
         return tableName;
@@ -73,6 +77,10 @@ public class TableContent implements ITableContent {
     public ArrayList<String> getSelectWheres(int i) { return selectWheres.get(i); }
 
     public String getDeleteWhere(int i) {return deleteWheres.get(i);}
+
+    public String getUpdateWhere(int i) { return updateWheres.get(i);}
+
+    public String getUpdateAssignment(int i) { return updateAssignments.get(i);}
 
     public int getSelectWheresSize() { return selectWheres.size();}
 

@@ -70,4 +70,32 @@ class Connection extends java.lang.Object
 
         return iterator0;
     }
+
+    public void personUpdateStatement0()
+    {
+        Connection thisRef0;
+        PersonTable table0;
+        ArrayList<> tableClass0;
+        java.util.stream.Stream stream0, newStream0;
+        PersonRowUpdatePredicate0 filterParm;
+        PersonRowUpdateConsumer0 forEachParam;
+
+        thisRef0 := @this: Connection;
+
+        table0 = thisRef0.<Connection: PersonTable personTable>;
+
+        tableClass0 = table0.<PersonTable: java.util.ArrayList<PersonRow> rows>;
+
+        stream0 = interfaceinvoke tableClass0.<java.util.Collection: java.util.stream.Stream stream()>();
+
+        filterParm = new PersonRowUpdatePredicate0;
+
+        newStream0 = interfaceinvoke stream0.<java.util.stream.Stream: java.util.stream.Stream filter(java.util.function.Predicate)>(filterParm);
+
+        forEachParam = new PersonRowUpdateConsumer0;
+
+        interfaceinvoke newStream0.<java.util.stream.Stream: void forEach(java.util.function.Consumer)>(forEachParam);
+
+        return;
+    }
 }

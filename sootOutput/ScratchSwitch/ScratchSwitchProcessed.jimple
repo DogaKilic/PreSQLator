@@ -1,0 +1,130 @@
+public class ScratchSwitchProcessed extends java.lang.Object
+{
+    private static int secretId;
+    private static java.lang.String secretName;
+
+    public void <init>()
+    {
+        ScratchSwitchProcessed r0, this;
+
+        r0 := @this: ScratchSwitchProcessed;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.sql.Statement r0;
+        java.sql.PreparedStatement r1, r2;
+        double $d0;
+        int i1, $i2, $i4, $i5, $i6, $i7, $i8, $i9;
+        java.util.Iterator r3;
+        java.lang.StringBuilder $r4, $r6, $r8, $r9, $r10;
+        java.io.PrintStream $r5;
+        java.lang.String $r7, $r11, $r15;
+        java.sql.SQLException $r12, r16;
+        java.lang.String[] r13;
+        Connection r14;
+        boolean $z0;
+        ScratchSwitchProcessed this;
+        util.Row rowLocalr3;
+
+        r13 := @parameter0: java.lang.String[];
+
+     label1:
+        r14 = new Connection;
+
+        specialinvoke r14.<Connection: void <init>()>();
+
+        $d0 = staticinvoke <java.lang.Math: double random()>();
+
+        i1 = (int) $d0;
+
+        $i2 = i1 % 3;
+
+        tableswitch($i2)
+        {
+            case 0: goto label2;
+            case 1: goto label3;
+            case 2: goto label4;
+            default: goto label5;
+        };
+
+     label2:
+        $i7 = <ScratchSwitchProcessed: int secretId>;
+
+     label3:
+        $i5 = <ScratchSwitchProcessed: int secretId>;
+
+        $i6 = $i5 - 1;
+
+     label4:
+        $i8 = <ScratchSwitchProcessed: int secretId>;
+
+        $i9 = $i8 - 2;
+
+     label5:
+        $r15 = <ScratchSwitchProcessed: java.lang.String secretName>;
+
+        specialinvoke r14.<Connection: void personInsertStatement(int,java.lang.String)>($i9, $r15);
+
+        r3 = virtualinvoke r14.<Connection: Iterator<PersonRow> personSelectStatement0()>();
+
+     label6:
+        $z0 = interfaceinvoke r3.<java.util.Iterator: boolean hasNext()>();
+
+        if $z0 == 0 goto label7;
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        $r4 = new java.lang.StringBuilder;
+
+        specialinvoke $r4.<java.lang.StringBuilder: void <init>()>();
+
+        $r6 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("name = ");
+
+        rowLocalr3 = interfaceinvoke r3.<java.util.Iterator: java.lang.Object next()>();
+
+        $r7 = virtualinvoke rowLocalr3.<util.Row: java.lang.String getParameter(int)>(1);
+
+        $r8 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r7);
+
+        $r9 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(", id = ");
+
+        $i4 = virtualinvoke rowLocalr3.<util.Row: java.lang.String getParameter(int)>(0);
+
+        $r10 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i4);
+
+        $r11 = virtualinvoke $r10.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>($r11);
+
+        goto label6;
+
+     label7:
+        goto label9;
+
+     label8:
+        $r12 := @caughtexception;
+
+        r16 = $r12;
+
+     label9:
+        return;
+
+        catch java.sql.SQLException from label1 to label7 with label8;
+    }
+
+    static void <clinit>()
+    {
+        ScratchSwitchProcessed this;
+
+        <ScratchSwitchProcessed: java.lang.String secretName> = "Hans";
+
+        <ScratchSwitchProcessed: int secretId> = 123456;
+
+        return;
+    }
+}

@@ -1,0 +1,22 @@
+class AnimalTable extends java.lang.Object
+{
+    public java.util.ArrayList<AnimalRow> rows;
+
+    public void <init>()
+    {
+        java.util.ArrayList listNew;
+        AnimalTable this;
+
+        this := @this: AnimalTable;
+
+        specialinvoke this.<java.lang.Object: void <init>()>();
+
+        listNew = new java.util.ArrayList;
+
+        specialinvoke listNew.<java.util.ArrayList: void <init>()>();
+
+        this.<AnimalTable: java.util.ArrayList<AnimalRow> rows> = listNew;
+
+        return;
+    }
+}

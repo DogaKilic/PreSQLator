@@ -1,0 +1,126 @@
+class Connection extends java.lang.Object
+{
+    public PersonTable personTable;
+    public AnimalTable animalTable;
+
+    public void <init>()
+    {
+        Connection this;
+        PersonTable table0;
+        AnimalTable table1;
+
+        this := @this: Connection;
+
+        specialinvoke this.<java.lang.Object: void <init>()>();
+
+        table0 = new PersonTable;
+
+        specialinvoke table0.<PersonTable: void <init>()>();
+
+        this.<Connection: PersonTable personTable> = table0;
+
+        table1 = new AnimalTable;
+
+        specialinvoke table1.<AnimalTable: void <init>()>();
+
+        this.<Connection: AnimalTable animalTable> = table1;
+
+        return;
+    }
+
+    public void personInsertStatement(int)
+    {
+        Connection thisRef;
+        int parm0;
+        PersonRow newRow0;
+        ArrayList<> tableClass;
+        PersonTable table;
+
+        thisRef := @this: Connection;
+
+        parm0 := @parameter0: int;
+
+        newRow0 = new PersonRow;
+
+        specialinvoke newRow0.<PersonRow: void <init>(int)>(parm0);
+
+        table = thisRef.<Connection: PersonTable personTable>;
+
+        tableClass = table.<PersonTable: java.util.ArrayList<PersonRow> rows>;
+
+        virtualinvoke tableClass.<java.util.ArrayList: boolean add(java.lang.Object)>(newRow0);
+
+        return;
+    }
+
+    public void animalInsertStatement(int)
+    {
+        Connection thisRef;
+        int parm0;
+        AnimalRow newRow1;
+        ArrayList<> tableClass;
+        AnimalTable table;
+
+        thisRef := @this: Connection;
+
+        parm0 := @parameter0: int;
+
+        newRow1 = new AnimalRow;
+
+        specialinvoke newRow1.<AnimalRow: void <init>(int)>(parm0);
+
+        table = thisRef.<Connection: AnimalTable animalTable>;
+
+        tableClass = table.<AnimalTable: java.util.ArrayList<AnimalRow> rows>;
+
+        virtualinvoke tableClass.<java.util.ArrayList: boolean add(java.lang.Object)>(newRow1);
+
+        return;
+    }
+
+    public Iterator<AnimalRow> animalSelectStatement0()
+    {
+        Connection thisRef0;
+        AnimalTable table0;
+        ArrayList<> tableClass0;
+        Iterator iterator0;
+
+        thisRef0 := @this: Connection;
+
+        table0 = thisRef0.<Connection: AnimalTable animalTable>;
+
+        tableClass0 = table0.<AnimalTable: java.util.ArrayList<AnimalRow> rows>;
+
+        iterator0 = virtualinvoke tableClass0.<java.util.ArrayList: java.util.Iterator iterator()>();
+
+        return iterator0;
+    }
+
+    public void personUpdateStatement0()
+    {
+        Connection thisRef0;
+        PersonTable table0;
+        ArrayList<> tableClass0;
+        java.util.stream.Stream stream0, newStream0;
+        PersonRowUpdatePredicate0 filterParm;
+        PersonRowUpdateConsumer0 forEachParam;
+
+        thisRef0 := @this: Connection;
+
+        table0 = thisRef0.<Connection: PersonTable personTable>;
+
+        tableClass0 = table0.<PersonTable: java.util.ArrayList<PersonRow> rows>;
+
+        stream0 = interfaceinvoke tableClass0.<java.util.Collection: java.util.stream.Stream stream()>();
+
+        filterParm = new PersonRowUpdatePredicate0;
+
+        newStream0 = interfaceinvoke stream0.<java.util.stream.Stream: java.util.stream.Stream filter(java.util.function.Predicate)>(filterParm);
+
+        forEachParam = new PersonRowUpdateConsumer0;
+
+        interfaceinvoke newStream0.<java.util.stream.Stream: void forEach(java.util.function.Consumer)>(forEachParam);
+
+        return;
+    }
+}

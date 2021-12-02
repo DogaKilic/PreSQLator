@@ -1,1 +1,0 @@
-create table alien (alienID integer, ufoPlate string, age integer)

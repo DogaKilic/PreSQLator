@@ -1,10 +1,10 @@
-package processor.statement;
+package processor.replace;
 
 import soot.Unit;
 
 import java.util.ArrayList;
 
-public class RSStatement {
+public class RSReplace {
     public String getLocalName() {
         return localName;
     }
@@ -62,7 +62,7 @@ public class RSStatement {
         this.predNext = pred;
     }
 
-    public RSStatement (String localName) {
+    public RSReplace(String localName) {
         this.assignedLocalNameGet = new ArrayList<>();
         this.nextCalled = new ArrayList<>();
         this.paramsGet = new ArrayList<>();

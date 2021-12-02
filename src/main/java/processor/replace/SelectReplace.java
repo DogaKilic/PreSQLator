@@ -1,11 +1,10 @@
-package processor.statement;
+package processor.replace;
 
 import soot.Unit;
 
 import java.util.ArrayList;
 
-public class UpdateStatement implements IStatement{
-
+public class SelectReplace implements IReplace {
     private static ArrayList<String> count = new ArrayList<>();
 
 
@@ -17,7 +16,12 @@ public class UpdateStatement implements IStatement{
     private String localName;
     private String tableName;
 
+    public String getQuery() {
+        return query;
+    }
 
+
+    private String query;
     private String assignedLocal;
     private Unit pred;
 
@@ -45,9 +49,10 @@ public class UpdateStatement implements IStatement{
         return tableName;
     }
 
-    public UpdateStatement(String localName, String tableName) {
+    public SelectReplace(String localName, String tableName, String query) {
         this.localName = localName;
         this.tableName = tableName;
+        this.query = query;
         this.assignedLocal = "";
         this.pred = null;
         this.localCount = count.stream().filter(x -> x.equals(tableName)).toArray().length;

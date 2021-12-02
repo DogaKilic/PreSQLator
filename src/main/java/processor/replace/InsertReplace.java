@@ -1,8 +1,8 @@
-package processor.statement;
+package processor.replace;
 
 import soot.Unit;
 
-public class InsertStatement implements IStatement {
+public class InsertReplace implements IReplace {
 
     private void increment() {
         if (currentCount < parameterCount) {
@@ -62,7 +62,7 @@ public class InsertStatement implements IStatement {
     private boolean ready;
     private Unit pred;
 
-    public InsertStatement(String localName, String tableName, int parameterCount) {
+    public InsertReplace(String localName, String tableName, int parameterCount) {
         this.localName = localName;
         this.tableName = tableName;
         this.parameterCount = parameterCount;

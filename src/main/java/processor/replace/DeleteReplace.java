@@ -1,10 +1,10 @@
-package processor.statement;
+package processor.replace;
 
 import soot.Unit;
 
 import java.util.ArrayList;
 
-public class DeleteStatement implements IStatement {
+public class DeleteReplace implements IReplace {
     private static ArrayList<String> count = new ArrayList<>();
 
 
@@ -45,7 +45,7 @@ public class DeleteStatement implements IStatement {
         return tableName;
     }
 
-    public DeleteStatement(String localName, String tableName) {
+    public DeleteReplace(String localName, String tableName) {
         this.localName = localName;
         this.tableName = tableName;
         this.assignedLocal = "";

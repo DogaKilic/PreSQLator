@@ -1,8 +1,7 @@
 package processor.generator;
 
 import content.TableBank;
-import content.TableContent;
-import processor.statement.*;
+import processor.replace.*;
 import soot.*;
 import soot.jimple.*;
 import util.ClassWriter;
@@ -83,20 +82,20 @@ public class MainClassGenerator extends ClassGenerator {
 
 
         for(SootMethod method : methodList) {
-            ArrayList<InsertStatement> insertStatements = new ArrayList<>();
-            ArrayList<SelectStatement> selectStatements = new ArrayList<>();
-            ArrayList<DeleteStatement> deleteStatements = new ArrayList<>();
-            ArrayList<UpdateStatement> updateStatements = new ArrayList<>();
+            ArrayList<InsertReplace> insertReplaces = new ArrayList<>();
+            ArrayList<SelectReplace> selectReplaces = new ArrayList<>();
+            ArrayList<DeleteReplace> deleteReplaces = new ArrayList<>();
+            ArrayList<UpdateReplace> updateReplaces = new ArrayList<>();
             ArrayList<String[]> staticToBeReplaced = new ArrayList<>();
-            ArrayList<MFieldStatement> mFieldToBeReplaced = new ArrayList<>();
+            ArrayList<MFieldReplace> mFieldToBeReplaced = new ArrayList<>();
             ArrayList<String[]> initFieldToBeReplaced = new ArrayList<>();
-            ArrayList<InsertStatement> insertToBeReplaced = new ArrayList<>();
-            ArrayList<SelectStatement> selectToBeReplaced = new ArrayList<>();
-            ArrayList<DeleteStatement> deleteToBeReplaced = new ArrayList<>();
-            ArrayList<UpdateStatement> updateToBeReplaced = new ArrayList<>();
-            ArrayList<RSStatement> rsStatements = new ArrayList<>();
-            ArrayList<RSStatement> nextToBeReplaced = new ArrayList<>();
-            ArrayList<RSStatement> getToBeReplaced = new ArrayList<>();
+            ArrayList<InsertReplace> insertToBeReplaced = new ArrayList<>();
+            ArrayList<SelectReplace> selectToBeReplaced = new ArrayList<>();
+            ArrayList<DeleteReplace> deleteToBeReplaced = new ArrayList<>();
+            ArrayList<UpdateReplace> updateToBeReplaced = new ArrayList<>();
+            ArrayList<RSReplace> rsReplaces = new ArrayList<>();
+            ArrayList<RSReplace> nextToBeReplaced = new ArrayList<>();
+            ArrayList<RSReplace> getToBeReplaced = new ArrayList<>();
             Unit initPred = null;
             Unit thisPred = null;
             Unit connPred = null;
@@ -130,6 +129,8 @@ public class MainClassGenerator extends ClassGenerator {
                     }
                 }
             }
+
+
              boolean skipNext = false;
 
              while (unitIterator.hasNext()) {
@@ -152,9 +153,9 @@ public class MainClassGenerator extends ClassGenerator {
                         }
                     }
                     String local = methodContent.split(" =")[0];
-                    RSStatement statement = new RSStatement(local);
+                    RSReplace statement = new RSReplace(local);
                     statement.setTableName(processedRsTableName.get(index));
-                    rsStatements.add(statement);
+                    rsReplaces.add(statement);
                 }
 
                  if (methodContent.contains("goto")) {}
@@ -245,8 +246,8 @@ public class MainClassGenerator extends ClassGenerator {
                         nameTypeAndTable[1] = "insert";
                         nameTypeAndTable[2] = queryData[2];
                         int count = (unitData[1].split("\\?").length - 1);
-                        InsertStatement newStatement = new InsertStatement(nameTypeAndTable[0], nameTypeAndTable[2], count);
-                        insertStatements.add(newStatement);
+                        InsertReplace newStatement = new InsertReplace(nameTypeAndTable[0], nameTypeAndTable[2], count);
+                        insertReplaces.add(newStatement);
                     }
 
                     else if ((queryData[0]).equals("select")){
@@ -271,18 +272,18 @@ public class MainClassGenerator extends ClassGenerator {
                         }
                         nameTypeAndTable[2] = queryData[tableIndex];
                         nameTypeAndTable[3] = "";
-                        SelectStatement newStatement = new SelectStatement(nameTypeAndTable[0], nameTypeAndTable[2], nameTypeAndTable[1]);
-                        selectStatements.add(newStatement);
+                        SelectReplace newStatement = new SelectReplace(nameTypeAndTable[0], nameTypeAndTable[2], nameTypeAndTable[1]);
+                        selectReplaces.add(newStatement);
                     }
                     else if ((queryData[0]).equals("delete")) {
                         String table = queryData[2];
-                        DeleteStatement newStatement = new DeleteStatement(nameTypeAndTable[0], table);
-                        deleteStatements.add(newStatement);
+                        DeleteReplace newStatement = new DeleteReplace(nameTypeAndTable[0], table);
+                        deleteReplaces.add(newStatement);
                     }
                     else if ((queryData[0]).equals("update")) {
                         String table = queryData[1];
-                        UpdateStatement update = new UpdateStatement(nameTypeAndTable[0], table);
-                        updateStatements.add(update);
+                        UpdateReplace update = new UpdateReplace(nameTypeAndTable[0], table);
+                        updateReplaces.add(update);
                     }
                 }
 
@@ -303,7 +304,7 @@ public class MainClassGenerator extends ClassGenerator {
                                 String fieldLocal;
                                 String field;
                                 if (methodContent.contains("virtualinvoke") || methodContent.contains("specialinvoke")) {
-                                    MFieldStatement statement = null;
+                                    MFieldReplace statement = null;
                                     if(assignment) {
                                         fieldLocal = methodContent.split(" ")[3].split("\\.")[0];
                                         field = methodContent.split(" ")[5].split("\\(")[0];
@@ -314,9 +315,9 @@ public class MainClassGenerator extends ClassGenerator {
                                     }
                                     if (methodContent.contains("specialinvoke")) {
 
-                                        statement = new MFieldStatement(assignedLocal, field, 3);
+                                        statement = new MFieldReplace(assignedLocal, field, 3);
                                     } else if (methodContent.contains("virtualinvoke")) {
-                                        statement = new MFieldStatement(assignedLocal, field, 5);
+                                        statement = new MFieldReplace(assignedLocal, field, 5);
                                     }
                                     if (methodContent.split(">\\(").length > 1 && !methodContent.split(">\\(")[1].equals(")")) {
                                         String[] content = methodContent.split(">\\(")[1].split("\\)")[0].split(",");
@@ -346,7 +347,7 @@ public class MainClassGenerator extends ClassGenerator {
                                 } else {
                                     fieldLocal = methodContent.split(" ")[2].split("\\.")[0];
                                     field = methodContent.split(" ")[4].split(">")[0];
-                                    MFieldStatement statement = new MFieldStatement(assignedLocal, field, 4);
+                                    MFieldReplace statement = new MFieldReplace(assignedLocal, field, 4);
                                     statement.setFieldLocal(fieldLocal);
                                     statement.setPred(unit);
                                     statement.setLocalType(methodContent.split(" ")[3]);
@@ -358,14 +359,14 @@ public class MainClassGenerator extends ClassGenerator {
                                 fieldAndAssignment[0] = methodContent.split(" ")[4].replaceAll(">", "");
                                 fieldAndAssignment[1] = methodContent.split(" =")[0];
                                 fieldAndAssignment[2] = methodContent.split(" ")[3];
-                                MFieldStatement statement = new MFieldStatement(fieldAndAssignment[1], fieldAndAssignment[0], 1);
+                                MFieldReplace statement = new MFieldReplace(fieldAndAssignment[1], fieldAndAssignment[0], 1);
                                 statement.setPred(unit);
                                 mFieldToBeReplaced.add(statement);
                                 toRemove.add(unit);
                             }
                         } else if (methodContent.split("=")[0].contains("<" + oldClass.getName() + ":")) {
                             String field = methodContent.split(" ")[2].replaceAll(">", "");
-                            MFieldStatement statement = new MFieldStatement("", field, 2);
+                            MFieldReplace statement = new MFieldReplace("", field, 2);
                             statement.setFieldLocal(methodContent.split("\\.")[0]);
                             statement.setValueLocal(methodContent.split("= ")[1]);
                             statement.setLocalType(methodContent.split(" ")[1]);
@@ -378,7 +379,7 @@ public class MainClassGenerator extends ClassGenerator {
                 else if (methodContent.contains(oldClass.getName())) {
                     if(methodContent.contains("= new")) {
                         String assigned = methodContent.split(" =")[0];
-                        MFieldStatement statement = new MFieldStatement(assigned, "", 6);
+                        MFieldReplace statement = new MFieldReplace(assigned, "", 6);
                         statement.setPred(unit);
                         mFieldToBeReplaced.add(statement);
                         toRemove.add(unit);
@@ -388,8 +389,8 @@ public class MainClassGenerator extends ClassGenerator {
 
                  }
 
-                else if (insertStatements.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
-                    InsertStatement statement = insertStatements.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
+                else if (insertReplaces.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
+                    InsertReplace statement = insertReplaces.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
 
                     if(methodContent.contains("void set")) {
                         String[] data = unit.toString().split("\\(");
@@ -407,46 +408,46 @@ public class MainClassGenerator extends ClassGenerator {
                     }
                 }
 
-                else if (selectStatements.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
+                else if (selectReplaces.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
                     if (methodContent.contains("java.sql.ResultSet executeQuery()")) {
-                        SelectStatement statement = selectStatements.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
+                        SelectReplace statement = selectReplaces.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
                         statement.setAssignedLocal(methodContent.split(" ")[0]);
-                        RSStatement rsStatement = new RSStatement(statement.getAssignedLocal());
-                        rsStatement.setTableName(statement.getTableName());
-                        rsStatements.add(rsStatement);
+                        RSReplace rsReplace = new RSReplace(statement.getAssignedLocal());
+                        rsReplace.setTableName(statement.getTableName());
+                        rsReplaces.add(rsReplace);
                         statement.setPred(unit);
                         selectToBeReplaced.add(statement);
                         toRemove.add(unit);
                     }
                 }
 
-                else if (deleteStatements.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
+                else if (deleteReplaces.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
                      if (methodContent.contains("executeUpdate()")) {
-                         DeleteStatement statement = deleteStatements.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
+                         DeleteReplace statement = deleteReplaces.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
                          statement.setPred(unit);
                          deleteToBeReplaced.add(statement);
                          toRemove.add(unit);
                      }
                  }
 
-                 else if (updateStatements.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
+                 else if (updateReplaces.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
                      if (methodContent.contains("executeUpdate()")) {
-                         UpdateStatement statement = updateStatements.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
+                         UpdateReplace statement = updateReplaces.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
                          statement.setPred(unit);
                          updateToBeReplaced.add(statement);
                          toRemove.add(unit);
                      }
                  }
 
-                else if (rsStatements.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
-                    RSStatement statement = rsStatements.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
+                else if (rsReplaces.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
+                    RSReplace statement = rsReplaces.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
                     if (methodContent.contains("java.sql.ResultSet: boolean next()") && !methodContent.contains("goto")) {
                         statement.setPredNext(unit);
                         statement.setAssignedLocalNameNext(methodContent.split(" ")[0]);
                         nextToBeReplaced.add(statement);
                         toRemove.add(unit);
                     }
-                    else if (methodContent.contains("java.sql.ResultSet") && methodContent.contains("get")) {
+                    else if (methodContent.contains("java.sql.ResultSet") && (methodContent.contains("getInt") || methodContent.contains("getString"))) {
                         statement.addPredGet(unit);
                         statement.addAssignedLocalNameGet(methodContent.split(" ")[0]);
                         statement.addParamsGet(methodContent.split(">\\(")[1].split("\\)")[0]);
@@ -492,28 +493,28 @@ public class MainClassGenerator extends ClassGenerator {
 
              if (!insertToBeReplaced.isEmpty()) {
                  for (int i = 0; i < insertToBeReplaced.size(); i++) {
-                     InsertStatement current =  insertToBeReplaced.get(i);
+                     InsertReplace current =  insertToBeReplaced.get(i);
                      processInsertStatement(current, units, activeBody, processedClass);
                  }
              }
 
              if (!deleteToBeReplaced.isEmpty()) {
                  for (int i = 0; i < insertToBeReplaced.size(); i++) {
-                     DeleteStatement current =  deleteToBeReplaced.get(i);
+                     DeleteReplace current =  deleteToBeReplaced.get(i);
                      processDeleteStatement(current, units, activeBody, processedClass);
                  }
              }
 
             if (!updateToBeReplaced.isEmpty()) {
                 for (int i = 0; i < insertToBeReplaced.size(); i++) {
-                    UpdateStatement current =  updateToBeReplaced.get(i);
+                    UpdateReplace current =  updateToBeReplaced.get(i);
                     processUpdateStatement(current, units, activeBody, processedClass);
                 }
             }
 
              if (!selectToBeReplaced.isEmpty()) {
                  for (int i = 0; i < selectToBeReplaced.size(); i++) {
-                     SelectStatement current = selectToBeReplaced.get(i);
+                     SelectReplace current = selectToBeReplaced.get(i);
                      currentPred = current.getPred();
                      currentUnits = units;
                      currentBody = activeBody;
@@ -523,14 +524,14 @@ public class MainClassGenerator extends ClassGenerator {
 
              if (!nextToBeReplaced.isEmpty()) {
                  for (int i = 0; i < nextToBeReplaced.size(); i++) {
-                     RSStatement current = nextToBeReplaced.get(i);
+                     RSReplace current = nextToBeReplaced.get(i);
                      processNext(current, units, activeBody, processedClass);
                  }
              }
 
              if(!getToBeReplaced.isEmpty()) {
                  for (int i = 0; i < getToBeReplaced.size(); i++) {
-                     RSStatement current = getToBeReplaced.get(i);
+                     RSReplace current = getToBeReplaced.get(i);
                      processGet(current, units, activeBody, processedClass);
                  }
              }
@@ -578,7 +579,7 @@ public class MainClassGenerator extends ClassGenerator {
         units.insertAfter(newUnits, pred);
     }
 
-    private void processMethodField (MFieldStatement statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
+    private void processMethodField (MFieldReplace statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
         ArrayList<Unit> newUnits = new ArrayList<>();
         FieldRef fieldRef;
         if (statement.getType() == 1) {
@@ -684,7 +685,7 @@ public class MainClassGenerator extends ClassGenerator {
         units.insertAfter(newUnits, pred);
     }
 
-    private void processInsertStatement(InsertStatement statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
+    private void processInsertStatement(InsertReplace statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
         ArrayList<Unit> newUnits = new ArrayList<>();
         ArrayList<Local> parameterList = new ArrayList<>();
         for (int i = 0; i < statement.getParameterCount(); i++) {
@@ -710,36 +711,36 @@ public class MainClassGenerator extends ClassGenerator {
                 }
             }
         }
-        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "InsertStatement");
+        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "InsertReplace");
         newUnits.add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(connectionLocal, toCall.makeRef(), parameterList)));
         units.insertAfter(newUnits, statement.getPred());
     }
 
-    private void processSelectStatement(SelectStatement statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
+    private void processSelectStatement(SelectReplace statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
         ArrayList<Unit> newUnits = new ArrayList<>();
         Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getAssignedLocal())).findFirst().get();
         assigned.setType(Scene.v().getRefType("java.util.Iterator"));
-        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "SelectStatement" + statement.getLocalCount());
+        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "SelectReplace" + statement.getLocalCount());
         newUnits.add(Jimple.v().newAssignStmt(assigned, Jimple.v().newVirtualInvokeExpr(connectionLocal, toCall.makeRef())));
         units.insertAfter(newUnits, statement.getPred());
     }
 
-    private void processDeleteStatement(DeleteStatement statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
+    private void processDeleteStatement(DeleteReplace statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
         ArrayList<Unit> newUnits = new ArrayList<>();
-        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "DeleteStatement" + statement.getLocalCount());
+        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "DeleteReplace" + statement.getLocalCount());
         newUnits.add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(connectionLocal, toCall.makeRef())));
         units.insertAfter(newUnits, statement.getPred());
     }
 
-    private void processUpdateStatement(UpdateStatement statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
+    private void processUpdateStatement(UpdateReplace statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
         ArrayList<Unit> newUnits = new ArrayList<>();
-        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "UpdateStatement" + statement.getLocalCount());
+        SootMethod toCall = Scene.v().getSootClass("Connection").getMethodByName(statement.getTableName() + "UpdateReplace" + statement.getLocalCount());
         newUnits.add(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(connectionLocal, toCall.makeRef())));
         units.insertAfter(newUnits, statement.getPred());
     }
 
 
-    private void processNext(RSStatement statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
+    private void processNext(RSReplace statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
         ArrayList<Unit> newUnits = new ArrayList<>();
         Local assigned = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getAssignedLocalNameNext())).findFirst().get();
         Local rs = activeBody.getLocals().stream().filter(x -> x.getName().equals(statement.getLocalName())).findFirst().get();
@@ -748,7 +749,7 @@ public class MainClassGenerator extends ClassGenerator {
         units.insertAfter(newUnits, statement.getPredNext());
     }
 
-    private void processGet (RSStatement statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
+    private void processGet (RSReplace statement, UnitPatchingChain units, Body activeBody, SootClass processedClass) {
         ArrayList<Local> rsLocals = new ArrayList<>();
         for (int i = 0; i < statement.getGetSize(); i++) {
             ArrayList<Unit> newUnits = new ArrayList<>();

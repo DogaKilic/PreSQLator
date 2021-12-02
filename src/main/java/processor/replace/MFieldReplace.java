@@ -1,12 +1,11 @@
-package processor.statement;
+package processor.replace;
 
 import soot.Unit;
 import soot.Value;
-import soot.jimple.Constant;
 
 import java.util.ArrayList;
 
-public class MFieldStatement implements IStatement{
+public class MFieldReplace implements IReplace {
     public void setFieldLocal(String fieldLocal) {
         this.fieldLocal = fieldLocal;
     }
@@ -80,7 +79,7 @@ public class MFieldStatement implements IStatement{
     }
 
 
-    public MFieldStatement(String assignedLocal, String field, int type) {
+    public MFieldReplace(String assignedLocal, String field, int type) {
         this.type = type;
         this.field = field;
         this.assignedLocal = assignedLocal;

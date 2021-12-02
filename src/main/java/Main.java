@@ -15,7 +15,7 @@ public class Main {
             path = args[0];
         }
         String processPath = "C:\\Users\\dogas\\IdeaProjects\\TestProj\\src\\main\\resources";
-        String className = "Modification";
+        String className = "Deletion";
 
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         compiler.run(null, null, null, processPath + "\\" + className + ".java");

@@ -4,7 +4,8 @@ import soot.Unit;
 
 import java.util.ArrayList;
 
-public class DeleteStatement implements IStatement {
+public class UpdateStatement implements IStatement{
+
     private static ArrayList<String> count = new ArrayList<>();
 
 
@@ -15,7 +16,6 @@ public class DeleteStatement implements IStatement {
     private int localCount;
     private String localName;
     private String tableName;
-
 
 
     private String assignedLocal;
@@ -45,7 +45,7 @@ public class DeleteStatement implements IStatement {
         return tableName;
     }
 
-    public DeleteStatement(String localName, String tableName) {
+    public UpdateStatement(String localName, String tableName) {
         this.localName = localName;
         this.tableName = tableName;
         this.assignedLocal = "";

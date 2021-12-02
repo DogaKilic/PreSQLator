@@ -2,20 +2,14 @@ package processor.generator;
 
 import content.TableBank;
 import content.TableContent;
-import fj.test.Bool;
 import soot.*;
 import soot.jimple.*;
 import soot.util.Chain;
 import util.ClassWriter;
-import util.ConnectionHelper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ConnectionClassGenerator extends ClassGenerator {
 

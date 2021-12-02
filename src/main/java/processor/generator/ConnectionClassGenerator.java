@@ -38,8 +38,6 @@ public class ConnectionClassGenerator extends ClassGenerator {
             tableFieldNames.add(tableFieldName);
             connectionClass.addField(tableField);
         }
-        SootField helper = new SootField("helper", RefType.v("util.ConnectionHelper"), Modifier.PUBLIC);
-        connectionClass.addField(helper);
         //create <init>
         SootMethod init = new SootMethod("<init>", null, VoidType.v(), Modifier.PUBLIC);
         connectionClass.addMethod(init);
@@ -66,14 +64,6 @@ public class ConnectionClassGenerator extends ClassGenerator {
             cnt++;
         }
 
-        Local helperLocal;
-        helperLocal = Jimple.v().newLocal("helper", Scene.v().getRefType("util.ConnectionHelper"));
-        initBody.getLocals().add(helperLocal);
-        units.add(Jimple.v().newAssignStmt(helperLocal, Jimple.v().newNewExpr(Scene.v().getRefType("util.ConnectionHelper"))));
-        SpecialInvokeExpr helperTableInv = Jimple.v().newSpecialInvokeExpr(helperLocal, Scene.v().getSootClass("util.ConnectionHelper").getMethod("<init>", new LinkedList<Type>()).makeRef());
-        units.add(Jimple.v().newInvokeStmt(helperTableInv));
-        InstanceFieldRef helperInstanceFieldRef = Jimple.v().newInstanceFieldRef(ref, connectionClass.getFieldByName("helper").makeRef());
-        units.add(Jimple.v().newAssignStmt(helperInstanceFieldRef, helperLocal));
         //add insertStatement methods
         cnt = 0;
         for (TableContent i : contents) {

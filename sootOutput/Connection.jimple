@@ -1,13 +1,11 @@
 class Connection extends java.lang.Object
 {
     public PersonTable personTable;
-    public util.ConnectionHelper helper;
 
     public void <init>()
     {
         Connection this;
         PersonTable table0;
-        util.ConnectionHelper helper;
 
         this := @this: Connection;
 
@@ -18,12 +16,6 @@ class Connection extends java.lang.Object
         specialinvoke table0.<PersonTable: void <init>()>();
 
         this.<Connection: PersonTable personTable> = table0;
-
-        helper = new util.ConnectionHelper;
-
-        specialinvoke helper.<util.ConnectionHelper: void <init>()>();
-
-        this.<Connection: util.ConnectionHelper helper> = helper;
 
         return;
     }

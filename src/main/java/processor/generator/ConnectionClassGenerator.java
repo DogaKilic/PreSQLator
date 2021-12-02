@@ -689,8 +689,10 @@ public class ConnectionClassGenerator extends ClassGenerator {
                 consumerList.add(forEachParam);
                 updateUnits.add(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(newStream, toCallForEach.makeRef(), consumerList)));
                 updateUnits.add(Jimple.v().newReturnVoidStmt());
-                cnt++;
+
+
             }
+            cnt++;
         }
 
 

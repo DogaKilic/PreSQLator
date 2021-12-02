@@ -389,8 +389,8 @@ public class MainClassGenerator extends ClassGenerator {
 
                  }
 
-                else if (insertReplaces.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
-                    InsertReplace statement = insertReplaces.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
+                else if (insertReplaces.stream().anyMatch(x -> !methodContent.replace(x.getLocalName() + ".", "").contains(".<"))) {
+                    InsertReplace statement = insertReplaces.stream().filter(x -> !methodContent.replace(x.getLocalName() + ".", "").contains(".<")).findFirst().get();
 
                     if(methodContent.contains("void set")) {
                         String[] data = unit.toString().split("\\(");
@@ -408,9 +408,9 @@ public class MainClassGenerator extends ClassGenerator {
                     }
                 }
 
-                else if (selectReplaces.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
+                else if (selectReplaces.stream().anyMatch(x -> !methodContent.replace(x.getLocalName() + ".", "").contains(".<"))) {
                     if (methodContent.contains("java.sql.ResultSet executeQuery()")) {
-                        SelectReplace statement = selectReplaces.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
+                        SelectReplace statement = selectReplaces.stream().filter(x -> !methodContent.replace(x.getLocalName() + ".", "").contains(".<")).findFirst().get();
                         statement.setAssignedLocal(methodContent.split(" ")[0]);
                         RSReplace rsReplace = new RSReplace(statement.getAssignedLocal());
                         rsReplace.setTableName(statement.getTableName());
@@ -421,18 +421,18 @@ public class MainClassGenerator extends ClassGenerator {
                     }
                 }
 
-                else if (deleteReplaces.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
+                else if (deleteReplaces.stream().anyMatch(x -> !methodContent.replace(x.getLocalName() + ".", "").contains(".<"))) {
                      if (methodContent.contains("executeUpdate()")) {
-                         DeleteReplace statement = deleteReplaces.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
+                         DeleteReplace statement = deleteReplaces.stream().filter(x -> !methodContent.replace(x.getLocalName() + ".", "").contains(".<")).findFirst().get();
                          statement.setPred(unit);
                          deleteToBeReplaced.add(statement);
                          toRemove.add(unit);
                      }
                  }
 
-                 else if (updateReplaces.stream().anyMatch(x -> methodContent.contains(x.getLocalName()))) {
+                 else if (updateReplaces.stream().anyMatch(x -> !methodContent.replace(x.getLocalName() + ".", "").contains(".<"))) {
                      if (methodContent.contains("executeUpdate()")) {
-                         UpdateReplace statement = updateReplaces.stream().filter(x -> methodContent.contains(x.getLocalName())).findFirst().get();
+                         UpdateReplace statement = updateReplaces.stream().filter(x -> !methodContent.replace(x.getLocalName() + ".", "").contains(".<")).findFirst().get();
                          statement.setPred(unit);
                          updateToBeReplaced.add(statement);
                          toRemove.add(unit);
@@ -499,14 +499,14 @@ public class MainClassGenerator extends ClassGenerator {
              }
 
              if (!deleteToBeReplaced.isEmpty()) {
-                 for (int i = 0; i < insertToBeReplaced.size(); i++) {
+                 for (int i = 0; i < deleteToBeReplaced.size(); i++) {
                      DeleteReplace current =  deleteToBeReplaced.get(i);
                      processDeleteStatement(current, units, activeBody, processedClass);
                  }
              }
 
             if (!updateToBeReplaced.isEmpty()) {
-                for (int i = 0; i < insertToBeReplaced.size(); i++) {
+                for (int i = 0; i < updateToBeReplaced.size(); i++) {
                     UpdateReplace current =  updateToBeReplaced.get(i);
                     processUpdateStatement(current, units, activeBody, processedClass);
                 }

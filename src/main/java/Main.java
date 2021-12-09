@@ -13,7 +13,7 @@ public class Main {
             path = args[0];
         }
         String processPath = "src/main/resources";
-        String className = "WhereSelectGt";
+        String className = "WrongColumn";
 
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         compiler.run(null, null, null, processPath + "\\" + className + ".java");

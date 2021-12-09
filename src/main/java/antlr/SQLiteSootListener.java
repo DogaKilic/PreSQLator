@@ -41,7 +41,7 @@ public class SQLiteSootListener extends SQLiteParserBaseListener {
         ArrayList<String> whereResults = new ArrayList<>();
         String tableName;
         for(int i = 0; i < selectCores.stream().count(); i++){
-            tableName = selectCores.get(i).table_or_subquery().get(0).getText();
+            tableName = selectCores.get(i).table_or_subquery().get(0).table_name().getText();
             if(!TableBank.hasTable(tableName)) {
                 TableContent newTable = new TableContent(tableName);
                 TableBank.addTable(newTable);

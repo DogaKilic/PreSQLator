@@ -16,25 +16,25 @@ public class WhereSelectGt extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.sql.Statement r0;
-        java.sql.PreparedStatement r1, r2;
-        int $i1, $i3;
-        java.sql.ResultSet r3;
+        java.sql.PreparedStatement r1, r2, r3;
+        int $i1, $i4;
+        java.sql.ResultSet r4;
         boolean $z0;
-        java.io.PrintStream $r4;
-        java.sql.SQLException $r5, r8;
-        java.lang.String[] r6;
-        java.sql.Connection r7;
+        java.io.PrintStream $r5;
+        java.sql.SQLException $r6, r9;
+        java.lang.String[] r7;
+        java.sql.Connection r8;
 
-        r6 := @parameter0: java.lang.String[];
+        r7 := @parameter0: java.lang.String[];
 
      label1:
-        r7 = staticinvoke <java.sql.DriverManager: java.sql.Connection getConnection(java.lang.String)>("jdbc:sqlite::memory:");
+        r8 = staticinvoke <java.sql.DriverManager: java.sql.Connection getConnection(java.lang.String)>("jdbc:sqlite::memory:");
 
-        r0 = interfaceinvoke r7.<java.sql.Connection: java.sql.Statement createStatement()>();
+        r0 = interfaceinvoke r8.<java.sql.Connection: java.sql.Statement createStatement()>();
 
         interfaceinvoke r0.<java.sql.Statement: int executeUpdate(java.lang.String)>("create table person (id integer)");
 
-        r1 = interfaceinvoke r7.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("insert into person values(?)");
+        r1 = interfaceinvoke r8.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("insert into person values(?)");
 
         $i1 = <WhereSelectGt: int secretId>;
 
@@ -42,20 +42,26 @@ public class WhereSelectGt extends java.lang.Object
 
         interfaceinvoke r1.<java.sql.PreparedStatement: int executeUpdate()>();
 
-        r2 = interfaceinvoke r7.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("select * from person where id > 123456");
+        r2 = interfaceinvoke r8.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("insert into person values(?)");
 
-        r3 = interfaceinvoke r2.<java.sql.PreparedStatement: java.sql.ResultSet executeQuery()>();
+        interfaceinvoke r2.<java.sql.PreparedStatement: void setInt(int,int)>(1, 1234567);
+
+        interfaceinvoke r2.<java.sql.PreparedStatement: int executeUpdate()>();
+
+        r3 = interfaceinvoke r8.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("select * from person where id > 123456");
+
+        r4 = interfaceinvoke r3.<java.sql.PreparedStatement: java.sql.ResultSet executeQuery()>();
 
      label2:
-        $z0 = interfaceinvoke r3.<java.sql.ResultSet: boolean next()>();
+        $z0 = interfaceinvoke r4.<java.sql.ResultSet: boolean next()>();
 
         if $z0 == 0 goto label3;
 
-        $r4 = <java.lang.System: java.io.PrintStream out>;
+        $r5 = <java.lang.System: java.io.PrintStream out>;
 
-        $i3 = interfaceinvoke r3.<java.sql.ResultSet: int getInt(java.lang.String)>("id");
+        $i4 = interfaceinvoke r4.<java.sql.ResultSet: int getInt(java.lang.String)>("id");
 
-        virtualinvoke $r4.<java.io.PrintStream: void println(int)>($i3);
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>($i4);
 
         goto label2;
 
@@ -63,11 +69,11 @@ public class WhereSelectGt extends java.lang.Object
         goto label5;
 
      label4:
-        $r5 := @caughtexception;
+        $r6 := @caughtexception;
 
-        r8 = $r5;
+        r9 = $r6;
 
-        virtualinvoke r8.<java.sql.SQLException: void printStackTrace()>();
+        virtualinvoke r9.<java.sql.SQLException: void printStackTrace()>();
 
      label5:
         return;

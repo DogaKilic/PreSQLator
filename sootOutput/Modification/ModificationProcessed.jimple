@@ -1,6 +1,5 @@
 public class ModificationProcessed extends java.lang.Object
 {
-    private static int secretId;
 
     public void <init>()
     {
@@ -16,69 +15,75 @@ public class ModificationProcessed extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.sql.Statement r0;
-        java.sql.PreparedStatement r1, r2, r3;
-        int $i1, $i4;
-        java.util.Iterator r4;
+        java.sql.PreparedStatement r1, r2, r10, r11;
+        java.lang.String[] r3;
+        java.lang.String $r4;
+        java.lang.Integer $r5;
+        int $i3, $i4, param, param;
+        java.util.Iterator r6;
+        java.io.PrintStream $r7;
+        java.sql.SQLException $r8, r12;
+        Connection r9;
         boolean $z0;
-        java.io.PrintStream $r5;
-        java.sql.SQLException $r6, r9;
-        java.lang.String[] r7;
-        Connection r8;
         ModificationProcessed this;
-        util.Row rowLocalr4;
+        util.Row rowLocalr6;
 
-        r7 := @parameter0: java.lang.String[];
+        r3 := @parameter0: java.lang.String[];
 
      label1:
-        r8 = new Connection;
+        r9 = new Connection;
 
-        specialinvoke r8.<Connection: void <init>()>();
+        specialinvoke r9.<Connection: void <init>()>();
 
-        $i1 = <ModificationProcessed: int secretId>;
+        param = 111111;
 
-        specialinvoke r8.<Connection: void personInsertStatement(int)>($i1);
+        specialinvoke r9.<Connection: void personInsertStatement(int)>(param);
 
-        specialinvoke r8.<Connection: void personUpdateStatement0()>();
+        param = 22222;
 
-        r4 = virtualinvoke r8.<Connection: Iterator<PersonRow> personSelectStatement0()>();
+        specialinvoke r9.<Connection: void personInsertStatement(int)>(param);
+
+        $r4 = r3[0];
+
+        $r5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(java.lang.String)>($r4);
+
+        $i3 = virtualinvoke $r5.<java.lang.Integer: int intValue()>();
+
+        if $i3 <= 0 goto label2;
+
+        specialinvoke r9.<Connection: void personUpdateStatement0()>();
 
      label2:
-        $z0 = interfaceinvoke r4.<java.util.Iterator: boolean hasNext()>();
-
-        if $z0 == 0 goto label3;
-
-        $r5 = <java.lang.System: java.io.PrintStream out>;
-
-        rowLocalr4 = interfaceinvoke r4.<java.util.Iterator: java.lang.Object next()>();
-
-        $i4 = virtualinvoke rowLocalr4.<util.Row: java.lang.String getParameter(int)>(0);
-
-        virtualinvoke $r5.<java.io.PrintStream: void println(int)>($i4);
-
-        goto label2;
+        r6 = virtualinvoke r9.<Connection: Iterator<PersonRow> personSelectStatement0()>();
 
      label3:
-        goto label5;
+        $z0 = interfaceinvoke r6.<java.util.Iterator: boolean hasNext()>();
+
+        if $z0 == 0 goto label4;
+
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        rowLocalr6 = interfaceinvoke r6.<java.util.Iterator: java.lang.Object next()>();
+
+        $i4 = virtualinvoke rowLocalr6.<util.Row: java.lang.String getParameter(int)>(0);
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(int)>($i4);
+
+        goto label3;
 
      label4:
-        $r6 := @caughtexception;
-
-        r9 = $r6;
-
-        virtualinvoke r9.<java.sql.SQLException: void printStackTrace()>();
+        goto label6;
 
      label5:
+        $r8 := @caughtexception;
+
+        r12 = $r8;
+
+        virtualinvoke r12.<java.sql.SQLException: void printStackTrace()>();
+
+     label6:
         return;
 
-        catch java.sql.SQLException from label1 to label3 with label4;
-    }
-
-    static void <clinit>()
-    {
-        ModificationProcessed this;
-
-        <ModificationProcessed: int secretId> = 123456;
-
-        return;
+        catch java.sql.SQLException from label1 to label4 with label5;
     }
 }

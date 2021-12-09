@@ -39,7 +39,7 @@ public class Scratch extends java.lang.Object
 
         r1 = interfaceinvoke r15.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("insert into person values(?, ?)");
 
-        r2 = interfaceinvoke r15.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("select * from person where name != \'josh\'");
+        r2 = interfaceinvoke r15.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("select * from person");
 
         $i1 = <Scratch: int secretId>;
 

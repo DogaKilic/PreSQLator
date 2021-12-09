@@ -20,7 +20,7 @@ class Connection extends java.lang.Object
         return;
     }
 
-    public void personInsertReplace(int, java.lang.String)
+    public void personInsertStatement(int, java.lang.String)
     {
         Connection thisRef;
         int parm0;
@@ -48,14 +48,12 @@ class Connection extends java.lang.Object
         return;
     }
 
-    public Iterator<PersonRow> personSelectReplace0()
+    public Iterator<PersonRow> personSelectStatement0()
     {
         Connection thisRef0;
         PersonTable table0;
         ArrayList<> tableClass0;
-        java.util.stream.Stream stream0, newStream0;
-        PersonRowSelectPredicate0 filterParm;
-        java.util.Iterator iterator0;
+        Iterator iterator0;
 
         thisRef0 := @this: Connection;
 
@@ -63,13 +61,7 @@ class Connection extends java.lang.Object
 
         tableClass0 = table0.<PersonTable: java.util.ArrayList<PersonRow> rows>;
 
-        stream0 = interfaceinvoke tableClass0.<java.util.Collection: java.util.stream.Stream stream()>();
-
-        filterParm = new PersonRowSelectPredicate0;
-
-        newStream0 = interfaceinvoke stream0.<java.util.stream.Stream: java.util.stream.Stream filter(java.util.function.Predicate)>(filterParm);
-
-        iterator0 = interfaceinvoke newStream0.<java.util.stream.BaseStream: java.util.Iterator iterator()>();
+        iterator0 = virtualinvoke tableClass0.<java.util.ArrayList: java.util.Iterator iterator()>();
 
         return iterator0;
     }

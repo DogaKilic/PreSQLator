@@ -14,6 +14,10 @@ public class WhereSelectGt {
             insert.setInt(1, secretId);
             insert.executeUpdate();
 
+            PreparedStatement insert2 = connection.prepareStatement("insert into person values(?)");
+            insert2.setInt(1, 1234567);
+            insert2.executeUpdate();
+
             PreparedStatement select = connection.prepareStatement("select * from person where id > 123456");
             ResultSet rs = select.executeQuery();
 

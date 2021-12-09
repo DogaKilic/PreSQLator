@@ -96,6 +96,24 @@ class Connection extends java.lang.Object
         return iterator0;
     }
 
+    public Iterator<AnimalRow> animalSelectStatement1()
+    {
+        Connection thisRef0;
+        AnimalTable table0;
+        ArrayList<> tableClass0;
+        Iterator iterator0;
+
+        thisRef0 := @this: Connection;
+
+        table0 = thisRef0.<Connection: AnimalTable animalTable>;
+
+        tableClass0 = table0.<AnimalTable: java.util.ArrayList<AnimalRow> rows>;
+
+        iterator0 = virtualinvoke tableClass0.<java.util.ArrayList: java.util.Iterator iterator()>();
+
+        return iterator0;
+    }
+
     public void personUpdateStatement0()
     {
         Connection thisRef0;

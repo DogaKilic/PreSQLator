@@ -16,42 +16,46 @@ public class WhereSelectGtProcessed extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.sql.Statement r0;
-        java.sql.PreparedStatement r1, r2;
-        int $i1, $i3;
-        java.util.Iterator r3;
+        java.sql.PreparedStatement r1, r2, r3;
+        int $i1, $i4, param;
+        java.util.Iterator r4;
         boolean $z0;
-        java.io.PrintStream $r4;
-        java.sql.SQLException $r5, r8;
-        java.lang.String[] r6;
-        Connection r7;
+        java.io.PrintStream $r5;
+        java.sql.SQLException $r6, r9;
+        java.lang.String[] r7;
+        Connection r8;
         WhereSelectGtProcessed this;
-        util.Row rowLocalr3;
+        util.Row rowLocalr4;
 
-        r6 := @parameter0: java.lang.String[];
+        r7 := @parameter0: java.lang.String[];
 
      label1:
-        r7 = new Connection;
+        r8 = new Connection;
 
-        specialinvoke r7.<Connection: void <init>()>();
+        specialinvoke r8.<Connection: void <init>()>();
 
         $i1 = <WhereSelectGtProcessed: int secretId>;
 
-        specialinvoke r7.<Connection: void personInsertStatement(int)>($i1);
+        specialinvoke r8.<Connection: void personInsertStatement(int)>($i1);
 
-        r3 = virtualinvoke r7.<Connection: Iterator<PersonRow> personSelectStatement0()>();
+        param = 1234567;
+
+        specialinvoke r8.<Connection: void personInsertStatement(int)>(param);
+
+        r4 = virtualinvoke r8.<Connection: Iterator<PersonRow> personSelectStatement0()>();
 
      label2:
-        $z0 = interfaceinvoke r3.<java.util.Iterator: boolean hasNext()>();
+        $z0 = interfaceinvoke r4.<java.util.Iterator: boolean hasNext()>();
 
         if $z0 == 0 goto label3;
 
-        $r4 = <java.lang.System: java.io.PrintStream out>;
+        $r5 = <java.lang.System: java.io.PrintStream out>;
 
-        rowLocalr3 = interfaceinvoke r3.<java.util.Iterator: java.lang.Object next()>();
+        rowLocalr4 = interfaceinvoke r4.<java.util.Iterator: java.lang.Object next()>();
 
-        $i3 = virtualinvoke rowLocalr3.<util.Row: java.lang.String getParameter(int)>(0);
+        $i4 = virtualinvoke rowLocalr4.<util.Row: java.lang.String getParameter(int)>(0);
 
-        virtualinvoke $r4.<java.io.PrintStream: void println(int)>($i3);
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>($i4);
 
         goto label2;
 
@@ -59,11 +63,11 @@ public class WhereSelectGtProcessed extends java.lang.Object
         goto label5;
 
      label4:
-        $r5 := @caughtexception;
+        $r6 := @caughtexception;
 
-        r8 = $r5;
+        r9 = $r6;
 
-        virtualinvoke r8.<java.sql.SQLException: void printStackTrace()>();
+        virtualinvoke r9.<java.sql.SQLException: void printStackTrace()>();
 
      label5:
         return;

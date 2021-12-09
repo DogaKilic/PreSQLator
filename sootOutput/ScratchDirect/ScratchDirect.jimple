@@ -39,7 +39,7 @@ public class ScratchDirect extends java.lang.Object
 
         r1 = interfaceinvoke r15.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("insert into person values(?, ?)");
 
-        r2 = interfaceinvoke r15.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("select * from person where name != \'josh\'");
+        r2 = interfaceinvoke r15.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("select * from person");
 
         r3 = interfaceinvoke r2.<java.sql.PreparedStatement: java.sql.ResultSet executeQuery()>();
 

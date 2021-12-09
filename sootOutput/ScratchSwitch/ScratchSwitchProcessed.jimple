@@ -18,8 +18,7 @@ public class ScratchSwitchProcessed extends java.lang.Object
     {
         java.sql.Statement r0;
         java.sql.PreparedStatement r1, r2;
-        double $d0;
-        int i1, $i2, $i4, $i5, $i6, $i7, $i8, $i9;
+        int $i1, $i2, $i3, $i4, $i6, $i7, $i8, $i9;
         java.util.Iterator r3;
         java.lang.StringBuilder $r4, $r6, $r8, $r9, $r10;
         java.io.PrintStream $r5;
@@ -38,11 +37,9 @@ public class ScratchSwitchProcessed extends java.lang.Object
 
         specialinvoke r14.<Connection: void <init>()>();
 
-        $d0 = staticinvoke <java.lang.Math: double random()>();
+        $i1 = <ScratchSwitchProcessed: int secretId>;
 
-        i1 = (int) $d0;
-
-        $i2 = i1 % 3;
+        $i2 = $i1 % 3;
 
         tableswitch($i2)
         {
@@ -53,22 +50,26 @@ public class ScratchSwitchProcessed extends java.lang.Object
         };
 
      label2:
-        $i7 = <ScratchSwitchProcessed: int secretId>;
+        $i9 = <ScratchSwitchProcessed: int secretId>;
+
+        goto label5;
 
      label3:
-        $i5 = <ScratchSwitchProcessed: int secretId>;
+        $i7 = <ScratchSwitchProcessed: int secretId>;
 
-        $i6 = $i5 - 1;
+        $i8 = $i7 - 1;
+
+        goto label5;
 
      label4:
-        $i8 = <ScratchSwitchProcessed: int secretId>;
+        $i3 = <ScratchSwitchProcessed: int secretId>;
 
-        $i9 = $i8 - 2;
+        $i4 = $i3 - 2;
 
      label5:
         $r15 = <ScratchSwitchProcessed: java.lang.String secretName>;
 
-        specialinvoke r14.<Connection: void personInsertStatement(int,java.lang.String)>($i9, $r15);
+        specialinvoke r14.<Connection: void personInsertStatement(int,java.lang.String)>($i4, $r15);
 
         r3 = virtualinvoke r14.<Connection: Iterator<PersonRow> personSelectStatement0()>();
 
@@ -93,9 +94,9 @@ public class ScratchSwitchProcessed extends java.lang.Object
 
         $r9 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(", id = ");
 
-        $i4 = virtualinvoke rowLocalr3.<util.Row: java.lang.String getParameter(int)>(0);
+        $i6 = virtualinvoke rowLocalr3.<util.Row: java.lang.String getParameter(int)>(0);
 
-        $r10 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i4);
+        $r10 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i6);
 
         $r11 = virtualinvoke $r10.<java.lang.StringBuilder: java.lang.String toString()>();
 

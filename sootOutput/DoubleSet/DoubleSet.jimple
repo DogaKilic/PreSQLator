@@ -1,7 +1,6 @@
 public class DoubleSet extends java.lang.Object
 {
     private static int secretId;
-    private static java.lang.String secretName;
 
     public void <init>()
     {
@@ -97,8 +96,6 @@ public class DoubleSet extends java.lang.Object
     static void <clinit>()
     {
         <DoubleSet: int secretId> = 123456;
-
-        <DoubleSet: java.lang.String secretName> = "Hans";
 
         return;
     }

@@ -14,7 +14,7 @@ public class ScratchDirect {
             Statement statement = connection.createStatement();
             statement.executeUpdate("create table person (id integer, name string)");
             PreparedStatement insert = connection.prepareStatement("insert into person values(?, ?)");
-            PreparedStatement select = connection.prepareStatement("select * from person where name != \'josh\'");
+            PreparedStatement select = connection.prepareStatement("select * from person");
 
             ResultSet rs = select.executeQuery();
 

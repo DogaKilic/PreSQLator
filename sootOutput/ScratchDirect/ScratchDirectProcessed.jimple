@@ -37,13 +37,13 @@ public class ScratchDirectProcessed extends java.lang.Object
 
         specialinvoke r15.<Connection: void <init>()>();
 
-        r3 = virtualinvoke r15.<Connection: Iterator<PersonRow> personSelectReplace0()>();
+        r3 = virtualinvoke r15.<Connection: Iterator<PersonRow> personSelectStatement0()>();
 
         $i1 = <ScratchDirectProcessed: int secretId>;
 
         $r4 = <ScratchDirectProcessed: java.lang.String secretName>;
 
-        specialinvoke r15.<Connection: void personInsertReplace(int,java.lang.String)>($i1, $r4);
+        specialinvoke r15.<Connection: void personInsertStatement(int,java.lang.String)>($i1, $r4);
 
      label2:
         $z0 = interfaceinvoke r3.<java.util.Iterator: boolean hasNext()>();

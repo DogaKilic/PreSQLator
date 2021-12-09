@@ -148,12 +148,10 @@ public class MainClassGenerator extends ClassGenerator {
 
 
                 if (processedRsMethods.stream().filter(x -> methodContent.contains(x)).findFirst().isPresent()) {
-                    System.out.println(methodContent);
                     Iterator<String> stringIterator = processedRsMethods.stream().iterator();
                     int index = 0;
                     while (stringIterator.hasNext()) {
                         String current = stringIterator.next();
-                        System.out.println(current);
                         if (methodContent.contains(current)) {
                             break;
                         }

@@ -1,7 +1,6 @@
 public class DoubleSetProcessed extends java.lang.Object
 {
     private static int secretId;
-    private static java.lang.String secretName;
 
     public void <init>()
     {
@@ -93,8 +92,6 @@ public class DoubleSetProcessed extends java.lang.Object
     static void <clinit>()
     {
         DoubleSetProcessed this;
-
-        <DoubleSetProcessed: java.lang.String secretName> = "Hans";
 
         <DoubleSetProcessed: int secretId> = 123456;
 

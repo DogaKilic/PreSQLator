@@ -14,16 +14,18 @@ public class ScratchSwitch {
             Statement statement = connection.createStatement();
             statement.executeUpdate("create table person (id integer, name string)");
             PreparedStatement insert = connection.prepareStatement("insert into person values(?, ?)");
-            PreparedStatement select = connection.prepareStatement("select * from person where name != \'josh\'");
+            PreparedStatement select = connection.prepareStatement("select * from person");
 
-            int random = (int) Math.random();
-            switch (random % 3) {
+            switch (secretId % 3) {
                 case 0:
                     insert.setInt(1, secretId);
+                    break;
                 case 1:
                     insert.setInt(1, secretId - 1);
+                    break;
                 case 2:
                     insert.setInt(1, secretId - 2);
+                    break;
             }
 
             insert.setString(2, secretName);

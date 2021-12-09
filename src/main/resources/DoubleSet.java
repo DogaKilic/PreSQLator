@@ -5,7 +5,6 @@ import java.util.LinkedList;
 public class DoubleSet {
 
     private static int secretId = 123456;
-    private static String secretName = "Hans";
 
 
     public static void main(String[] args) {

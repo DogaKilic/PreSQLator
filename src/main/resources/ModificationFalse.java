@@ -2,8 +2,6 @@ import java.sql.*;
 
 public class ModificationFalse {
 
-    private static int secretId = 123456;
-
     public static void main(String[] args) {
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");

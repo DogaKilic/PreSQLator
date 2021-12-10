@@ -16,7 +16,7 @@ public class ScratchFalse {
             statement.executeUpdate("create table video (id integer, name string)");
             PreparedStatement insert = connection.prepareStatement("insert into person values(?, ?)");
             PreparedStatement personSelect = connection.prepareStatement("select * from person");
-            PreparedStatement videoSelect = connection.prepareCall("select * from video");
+            PreparedStatement videoSelect = connection.prepareStatement("select * from video");
 
             insert.setInt(1, secretId);
             insert.setString(2, secretName);

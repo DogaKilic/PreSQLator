@@ -108,4 +108,60 @@ class Connection extends java.lang.Object
 
         return;
     }
+
+    public void personUpdateStatement1()
+    {
+        Connection thisRef0;
+        PersonTable table0;
+        ArrayList<> tableClass0;
+        java.util.stream.Stream stream0, newStream0;
+        PersonRowUpdatePredicate1 filterParm;
+        PersonRowUpdateConsumer1 forEachParam;
+
+        thisRef0 := @this: Connection;
+
+        table0 = thisRef0.<Connection: PersonTable personTable>;
+
+        tableClass0 = table0.<PersonTable: java.util.ArrayList<PersonRow> rows>;
+
+        stream0 = interfaceinvoke tableClass0.<java.util.Collection: java.util.stream.Stream stream()>();
+
+        filterParm = new PersonRowUpdatePredicate1;
+
+        newStream0 = interfaceinvoke stream0.<java.util.stream.Stream: java.util.stream.Stream filter(java.util.function.Predicate)>(filterParm);
+
+        forEachParam = new PersonRowUpdateConsumer1;
+
+        interfaceinvoke newStream0.<java.util.stream.Stream: void forEach(java.util.function.Consumer)>(forEachParam);
+
+        return;
+    }
+
+    public void personUpdateStatement2()
+    {
+        Connection thisRef0;
+        PersonTable table0;
+        ArrayList<> tableClass0;
+        java.util.stream.Stream stream0, newStream0;
+        PersonRowUpdatePredicate2 filterParm;
+        PersonRowUpdateConsumer2 forEachParam;
+
+        thisRef0 := @this: Connection;
+
+        table0 = thisRef0.<Connection: PersonTable personTable>;
+
+        tableClass0 = table0.<PersonTable: java.util.ArrayList<PersonRow> rows>;
+
+        stream0 = interfaceinvoke tableClass0.<java.util.Collection: java.util.stream.Stream stream()>();
+
+        filterParm = new PersonRowUpdatePredicate2;
+
+        newStream0 = interfaceinvoke stream0.<java.util.stream.Stream: java.util.stream.Stream filter(java.util.function.Predicate)>(filterParm);
+
+        forEachParam = new PersonRowUpdateConsumer2;
+
+        interfaceinvoke newStream0.<java.util.stream.Stream: void forEach(java.util.function.Consumer)>(forEachParam);
+
+        return;
+    }
 }

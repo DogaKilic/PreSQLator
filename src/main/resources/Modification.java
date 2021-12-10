@@ -15,11 +15,15 @@ public class Modification {
 
 
             PreparedStatement insert2 = connection.prepareStatement("insert into person values(?)");
-            insert2.setInt(1, 22222);
+            insert2.setInt(1, 222222);
             insert2.executeUpdate();
 
             if (Integer.valueOf(args[0]) > 0) {
                 PreparedStatement update = connection.prepareStatement("update person set id=333333 where id=111111");
+                update.executeUpdate();
+            }
+            else {
+                PreparedStatement update = connection.prepareStatement("update person set id=333333 where id=222222");
                 update.executeUpdate();
             }
 

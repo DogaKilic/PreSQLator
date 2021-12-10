@@ -24,6 +24,10 @@ public class ModificationFalse {
                 PreparedStatement update = connection.prepareStatement("update person set id=333333 where id=111111");
                 update.executeUpdate();
             }
+            else {
+                PreparedStatement update = connection.prepareStatement("update person set id=333333 where id=222222");
+                update.executeUpdate();
+            }
 
 
             PreparedStatement select = connection.prepareStatement("select * from animal");

@@ -73,7 +73,7 @@ public class Multiples extends java.lang.Object
 
         interfaceinvoke r8.<java.sql.PreparedStatement: int executeUpdate()>();
 
-        r9 = interfaceinvoke r20.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("update person set name = \'Niko\' where id=3");
+        r9 = interfaceinvoke r20.<java.sql.Connection: java.sql.PreparedStatement prepareStatement(java.lang.String)>("update person set name = \'Niko\' where id=4");
 
         interfaceinvoke r9.<java.sql.PreparedStatement: int executeUpdate()>();
 

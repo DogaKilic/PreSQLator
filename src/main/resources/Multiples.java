@@ -36,7 +36,7 @@ public class Multiples {
             PreparedStatement update2 = connection.prepareStatement("update person set name = 'Alex' where id=2");
             update2.executeUpdate();
 
-            PreparedStatement update3 = connection.prepareStatement("update person set name = 'Niko' where id=3");
+            PreparedStatement update3 = connection.prepareStatement("update person set name = 'Niko' where id=4x");
             update3.executeUpdate();
 
             PreparedStatement select = connection.prepareStatement("select * from person");

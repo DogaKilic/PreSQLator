@@ -17,31 +17,28 @@ public class ScratchSwitchProcessed extends java.lang.Object
     public static void main(java.lang.String[])
     {
         java.sql.Statement r0;
-        java.sql.PreparedStatement r1, r2;
-        int $i1, $i2, $i3, $i4, $i6, $i7, $i8, $i9;
-        java.util.Iterator r3;
-        java.lang.StringBuilder $r4, $r6, $r8, $r9, $r10;
-        java.io.PrintStream $r5;
-        java.lang.String $r7, $r11, $r15;
-        java.sql.SQLException $r12, r16;
-        java.lang.String[] r13;
-        Connection r14;
-        boolean $z0;
+        java.sql.PreparedStatement r1;
+        int i1, $i2, $i3, $i4, $i6;
+        java.sql.SQLException $r2, r6;
+        java.lang.String[] r3;
+        Connection r4;
+        java.lang.String $r5;
         ScratchSwitchProcessed this;
-        util.Row rowLocalr3;
 
-        r13 := @parameter0: java.lang.String[];
+        r3 := @parameter0: java.lang.String[];
 
      label1:
-        r14 = new Connection;
+        r4 = new Connection;
 
-        specialinvoke r14.<Connection: void <init>()>();
+        specialinvoke r4.<Connection: void <init>()>();
 
-        $i1 = <ScratchSwitchProcessed: int secretId>;
+        i1 = <ScratchSwitchProcessed: int secretId>;
 
-        $i2 = $i1 % 3;
+        $i2 = <ScratchSwitchProcessed: int secretId>;
 
-        tableswitch($i2)
+        $i3 = $i2 % 3;
+
+        tableswitch($i3)
         {
             case 0: goto label2;
             case 1: goto label3;
@@ -50,72 +47,33 @@ public class ScratchSwitchProcessed extends java.lang.Object
         };
 
      label2:
-        $i9 = <ScratchSwitchProcessed: int secretId>;
-
         goto label5;
 
      label3:
-        $i7 = <ScratchSwitchProcessed: int secretId>;
-
-        $i8 = $i7 - 1;
+        $i6 = i1 - 1;
 
         goto label5;
 
      label4:
-        $i3 = <ScratchSwitchProcessed: int secretId>;
-
-        $i4 = $i3 - 2;
+        $i4 = i1 - 2;
 
      label5:
-        $r15 = <ScratchSwitchProcessed: java.lang.String secretName>;
+        $r5 = <ScratchSwitchProcessed: java.lang.String secretName>;
 
-        specialinvoke r14.<Connection: void personInsertStatement(int,java.lang.String)>($i4, $r15);
-
-        r3 = virtualinvoke r14.<Connection: Iterator<PersonRow> personSelectStatement0()>();
+        specialinvoke r4.<Connection: void personInsertStatement(int,java.lang.String)>($i4, $r5);
 
      label6:
-        $z0 = interfaceinvoke r3.<java.util.Iterator: boolean hasNext()>();
-
-        if $z0 == 0 goto label7;
-
-        $r5 = <java.lang.System: java.io.PrintStream out>;
-
-        $r4 = new java.lang.StringBuilder;
-
-        specialinvoke $r4.<java.lang.StringBuilder: void <init>()>();
-
-        $r6 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("name = ");
-
-        rowLocalr3 = interfaceinvoke r3.<java.util.Iterator: java.lang.Object next()>();
-
-        $r7 = virtualinvoke rowLocalr3.<util.Row: java.lang.String getParameter(int)>(1);
-
-        $r8 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r7);
-
-        $r9 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(", id = ");
-
-        $i6 = virtualinvoke rowLocalr3.<util.Row: java.lang.String getParameter(int)>(0);
-
-        $r10 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i6);
-
-        $r11 = virtualinvoke $r10.<java.lang.StringBuilder: java.lang.String toString()>();
-
-        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>($r11);
-
-        goto label6;
+        goto label8;
 
      label7:
-        goto label9;
+        $r2 := @caughtexception;
+
+        r6 = $r2;
 
      label8:
-        $r12 := @caughtexception;
-
-        r16 = $r12;
-
-     label9:
         return;
 
-        catch java.sql.SQLException from label1 to label7 with label8;
+        catch java.sql.SQLException from label1 to label6 with label7;
     }
 
     static void <clinit>()

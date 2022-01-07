@@ -1,13 +1,17 @@
+import edu.kit.joana.ui.annotations.EntryPoint;
+import edu.kit.joana.ui.annotations.Sink;
+import edu.kit.joana.ui.annotations.Source;
+
 import java.sql.*;
 import java.util.LinkedList;
 
-
 public class Scratch {
-
+    @Source
     private static int secretId = 123456;
+    @Source
     private static String secretName = "Hans";
 
-
+    @EntryPoint
     public static void main(String[] args) {
         try {
             Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");

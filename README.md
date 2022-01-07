@@ -32,11 +32,11 @@ The Jar-file expects 2 or 3 arguments to run:
     
 Then the Jar-file can be called with:
 
-> java -jar testProj.jar Scratch.class ScratchResultFolder
+> java -jar TestProj-1.0-SNAPSHOT-jar-with-dependencies.jar Scratch.class ScratchResultFolder
 
 or if one or more create table statements have to be given:
 
->java -jar testProj.jar Scratch.class ScratchResultFolder ScratchCreateText.txt
+>java -jar TestProj-1.0-SNAPSHOT-jar-with-dependencies.jar Scratch.class ScratchResultFolder ScratchCreateText.txt
 
 
 After running the Jar-file the processed class-file and all the classes required to run it should be contained in a folder called \Scratch in the given result folder.

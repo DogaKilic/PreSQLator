@@ -5,7 +5,7 @@ Through this process, static information flow analysis becomes possible to perfo
 soot framework is used in this project to create and modify classes.
 
 
-===================================================================================================================================================================
+============================================================================================
 First time setup
 
 compile the project using maven:
@@ -14,8 +14,7 @@ compile the project using maven:
 
 Jar-file of the project should be built in the \target folder.
 
-
-===================================================================================================================================================================
+============================================================================================
 Usage
 
 
@@ -40,4 +39,4 @@ or if one or more create table statements have to be given:
 
 After running the Jar-file the processed class-file and all the classes required to run it should be contained in a folder called \Scratch in the given result folder.
 
-===================================================================================================================================================================
+============================================================================================

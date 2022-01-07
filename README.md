@@ -14,6 +14,7 @@ compile the project using maven:
 > mvn clean compile assembly:single
 
 Jar-file of the project should be built in the \target folder.
+
 ===========================================================================
 
 Usage

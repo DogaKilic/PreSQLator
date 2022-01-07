@@ -6,6 +6,7 @@ soot framework is used in this project to create and modify classes.
 
 
 ===========================================================================
+
 First time setup
 
 compile the project using maven:
@@ -14,6 +15,7 @@ compile the project using maven:
 
 Jar-file of the project should be built in the \target folder.
 ===========================================================================
+
 Usage
 
 
